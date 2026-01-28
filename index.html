@@ -11,6 +11,7 @@
             --accent-cyan: #00f5ff;
             --accent-magenta: #ff00aa;
             --accent-yellow: #f5ff00;
+            --accent-orange: #ff9500;
             --text-light: #e8e8e8;
             --glass: rgba(255, 255, 255, 0.05);
         }
@@ -94,6 +95,96 @@
             max-width: 900px;
             margin: 0 auto;
             padding: 40px 20px;
+        }
+
+        /* ===== NOUVEAU: Stats Bar ===== */
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--glass);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-item.visits { border-color: rgba(0, 245, 255, 0.3); }
+        .stat-item.members { border-color: rgba(255, 0, 170, 0.3); }
+        .stat-item.online { border-color: rgba(0, 255, 136, 0.3); }
+
+        .stat-value {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+        }
+
+        .stat-item.visits .stat-value { color: var(--accent-cyan); }
+        .stat-item.members .stat-value { color: var(--accent-magenta); }
+        .stat-item.online .stat-value { color: #00ff88; }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.8rem;
+        }
+
+        /* ===== NOUVEAU: User Button ===== */
+        .user-bar {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .user-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 25px;
+            background: linear-gradient(135deg, var(--accent-magenta), var(--accent-cyan));
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .user-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(255, 0, 170, 0.4);
+        }
+
+        .user-btn.logged-in {
+            background: var(--glass);
+            border: 2px solid var(--accent-cyan);
+        }
+
+        .user-avatar {
+            width: 28px;
+            height: 28px;
+            background: var(--accent-orange);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: var(--bg-dark);
         }
 
         /* Hero section */
@@ -260,7 +351,7 @@
             color: rgba(255, 255, 255, 0.8);
         }
 
-        /* Reasons grid */
+        /* Reasons */
         .reasons-title {
             font-family: 'Syne', sans-serif;
             font-size: 1.5rem;
@@ -269,94 +360,93 @@
         }
 
         .reasons-grid {
-            display: grid;
+            display: flex;
+            flex-direction: column;
             gap: 20px;
+            margin-bottom: 40px;
         }
 
         .reason-card {
             background: var(--glass);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
             padding: 25px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: default;
+            position: relative;
+            transition: all 0.3s ease;
         }
 
         .reason-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            border-color: rgba(0, 245, 255, 0.3);
-            box-shadow: 0 20px 60px rgba(0, 245, 255, 0.15);
+            transform: translateX(10px);
+            border-color: var(--accent-cyan);
         }
 
         .reason-number {
-            display: inline-flex;
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+            border-radius: 10px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
-            border-radius: 12px;
             font-family: 'Syne', sans-serif;
             font-weight: 800;
             font-size: 1.2rem;
-            margin-bottom: 15px;
         }
 
         .reason-title {
             font-family: 'Syne', sans-serif;
-            font-size: 1.3rem;
-            font-weight: 700;
+            font-size: 1.2rem;
             margin-bottom: 10px;
+            margin-top: 10px;
             color: var(--text-light);
         }
 
         .reason-text {
-            font-size: 1rem;
-            line-height: 1.6;
             color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
         }
 
         /* Conclusion */
         .conclusion {
-            background: linear-gradient(135deg, rgba(245, 255, 0, 0.05), rgba(0, 245, 255, 0.05));
-            border: 1px solid rgba(245, 255, 0, 0.3);
+            background: linear-gradient(135deg, rgba(0, 245, 255, 0.1), rgba(245, 255, 0, 0.1));
+            border: 2px solid var(--accent-cyan);
             border-radius: 20px;
-            padding: 35px;
-            margin-top: 40px;
+            padding: 30px;
             text-align: center;
-            animation: fadeInUp 1s ease-out 0.9s backwards;
+            margin-bottom: 50px;
         }
 
         .conclusion-icon {
             font-size: 3rem;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .conclusion h3 {
             font-family: 'Syne', sans-serif;
-            font-size: 1.8rem;
-            color: var(--accent-yellow);
+            font-size: 1.5rem;
             margin-bottom: 15px;
+            color: var(--accent-cyan);
         }
 
         .conclusion p {
             font-size: 1.1rem;
             line-height: 1.7;
             color: rgba(255, 255, 255, 0.8);
-            max-width: 600px;
-            margin: 0 auto;
         }
 
         .highlight {
-            color: var(--accent-cyan);
+            color: var(--accent-yellow);
             font-weight: 700;
         }
 
-        /* CTA */
+        /* CTA Section */
         .cta-section {
             text-align: center;
-            padding: 60px 0;
-            animation: fadeInUp 1s ease-out 1.2s backwards;
+            padding: 40px 0;
+            animation: fadeInUp 1s ease-out 0.9s backwards;
         }
 
         .cta-question {
@@ -368,9 +458,9 @@
 
         .share-buttons {
             display: flex;
+            flex-wrap: wrap;
             gap: 15px;
             justify-content: center;
-            flex-wrap: wrap;
         }
 
         .share-btn {
@@ -379,12 +469,12 @@
             gap: 10px;
             padding: 15px 30px;
             border-radius: 50px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1rem;
+            font-family: 'Syne', sans-serif;
             font-weight: 700;
-            text-decoration: none;
-            transition: all 0.3s ease;
+            font-size: 1rem;
             cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
             border: none;
         }
 
@@ -399,23 +489,22 @@
             color: var(--text-light);
         }
 
-        .share-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(0, 245, 255, 0.3);
+        .share-btn.account {
+            background: var(--glass);
+            border: 2px solid var(--accent-orange);
+            color: var(--accent-orange);
         }
 
-        /* Live button animation */
-        .live-btn {
-            position: relative;
-            background: linear-gradient(135deg, var(--accent-magenta), #ff4444) !important;
+        .share-btn.live {
+            background: linear-gradient(135deg, var(--accent-magenta), #ff4444);
+            color: white;
         }
 
-        .live-btn .live-indicator {
+        .share-btn.live .live-indicator {
             width: 8px;
             height: 8px;
             background: #00ff88;
             border-radius: 50%;
-            margin-left: 8px;
             animation: livePulse 1.5s ease-in-out infinite;
             box-shadow: 0 0 10px #00ff88;
         }
@@ -423,6 +512,11 @@
         @keyframes livePulse {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        .share-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 245, 255, 0.3);
         }
 
         /* Footer */
@@ -436,6 +530,14 @@
         footer a {
             color: var(--accent-cyan);
             text-decoration: none;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 15px;
+            flex-wrap: wrap;
         }
 
         /* Logo styling */
@@ -517,6 +619,19 @@
                 width: 100%;
                 justify-content: center;
             }
+
+            .stats-bar {
+                gap: 8px;
+            }
+
+            .stat-item {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+
+            .stat-label {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -526,6 +641,33 @@
     <div class="floating-orb orb-2"></div>
 
     <div class="container">
+        <!-- ===== NOUVEAU: Stats Bar ===== -->
+        <div class="stats-bar">
+            <div class="stat-item visits">
+                <span>👁️</span>
+                <span class="stat-value" id="visitCount">--</span>
+                <span class="stat-label">visites</span>
+            </div>
+            <div class="stat-item members">
+                <span>👥</span>
+                <span class="stat-value" id="memberCount">--</span>
+                <span class="stat-label">membres</span>
+            </div>
+            <div class="stat-item online">
+                <span>🟢</span>
+                <span class="stat-value" id="onlineCount">--</span>
+                <span class="stat-label">en ligne</span>
+            </div>
+        </div>
+
+        <!-- ===== NOUVEAU: User Button ===== -->
+        <div class="user-bar">
+            <a href="compte.html" class="user-btn" id="userBtn">
+                <span>👤</span>
+                <span>Connexion / Inscription</span>
+            </a>
+        </div>
+
         <!-- Logo Top -->
         <div class="logo-container logo-top">
             <img src="1000074492.png" alt="Tino Le Doc" class="logo-img">
@@ -605,12 +747,18 @@
         <section class="cta-section">
             <h2 class="cta-question">Et toi, tu en penses quoi ? 🤔</h2>
             <div class="share-buttons">
-                <a href="tchat.html" class="share-btn primary live-btn">
-                    💬 Tchat en direct
+                <a href="tchat.html" class="share-btn live">
                     <span class="live-indicator"></span>
+                    <span>💬 Tchat public</span>
                 </a>
-                <a href="avis.html" class="share-btn primary">
+                <a href="messagerie.html" class="share-btn primary">
+                    ✉️ Messagerie privée
+                </a>
+                <a href="avis.html" class="share-btn secondary">
                     ⭐ Donner mon avis
+                </a>
+                <a href="compte.html" class="share-btn account">
+                    👤 Mon compte
                 </a>
                 <button class="share-btn secondary" onclick="shareContent()">
                     📤 Partager ce débat
@@ -628,10 +776,86 @@
 
         <footer>
             Créé avec ❤️ par <strong>Tino Le Doc</strong> | Propulsé par <a href="https://claude.ai" target="_blank">Claude AI</a>
+            <div class="footer-links">
+                <a href="tchat.html">💬 Tchat</a>
+                <a href="messagerie.html">✉️ Messagerie</a>
+                <a href="avis.html">⭐ Avis</a>
+                <a href="compte.html">👤 Compte</a>
+                <a href="confidentialite.html">🔒 Confidentialité</a>
+            </div>
         </footer>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script>
+        // ==================== FIREBASE ====================
+        firebase.initializeApp({
+            apiKey: "AIzaSyCV0R7uSlyTm2yEL-EoAd6_DZa16R4WiPc",
+            authDomain: "tino-le-doc.firebaseapp.com",
+            databaseURL: "https://tino-le-doc-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "tino-le-doc",
+            storageBucket: "tino-le-doc.firebasestorage.app",
+            messagingSenderId: "865928450606",
+            appId: "1:865928450606:web:20fcb9497f7e0ded2fc5bf"
+        });
+
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        // ==================== COMPTEURS ====================
+        
+        // Tracker visite (1x par jour)
+        function trackVisit() {
+            const visitKey = 'tino_visited_' + new Date().toDateString();
+            if (!localStorage.getItem(visitKey)) {
+                localStorage.setItem(visitKey, 'true');
+                db.ref('counters/visits').transaction(count => (count || 0) + 1);
+            }
+        }
+
+        // Compteurs temps réel
+        db.ref('counters/visits').on('value', s => {
+            document.getElementById('visitCount').textContent = (s.val() || 0).toLocaleString('fr-FR');
+        });
+
+        db.ref('counters/subscribers').on('value', s => {
+            document.getElementById('memberCount').textContent = (s.val() || 0).toLocaleString('fr-FR');
+        });
+
+        db.ref('chatUsers').on('value', s => {
+            document.getElementById('onlineCount').textContent = s.numChildren() || 0;
+        });
+
+        // ==================== USER STATE ====================
+        
+        auth.onAuthStateChanged(async user => {
+            const userBtn = document.getElementById('userBtn');
+            
+            if (user) {
+                try {
+                    const snapshot = await db.ref('users/' + user.uid).once('value');
+                    const profile = snapshot.val();
+                    
+                    if (profile && profile.pseudo) {
+                        userBtn.classList.add('logged-in');
+                        userBtn.innerHTML = `
+                            <div class="user-avatar">${profile.pseudo.charAt(0).toUpperCase()}</div>
+                            <span>${profile.pseudo}</span>
+                        `;
+                    }
+                } catch (e) {
+                    console.log('Erreur profil:', e);
+                }
+            } else {
+                userBtn.classList.remove('logged-in');
+                userBtn.innerHTML = `<span>👤</span><span>Connexion / Inscription</span>`;
+            }
+        });
+
+        // ==================== PARTAGE ====================
+        
         function shareContent() {
             const text = "🤖 J'ai demandé à une IA si on devrait tout remplacer par des robots. Sa réponse m'a surpris ! Découvrez le débat ici 👇";
             if (navigator.share) {
@@ -651,7 +875,8 @@
             alert("Lien copié ! 🔗");
         }
 
-        // Animate cards on scroll
+        // ==================== ANIMATIONS ====================
+        
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -667,6 +892,10 @@
             card.style.transition = `all 0.6s ease ${index * 0.15}s`;
             observer.observe(card);
         });
+
+        // Init
+        trackVisit();
+        console.log('✅ Tino Le Doc initialisé');
     </script>
 </body>
 </html>
