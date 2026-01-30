@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium ✨ Tino Le Doc</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --cyan: #00f5ff;
+            --magenta: #ff00aa;
+            --yellow: #f5ff00;
+            --orange: #ff9500;
+            --green: #00ff88;
+            --red: #ff4444;
+            --gold: #ffd700;
+            --text: #e8e8e8;
+            --text-secondary: #a0a0a0;
+            --glass: rgba(255,255,255,0.05);
+            --glass-border: rgba(255,255,255,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+        .bg-grid { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(255, 215, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 215, 0, 0.03) 1px, transparent 1px); background-size: 50px 50px; pointer-events: none; z-index: 0; }
+        .container { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; padding: 40px 20px; }
+        .logo { margin-bottom: 20px; }
+        .logo img { max-width: 120px; filter: drop-shadow(0 5px 20px rgba(255,215,0,0.4)); }
+        .back-link { display: inline-block; color: var(--cyan); text-decoration: none; margin-bottom: 20px; }
+        h1 { font-family: 'Syne', sans-serif; font-size: 3rem; background: linear-gradient(135deg, var(--gold), var(--orange)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 15px; }
+        .subtitle { font-size: 1.2rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; }
+        .premium-badge { display: inline-flex; align-items: center; gap: 8px; padding: 10px 25px; background: linear-gradient(135deg, var(--gold), var(--orange)); border-radius: 30px; font-family: 'Syne', sans-serif; font-weight: 700; color: var(--bg); margin: 20px 0; animation: glow 2s ease-in-out infinite; }
+        @keyframes glow { 0%, 100% { box-shadow: 0 0 20px rgba(255,215,0,0.4); } 50% { box-shadow: 0 0 40px rgba(255,215,0,0.6); } }
+        
+        .config-box { background: rgba(255,68,68,0.1); border: 2px solid var(--red); border-radius: 15px; padding: 25px; margin-bottom: 30px; display: none; }
+        .config-box.success { background: rgba(0,255,136,0.1); border-color: var(--green); }
+        .config-title { font-family: 'Syne', sans-serif; font-size: 1.2rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .config-input { width: 100%; padding: 12px 15px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 10px; color: var(--text); font-family: inherit; font-size: 0.9rem; margin-bottom: 10px; }
+        .config-input:focus { outline: none; border-color: var(--cyan); }
+        .config-btn { padding: 10px 20px; background: var(--green); border: none; border-radius: 8px; color: var(--bg); font-weight: 700; cursor: pointer; }
+        .config-note { font-size: 0.85rem; color: var(--text-secondary); margin-top: 10px; }
+
+        .pricing-section { padding: 40px 0; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+        .pricing-card { background: var(--glass); border: 2px solid var(--glass-border); border-radius: 25px; padding: 40px 30px; text-align: center; position: relative; transition: all 0.3s; }
+        .pricing-card:hover { transform: translateY(-10px); border-color: var(--cyan); }
+        .pricing-card.popular { border-color: var(--gold); background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,149,0,0.1)); }
+        .pricing-card.popular::before { content: '⭐ POPULAIRE'; position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--gold), var(--orange)); color: var(--bg); padding: 8px 20px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
+        .plan-icon { font-size: 3rem; margin-bottom: 15px; }
+        .plan-name { font-family: 'Syne', sans-serif; font-size: 1.5rem; margin-bottom: 10px; }
+        .plan-price { font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800; background: linear-gradient(135deg, var(--cyan), var(--magenta)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .plan-price span { font-size: 1rem; color: var(--text-secondary); -webkit-text-fill-color: var(--text-secondary); }
+        .plan-period { color: var(--text-secondary); margin-bottom: 25px; }
+        .plan-features { list-style: none; margin-bottom: 30px; text-align: left; }
+        .plan-features li { padding: 10px 0; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; gap: 10px; }
+        .plan-features li:last-child { border-bottom: none; }
+        .plan-features .check { color: var(--green); font-size: 1.2rem; }
+        .plan-features .cross { color: var(--red); font-size: 1.2rem; opacity: 0.5; }
+        .plan-btn { width: 100%; padding: 15px 30px; border: none; border-radius: 15px; font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .plan-btn.primary { background: linear-gradient(135deg, var(--gold), var(--orange)); color: var(--bg); }
+        .plan-btn.secondary { background: var(--glass); border: 2px solid var(--cyan); color: var(--cyan); }
+        .plan-btn:hover { transform: scale(1.05); box-shadow: 0 10px 30px rgba(255,215,0,0.3); }
+        .plan-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .user-status { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 15px; padding: 20px; margin-bottom: 30px; display: none; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; }
+        .user-status.active { display: flex; }
+        .user-info { display: flex; align-items: center; gap: 15px; }
+        .user-avatar { width: 50px; height: 50px; background: linear-gradient(135deg, var(--magenta), var(--cyan)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; }
+        .user-name { font-family: 'Syne', sans-serif; font-size: 1.1rem; }
+        .user-plan { font-size: 0.9rem; color: var(--text-secondary); }
+        .user-plan.premium { color: var(--gold); }
+
+        .already-premium { background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,149,0,0.2)); border: 2px solid var(--gold); border-radius: 20px; padding: 40px; text-align: center; margin-bottom: 30px; display: none; }
+        .already-premium.active { display: block; }
+        .already-premium h2 { font-family: 'Syne', sans-serif; font-size: 1.8rem; color: var(--gold); margin-bottom: 15px; }
+        .already-premium p { color: var(--text-secondary); margin-bottom: 20px; }
+        .premium-expires { font-size: 0.9rem; color: var(--text-secondary); }
+
+        .features-section { padding: 60px 0; }
+        .section-title { font-family: 'Syne', sans-serif; font-size: 2rem; text-align: center; margin-bottom: 40px; background: linear-gradient(135deg, var(--cyan), var(--magenta)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; }
+        .feature-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px; text-align: center; transition: all 0.3s; }
+        .feature-card:hover { border-color: var(--gold); transform: translateY(-5px); }
+        .feature-icon { font-size: 2.5rem; margin-bottom: 15px; }
+        .feature-title { font-family: 'Syne', sans-serif; font-size: 1.2rem; margin-bottom: 10px; color: var(--gold); }
+        .feature-desc { color: var(--text-secondary); line-height: 1.6; }
+
+        footer { text-align: center; padding: 40px 20px; color: var(--text-secondary); }
+        footer a { color: var(--cyan); text-decoration: none; }
+        .footer-links { display: flex; justify-content: center; gap: 25px; margin-top: 15px; flex-wrap: wrap; }
+        @media (max-width: 768px) { h1 { font-size: 2rem; } .pricing-grid { grid-template-columns: 1fr; } }
+        .toast { position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; background: var(--green); color: var(--bg); border-radius: 10px; font-weight: 700; transform: translateX(150%); transition: transform 0.3s; z-index: 1000; }
+        .toast.show { transform: translateX(0); }
+        .toast.error { background: var(--red); color: white; }
+        .stripe-badge { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 30px; padding: 15px; background: var(--glass); border-radius: 10px; font-size: 0.9rem; color: var(--text-secondary); }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="container">
+        <header class="header">
+            <div class="logo"><a href="index.html"><img src="1000074492.png" alt="Tino Le Doc"></a></div>
+            <a href="index.html" class="back-link">← Retour à l'accueil</a>
+            <h1>✨ Tino Premium</h1>
+            <p class="subtitle">Débloquez tout le potentiel de Tino Le Doc et accédez à des contenus exclusifs sur l'IA</p>
+            <div class="premium-badge"><span>👑</span><span>OFFRE DE LANCEMENT -30%</span></div>
+        </header>
+
+        <!-- Config Stripe -->
+        <div class="config-box" id="configBox">
+            <div class="config-title">⚙️ Configuration Stripe (Admin)</div>
+            <input type="text" class="config-input" id="stripeKeyInput" placeholder="Clé publique Stripe (pk_test_... ou pk_live_...)">
+            <input type="text" class="config-input" id="priceMonthlyInput" placeholder="Price ID Mensuel (price_...)">
+            <input type="text" class="config-input" id="priceYearlyInput" placeholder="Price ID Annuel (price_...)">
+            <button class="config-btn" onclick="saveConfig()">💾 Sauvegarder</button>
+            <p class="config-note">⚠️ Ces clés sont sauvegardées localement. Pour la production, utilisez un backend sécurisé.</p>
+        </div>
+
+        <!-- User Status -->
+        <div class="user-status" id="userStatus">
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">?</div>
+                <div>
+                    <div class="user-name" id="userName">Utilisateur</div>
+                    <div class="user-plan" id="userPlan">Plan Gratuit</div>
+                </div>
+            </div>
+            <div>
+                <a href="compte.html" class="plan-btn secondary" style="width:auto;padding:10px 20px;display:inline-block;text-decoration:none;">⚙️ Mon compte</a>
+                <button class="plan-btn secondary" style="width:auto;padding:10px 20px;margin-left:10px;" onclick="toggleConfig()">🔧</button>
+            </div>
+        </div>
+
+        <!-- Already Premium -->
+        <div class="already-premium" id="alreadyPremium">
+            <h2>👑 Vous êtes Premium !</h2>
+            <p>Merci pour votre soutien ! Vous avez accès à toutes les fonctionnalités exclusives.</p>
+            <div class="premium-expires" id="premiumExpires"></div>
+            <a href="boutique.html" class="plan-btn primary" style="display:inline-block;margin-top:20px;text-decoration:none;">🛒 Voir la boutique</a>
+        </div>
+
+        <!-- Pricing -->
+        <section class="pricing-section" id="pricingSection">
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="plan-icon">🆓</div>
+                    <h3 class="plan-name">Gratuit</h3>
+                    <div class="plan-price">0€</div>
+                    <div class="plan-period">Pour toujours</div>
+                    <ul class="plan-features">
+                        <li><span class="check">✓</span> Quiz IA (3/jour)</li>
+                        <li><span class="check">✓</span> Sondages (3 votes/jour)</li>
+                        <li><span class="check">✓</span> Débat du jour</li>
+                        <li><span class="check">✓</span> Tchat public</li>
+                        <li><span class="cross">✗</span> Messages privés limités</li>
+                        <li><span class="cross">✗</span> Publicités affichées</li>
+                    </ul>
+                    <button class="plan-btn secondary" onclick="location.href='compte.html'">Commencer gratuitement</button>
+                </div>
+                <div class="pricing-card popular">
+                    <div class="plan-icon">⚡</div>
+                    <h3 class="plan-name">Premium Mensuel</h3>
+                    <div class="plan-price">4,99€<span>/mois</span></div>
+                    <div class="plan-period"><s>6,99€</s> Offre lancement</div>
+                    <ul class="plan-features">
+                        <li><span class="check">✓</span> Quiz illimités</li>
+                        <li><span class="check">✓</span> Votes illimités</li>
+                        <li><span class="check">✓</span> Créer vos débats</li>
+                        <li><span class="check">✓</span> Messages privés illimités</li>
+                        <li><span class="check">✓</span> <strong>Sans publicité</strong></li>
+                        <li><span class="check">✓</span> Badge Premium ✨</li>
+                    </ul>
+                    <button class="plan-btn primary" id="btnMonthly" onclick="subscribe('monthly')">S'abonner maintenant</button>
+                </div>
+                <div class="pricing-card">
+                    <div class="plan-icon">💎</div>
+                    <h3 class="plan-name">Premium Annuel</h3>
+                    <div class="plan-price">39,99€<span>/an</span></div>
+                    <div class="plan-period"><s>59,88€</s> Économisez 33%</div>
+                    <ul class="plan-features">
+                        <li><span class="check">✓</span> Tout le plan mensuel</li>
+                        <li><span class="check">✓</span> <strong>2 mois gratuits</strong></li>
+                        <li><span class="check">✓</span> Pack Prompts IA offert</li>
+                        <li><span class="check">✓</span> Accès anticipé nouveautés</li>
+                        <li><span class="check">✓</span> Support prioritaire</li>
+                        <li><span class="check">✓</span> Badge VIP 💎</li>
+                    </ul>
+                    <button class="plan-btn primary" id="btnYearly" onclick="subscribe('yearly')">Meilleure offre</button>
+                </div>
+            </div>
+            <div class="stripe-badge">🔒 Paiement 100% sécurisé par <strong style="margin-left:5px;">Stripe</strong></div>
+        </section>
+
+        <!-- Features -->
+        <section class="features-section">
+            <h2 class="section-title">🚀 Avantages Premium</h2>
+            <div class="features-grid">
+                <div class="feature-card"><div class="feature-icon">🧠</div><h3 class="feature-title">Quiz Illimités</h3><p class="feature-desc">Testez vos connaissances sur l'IA sans limite.</p></div>
+                <div class="feature-card"><div class="feature-icon">📚</div><h3 class="feature-title">Ressources Exclusives</h3><p class="feature-desc">E-books, guides et formations IA.</p></div>
+                <div class="feature-card"><div class="feature-icon">💬</div><h3 class="feature-title">Messagerie Privée</h3><p class="feature-desc">Échangez sans limite avec la communauté.</p></div>
+                <div class="feature-card"><div class="feature-icon">🚫</div><h3 class="feature-title">Sans Publicité</h3><p class="feature-desc">Une expérience pure et sans distraction.</p></div>
+                <div class="feature-card"><div class="feature-icon">⚔️</div><h3 class="feature-title">Créez vos Débats</h3><p class="feature-desc">Proposez vos propres sujets.</p></div>
+                <div class="feature-card"><div class="feature-icon">✨</div><h3 class="feature-title">Badge Premium</h3><p class="feature-desc">Affichez votre statut VIP.</p></div>
+            </div>
+        </section>
+
+        <footer>
+            <p><strong>Tino Le Doc</strong> - L'IA qui fait débat</p>
+            <div class="footer-links">
+                <a href="index.html">🏠 Accueil</a>
+                <a href="boutique.html">🛒 Boutique</a>
+                <a href="compte.html">👤 Mon compte</a>
+                <a href="confidentialite.html">🔒 Confidentialité</a>
+            </div>
+        </footer>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <script>
+    // ==================== CONFIG ====================
+    // REMPLACE CES VALEURS PAR TES CLÉS STRIPE
+    const DEFAULT_CONFIG = {
+        stripeKey: '', // pk_test_xxx ou pk_live_xxx
+        priceMonthly: '', // price_xxx
+        priceYearly: ''   // price_xxx
+    };
+
+    // Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyCV0R7uSlyTm2yEL-EoAd6_DZa16R4WiPc",
+        authDomain: "tino-le-doc.firebaseapp.com",
+        databaseURL: "https://tino-le-doc-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "tino-le-doc",
+        storageBucket: "tino-le-doc.firebasestorage.app",
+        messagingSenderId: "865928450606",
+        appId: "1:865928450606:web:20fcb9497f7e0ded2fc5bf"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    let stripe = null;
+    let stripeConfig = { ...DEFAULT_CONFIG };
+    let currentUser = null;
+    let userProfile = null;
+
+    // Load config
+    function loadConfig() {
+        try {
+            const saved = localStorage.getItem('tinoStripeConfig');
+            if (saved) stripeConfig = JSON.parse(saved);
+        } catch (e) {}
+        
+        if (stripeConfig.stripeKey && stripeConfig.stripeKey.startsWith('pk_')) {
+            try {
+                stripe = Stripe(stripeConfig.stripeKey);
+                console.log('✅ Stripe initialisé');
+            } catch (e) {
+                console.error('❌ Erreur Stripe:', e);
+            }
+        }
+    }
+
+    function toggleConfig() {
+        const box = document.getElementById('configBox');
+        box.style.display = box.style.display === 'none' ? 'block' : 'none';
+        document.getElementById('stripeKeyInput').value = stripeConfig.stripeKey || '';
+        document.getElementById('priceMonthlyInput').value = stripeConfig.priceMonthly || '';
+        document.getElementById('priceYearlyInput').value = stripeConfig.priceYearly || '';
+    }
+
+    function saveConfig() {
+        const key = document.getElementById('stripeKeyInput').value.trim();
+        const monthly = document.getElementById('priceMonthlyInput').value.trim();
+        const yearly = document.getElementById('priceYearlyInput').value.trim();
+
+        if (key && !key.startsWith('pk_')) {
+            showToast('Clé Stripe invalide', true);
+            return;
+        }
+
+        stripeConfig = { stripeKey: key, priceMonthly: monthly, priceYearly: yearly };
+        localStorage.setItem('tinoStripeConfig', JSON.stringify(stripeConfig));
+
+        if (key) {
+            try {
+                stripe = Stripe(key);
+                showToast('✅ Configuration sauvegardée !');
+                document.getElementById('configBox').classList.add('success');
+            } catch (e) {
+                showToast('Erreur Stripe', true);
+            }
+        } else {
+            showToast('✅ Configuration sauvegardée (mode démo)');
+        }
+    }
+
+    // Auth
+    auth.onAuthStateChanged(async (user) => {
+        currentUser = user;
+        const statusEl = document.getElementById('userStatus');
+        const premiumEl = document.getElementById('alreadyPremium');
+        const pricingEl = document.getElementById('pricingSection');
+
+        if (user) {
+            statusEl.classList.add('active');
+            try {
+                const snapshot = await db.ref('users/' + user.uid).once('value');
+                userProfile = snapshot.val() || {};
+                document.getElementById('userAvatar').textContent = userProfile.pseudo ? userProfile.pseudo.charAt(0).toUpperCase() : '?';
+                document.getElementById('userName').textContent = userProfile.pseudo || 'Utilisateur';
+
+                if (userProfile.premium && userProfile.premiumExpiry > Date.now()) {
+                    document.getElementById('userPlan').textContent = '✨ Premium';
+                    document.getElementById('userPlan').classList.add('premium');
+                    premiumEl.classList.add('active');
+                    pricingEl.style.display = 'none';
+                    document.getElementById('premiumExpires').textContent = 'Expire le ' + new Date(userProfile.premiumExpiry).toLocaleDateString('fr-FR');
+                } else {
+                    document.getElementById('userPlan').textContent = 'Plan Gratuit';
+                }
+            } catch (e) { console.error(e); }
+        }
+        setTimeout(checkUrlParams, 500);
+    });
+
+    // Subscribe
+    async function subscribe(plan) {
+        if (!currentUser) {
+            showToast('Connectez-vous d\'abord', true);
+            setTimeout(() => location.href = 'compte.html', 1500);
+            return;
+        }
+
+        const priceId = plan === 'monthly' ? stripeConfig.priceMonthly : stripeConfig.priceYearly;
+        const btn = document.getElementById(plan === 'monthly' ? 'btnMonthly' : 'btnYearly');
+
+        if (!stripe || !priceId || !priceId.startsWith('price_')) {
+            // Mode simulation
+            if (confirm('⚠️ Mode Démo\n\nStripe non configuré. Simuler le paiement ?')) {
+                await simulatePayment(plan);
+            }
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = '⏳ Redirection...';
+
+        try {
+            const { error } = await stripe.redirectToCheckout({
+                lineItems: [{ price: priceId, quantity: 1 }],
+                mode: 'subscription',
+                successUrl: window.location.href.split('?')[0] + '?success=true&plan=' + plan,
+                cancelUrl: window.location.href.split('?')[0] + '?canceled=true',
+                customerEmail: currentUser.email,
+                clientReferenceId: currentUser.uid
+            });
+            if (error) showToast(error.message, true);
+        } catch (e) {
+            showToast('Erreur Stripe', true);
+        }
+        btn.disabled = false;
+        btn.textContent = plan === 'monthly' ? 'S\'abonner maintenant' : 'Meilleure offre';
+    }
+
+    async function simulatePayment(plan) {
+        try {
+            await db.ref('users/' + currentUser.uid).update({
+                premium: true,
+                premiumType: plan,
+                premiumStart: Date.now(),
+                premiumExpiry: plan === 'yearly' ? Date.now() + 365*24*60*60*1000 : Date.now() + 30*24*60*60*1000
+            });
+            showToast('🎉 Bienvenue Premium !');
+            setTimeout(() => location.reload(), 2000);
+        } catch (e) {
+            showToast('Erreur', true);
+        }
+    }
+
+    function checkUrlParams() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('success') === 'true' && currentUser) {
+            const plan = params.get('plan') || 'monthly';
+            db.ref('users/' + currentUser.uid).update({
+                premium: true,
+                premiumType: plan,
+                premiumStart: Date.now(),
+                premiumExpiry: plan === 'yearly' ? Date.now() + 365*24*60*60*1000 : Date.now() + 30*24*60*60*1000
+            }).then(() => {
+                showToast('🎉 Paiement réussi !');
+                window.history.replaceState({}, '', window.location.pathname);
+                setTimeout(() => location.reload(), 2000);
+            });
+        }
+        if (params.get('canceled') === 'true') {
+            showToast('Paiement annulé', true);
+            window.history.replaceState({}, '', window.location.pathname);
+        }
+    }
+
+    function showToast(msg, err = false) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = 'toast' + (err ? ' error' : '');
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 4000);
+    }
+
+    loadConfig();
+    </script>
+</body>
+</html>

@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boutique 🛒 Tino Le Doc</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --cyan: #00f5ff;
+            --magenta: #ff00aa;
+            --yellow: #f5ff00;
+            --orange: #ff9500;
+            --green: #00ff88;
+            --red: #ff4444;
+            --gold: #ffd700;
+            --text: #e8e8e8;
+            --text-secondary: #a0a0a0;
+            --glass: rgba(255,255,255,0.05);
+            --glass-border: rgba(255,255,255,0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 245, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 245, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .logo { margin-bottom: 20px; }
+        .logo img { max-width: 120px; filter: drop-shadow(0 5px 20px rgba(255,165,0,0.4)); }
+
+        .back-link {
+            display: inline-block;
+            color: var(--cyan);
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--cyan), var(--magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Categories */
+        .categories {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            padding: 12px 25px;
+            background: var(--glass);
+            border: 2px solid var(--glass-border);
+            border-radius: 30px;
+            color: var(--text);
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .category-btn:hover {
+            border-color: var(--cyan);
+        }
+
+        .category-btn.active {
+            background: linear-gradient(135deg, var(--cyan), var(--magenta));
+            border-color: transparent;
+            color: var(--bg);
+        }
+
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .product-card {
+            background: var(--glass);
+            border: 2px solid var(--glass-border);
+            border-radius: 25px;
+            overflow: hidden;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--cyan);
+            box-shadow: 0 20px 40px rgba(0,245,255,0.2);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            z-index: 2;
+        }
+
+        .product-badge.bestseller {
+            background: linear-gradient(135deg, var(--gold), var(--orange));
+            color: var(--bg);
+        }
+
+        .product-badge.new {
+            background: linear-gradient(135deg, var(--green), var(--cyan));
+            color: var(--bg);
+        }
+
+        .product-badge.premium {
+            background: linear-gradient(135deg, var(--magenta), var(--cyan));
+            color: white;
+        }
+
+        .product-badge.free {
+            background: var(--green);
+            color: var(--bg);
+        }
+
+        .product-image {
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            background: linear-gradient(135deg, rgba(0,245,255,0.1), rgba(255,0,170,0.1));
+        }
+
+        .product-content {
+            padding: 25px;
+        }
+
+        .product-category {
+            font-size: 0.8rem;
+            color: var(--cyan);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .product-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .product-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .product-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .product-feature {
+            padding: 5px 12px;
+            background: rgba(0,245,255,0.1);
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: var(--cyan);
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .product-price {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .product-price.free {
+            color: var(--green);
+        }
+
+        .product-price .old-price {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-decoration: line-through;
+            margin-right: 10px;
+            font-weight: 400;
+        }
+
+        .buy-btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, var(--magenta), var(--cyan));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .buy-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(255,0,170,0.3);
+        }
+
+        .buy-btn.free {
+            background: linear-gradient(135deg, var(--green), var(--cyan));
+        }
+
+        /* Bundle Section */
+        .bundle-section {
+            background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,0,170,0.1));
+            border: 2px solid var(--gold);
+            border-radius: 25px;
+            padding: 40px;
+            margin: 50px 0;
+            text-align: center;
+        }
+
+        .bundle-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--gold), var(--orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .bundle-desc {
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+
+        .bundle-items {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .bundle-item {
+            padding: 10px 20px;
+            background: var(--glass);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bundle-price {
+            font-family: 'Syne', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .bundle-price .old {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: line-through;
+            margin-right: 15px;
+        }
+
+        .bundle-price .savings {
+            display: block;
+            font-size: 1rem;
+            color: var(--green);
+            margin-top: 5px;
+        }
+
+        .bundle-btn {
+            padding: 18px 50px;
+            background: linear-gradient(135deg, var(--gold), var(--orange));
+            border: none;
+            border-radius: 30px;
+            color: var(--bg);
+            font-family: 'Syne', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .bundle-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(255,215,0,0.4);
+        }
+
+        /* Stats */
+        .shop-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .shop-stat {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .shop-stat-value {
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--cyan), var(--magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .shop-stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        /* Purchase Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg);
+            border: 2px solid var(--glass-border);
+            border-radius: 25px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 25px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.3rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-product {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .modal-product-icon {
+            font-size: 3rem;
+        }
+
+        .modal-product-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.1rem;
+        }
+
+        .modal-product-price {
+            color: var(--cyan);
+            font-weight: 700;
+        }
+
+        .payment-options {
+            margin-bottom: 25px;
+        }
+
+        .payment-option {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: var(--glass);
+            border: 2px solid var(--glass-border);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-option:hover {
+            border-color: var(--cyan);
+        }
+
+        .payment-option.selected {
+            border-color: var(--green);
+            background: rgba(0,255,136,0.1);
+        }
+
+        .payment-radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--text-secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .payment-option.selected .payment-radio {
+            border-color: var(--green);
+        }
+
+        .payment-option.selected .payment-radio::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: var(--green);
+            border-radius: 50%;
+        }
+
+        .payment-icon {
+            font-size: 1.5rem;
+        }
+
+        .confirm-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--green), var(--cyan));
+            border: none;
+            border-radius: 15px;
+            color: var(--bg);
+            font-family: 'Syne', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .confirm-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .confirm-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        footer a {
+            color: var(--cyan);
+            text-decoration: none;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .products-grid { grid-template-columns: 1fr; }
+            .bundle-section { padding: 25px; }
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: var(--green);
+            color: var(--bg);
+            border-radius: 10px;
+            font-weight: 700;
+            transform: translateX(150%);
+            transition: transform 0.3s;
+            z-index: 1001;
+        }
+
+        .toast.show { transform: translateX(0); }
+        .toast.error { background: var(--red); color: white; }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <a href="index.html"><img src="1000074492.png" alt="Tino Le Doc"></a>
+            </div>
+            <a href="index.html" class="back-link">← Retour à l'accueil</a>
+            <h1>🛒 Boutique IA</h1>
+            <p class="subtitle">Ressources exclusives pour maîtriser l'Intelligence Artificielle</p>
+        </header>
+
+        <!-- Stats -->
+        <div class="shop-stats">
+            <div class="shop-stat">
+                <div class="shop-stat-value" id="totalProducts">8</div>
+                <div class="shop-stat-label">Produits</div>
+            </div>
+            <div class="shop-stat">
+                <div class="shop-stat-value" id="totalDownloads">1.2K+</div>
+                <div class="shop-stat-label">Téléchargements</div>
+            </div>
+            <div class="shop-stat">
+                <div class="shop-stat-value">⭐ 4.9</div>
+                <div class="shop-stat-label">Note moyenne</div>
+            </div>
+            <div class="shop-stat">
+                <div class="shop-stat-value" id="freeProducts">3</div>
+                <div class="shop-stat-label">Gratuits</div>
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="categories">
+            <button class="category-btn active" data-category="all">🌐 Tous</button>
+            <button class="category-btn" data-category="ebook">📚 E-books</button>
+            <button class="category-btn" data-category="prompts">💡 Prompts</button>
+            <button class="category-btn" data-category="formation">🎓 Formations</button>
+            <button class="category-btn" data-category="templates">📋 Templates</button>
+        </div>
+
+        <!-- Products -->
+        <div class="products-grid" id="productsGrid">
+            <!-- Products loaded by JS -->
+        </div>
+
+        <!-- Bundle -->
+        <section class="bundle-section">
+            <h2 class="bundle-title">🎁 Pack Complet IA Master</h2>
+            <p class="bundle-desc">Tous nos produits réunis dans un pack exceptionnel à prix réduit</p>
+            <div class="bundle-items">
+                <div class="bundle-item">📚 E-book complet</div>
+                <div class="bundle-item">💡 100 Prompts</div>
+                <div class="bundle-item">🎓 Formation vidéo</div>
+                <div class="bundle-item">📋 Templates</div>
+            </div>
+            <div class="bundle-price">
+                <span class="old">89,96€</span>
+                49,99€
+                <span class="savings">✨ Économisez 40€ !</span>
+            </div>
+            <button class="bundle-btn" onclick="buyProduct('bundle')">🚀 Obtenir le Pack Complet</button>
+        </section>
+
+        <footer>
+            <p><strong>Tino Le Doc</strong> - Boutique IA</p>
+            <div class="footer-links">
+                <a href="index.html">🏠 Accueil</a>
+                <a href="premium.html">✨ Premium</a>
+                <a href="compte.html">👤 Mon compte</a>
+                <a href="confidentialite.html">🔒 Confidentialité</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Purchase Modal -->
+    <div class="modal-overlay" id="purchaseModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">🛒 Finaliser l'achat</h3>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-product">
+                    <div class="modal-product-icon" id="modalIcon">📚</div>
+                    <div>
+                        <div class="modal-product-name" id="modalName">Produit</div>
+                        <div class="modal-product-price" id="modalPrice">0€</div>
+                    </div>
+                </div>
+
+                <div class="payment-options">
+                    <div class="payment-option selected" data-method="card">
+                        <div class="payment-radio"></div>
+                        <div class="payment-icon">💳</div>
+                        <span>Carte bancaire</span>
+                    </div>
+                    <div class="payment-option" data-method="paypal">
+                        <div class="payment-radio"></div>
+                        <div class="payment-icon">🅿️</div>
+                        <span>PayPal</span>
+                    </div>
+                </div>
+
+                <button class="confirm-btn" id="confirmBtn" onclick="confirmPurchase()">
+                    ✅ Confirmer l'achat
+                </button>
+
+                <p style="text-align: center; margin-top: 15px; font-size: 0.85rem; color: var(--text-secondary);">
+                    🔒 Paiement sécurisé par Stripe
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <script>
+    // Firebase Init
+    const firebaseConfig = {
+        apiKey: "AIzaSyCV0R7uSlyTm2yEL-EoAd6_DZa16R4WiPc",
+        authDomain: "tino-le-doc.firebaseapp.com",
+        databaseURL: "https://tino-le-doc-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "tino-le-doc",
+        storageBucket: "tino-le-doc.firebasestorage.app",
+        messagingSenderId: "865928450606",
+        appId: "1:865928450606:web:20fcb9497f7e0ded2fc5bf"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // Products
+    const products = [
+        {
+            id: 'ebook-ia',
+            icon: '📚',
+            category: 'ebook',
+            badge: 'bestseller',
+            title: 'E-book : Comprendre l\'IA en 2025',
+            desc: 'Guide complet de 150 pages pour comprendre l\'IA, ses applications et son impact sur notre quotidien.',
+            features: ['150 pages', 'PDF', 'Illustrations', 'Quiz inclus'],
+            price: 9.99,
+            oldPrice: 14.99
+        },
+        {
+            id: 'prompts-pack',
+            icon: '💡',
+            category: 'prompts',
+            badge: 'bestseller',
+            title: '100 Prompts ChatGPT Pro',
+            desc: 'Collection de 100 prompts optimisés pour ChatGPT : rédaction, code, marketing, créativité...',
+            features: ['100 prompts', 'PDF + Notion', '10 catégories', 'Mises à jour'],
+            price: 4.99,
+            oldPrice: 9.99
+        },
+        {
+            id: 'formation-ia',
+            icon: '🎓',
+            category: 'formation',
+            badge: 'new',
+            title: 'Formation Vidéo : IA au Quotidien',
+            desc: '3 heures de vidéo pour apprendre à utiliser l\'IA dans votre vie personnelle et professionnelle.',
+            features: ['3h de vidéo', '15 modules', 'Certificat', 'Support'],
+            price: 29.99,
+            oldPrice: 49.99
+        },
+        {
+            id: 'templates-notion',
+            icon: '📋',
+            category: 'templates',
+            badge: 'new',
+            title: 'Pack Templates Notion IA',
+            desc: '10 templates Notion pour organiser vos projets IA : veille, prompts, idées, projets...',
+            features: ['10 templates', 'Notion', 'Duplicables', 'Guide d\'utilisation'],
+            price: 7.99,
+            oldPrice: 12.99
+        },
+        {
+            id: 'guide-midjourney',
+            icon: '🎨',
+            category: 'ebook',
+            title: 'Guide Midjourney : De Zéro à Expert',
+            desc: 'Maîtrisez l\'art du prompt pour Midjourney avec ce guide pratique de 80 pages.',
+            features: ['80 pages', 'PDF', 'Exemples visuels', '50 prompts'],
+            price: 7.99
+        },
+        {
+            id: 'prompts-gratuit',
+            icon: '🎁',
+            category: 'prompts',
+            badge: 'free',
+            title: '10 Prompts ChatGPT Gratuits',
+            desc: 'Découvrez 10 prompts essentiels pour bien débuter avec ChatGPT. 100% gratuit !',
+            features: ['10 prompts', 'PDF', 'Débutant friendly'],
+            price: 0
+        },
+        {
+            id: 'checklist-ia',
+            icon: '✅',
+            category: 'templates',
+            badge: 'free',
+            title: 'Checklist : Intégrer l\'IA en Entreprise',
+            desc: 'Liste de vérification gratuite pour réussir l\'intégration de l\'IA dans votre entreprise.',
+            features: ['PDF', 'Imprimable', '30 points clés'],
+            price: 0
+        },
+        {
+            id: 'glossaire-ia',
+            icon: '📖',
+            category: 'ebook',
+            badge: 'free',
+            title: 'Glossaire de l\'IA : 100 Termes',
+            desc: 'Dictionnaire gratuit des 100 termes essentiels de l\'Intelligence Artificielle.',
+            features: ['PDF', '100 définitions', 'Exemples'],
+            price: 0
+        }
+    ];
+
+    let currentProduct = null;
+    let currentFilter = 'all';
+
+    // Display products
+    function displayProducts() {
+        const grid = document.getElementById('productsGrid');
+        const filtered = currentFilter === 'all' 
+            ? products 
+            : products.filter(p => p.category === currentFilter);
+
+        grid.innerHTML = filtered.map(product => `
+            <div class="product-card" data-category="${product.category}">
+                ${product.badge ? `<span class="product-badge ${product.badge}">${getBadgeText(product.badge)}</span>` : ''}
+                <div class="product-image">${product.icon}</div>
+                <div class="product-content">
+                    <div class="product-category">${getCategoryName(product.category)}</div>
+                    <h3 class="product-title">${product.title}</h3>
+                    <p class="product-desc">${product.desc}</p>
+                    <div class="product-features">
+                        ${product.features.map(f => `<span class="product-feature">${f}</span>`).join('')}
+                    </div>
+                    <div class="product-footer">
+                        <div class="product-price ${product.price === 0 ? 'free' : ''}">
+                            ${product.oldPrice ? `<span class="old-price">${product.oldPrice}€</span>` : ''}
+                            ${product.price === 0 ? 'GRATUIT' : product.price + '€'}
+                        </div>
+                        <button class="buy-btn ${product.price === 0 ? 'free' : ''}" onclick="buyProduct('${product.id}')">
+                            ${product.price === 0 ? '📥 Télécharger' : '🛒 Acheter'}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function getBadgeText(badge) {
+        const badges = {
+            bestseller: '🔥 Bestseller',
+            new: '✨ Nouveau',
+            premium: '👑 Premium',
+            free: '🎁 Gratuit'
+        };
+        return badges[badge] || badge;
+    }
+
+    function getCategoryName(cat) {
+        const names = {
+            ebook: '📚 E-book',
+            prompts: '💡 Prompts',
+            formation: '🎓 Formation',
+            templates: '📋 Template'
+        };
+        return names[cat] || cat;
+    }
+
+    // Category filter
+    document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentFilter = this.dataset.category;
+            displayProducts();
+        });
+    });
+
+    // Buy product
+    function buyProduct(productId) {
+        if (productId === 'bundle') {
+            currentProduct = {
+                id: 'bundle',
+                icon: '🎁',
+                title: 'Pack Complet IA Master',
+                price: 49.99
+            };
+        } else {
+            currentProduct = products.find(p => p.id === productId);
+        }
+
+        if (!currentProduct) return;
+
+        // Free products
+        if (currentProduct.price === 0) {
+            downloadFreeProduct(currentProduct);
+            return;
+        }
+
+        // Show modal
+        document.getElementById('modalIcon').textContent = currentProduct.icon;
+        document.getElementById('modalName').textContent = currentProduct.title;
+        document.getElementById('modalPrice').textContent = currentProduct.price + '€';
+        document.getElementById('purchaseModal').classList.add('active');
+    }
+
+    // Download free product
+    function downloadFreeProduct(product) {
+        showToast('📥 Téléchargement de "' + product.title + '"...');
+        
+        // Track download
+        db.ref('downloads/' + product.id).transaction(count => (count || 0) + 1);
+        
+        // Simulate download (in production, provide actual file URL)
+        setTimeout(() => {
+            showToast('✅ Téléchargement terminé !');
+        }, 1500);
+    }
+
+    // Payment options
+    document.querySelectorAll('.payment-option').forEach(opt => {
+        opt.addEventListener('click', function() {
+            document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
+
+    // Close modal
+    function closeModal() {
+        document.getElementById('purchaseModal').classList.remove('active');
+    }
+
+    // Click outside modal
+    document.getElementById('purchaseModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+
+    // Confirm purchase
+    async function confirmPurchase() {
+        const user = auth.currentUser;
+        const btn = document.getElementById('confirmBtn');
+
+        if (!user) {
+            showToast('Connectez-vous pour acheter', true);
+            setTimeout(() => location.href = 'compte.html', 1500);
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = '⏳ Traitement...';
+
+        // Simulate payment (in production, use Stripe)
+        setTimeout(async () => {
+            try {
+                // Save purchase
+                await db.ref('purchases/' + user.uid).push({
+                    productId: currentProduct.id,
+                    productName: currentProduct.title,
+                    price: currentProduct.price,
+                    timestamp: Date.now()
+                });
+
+                // Track sale
+                await db.ref('sales/' + currentProduct.id).transaction(count => (count || 0) + 1);
+
+                closeModal();
+                showToast('🎉 Achat réussi ! Vérifiez votre email.');
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                showToast('Erreur lors de l\'achat', true);
+            }
+
+            btn.disabled = false;
+            btn.textContent = '✅ Confirmer l\'achat';
+        }, 2000);
+    }
+
+    // Toast
+    function showToast(message, isError = false) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = 'toast' + (isError ? ' error' : '');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // Init
+    displayProducts();
+    </script>
+</body>
+</html>
