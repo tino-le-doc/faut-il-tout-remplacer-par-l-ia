@@ -6,6 +6,7 @@
     <title>Premium ✨ Tino Le Doc</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <script src="https://js.stripe.com/v3/"></script>
+    <link rel="stylesheet" href="css/common.css">
     <style>
         :root {
             --bg: #0a0a0f;
@@ -98,9 +99,10 @@
     </style>
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Aller au contenu</a>
     <div class="bg-grid"></div>
     <div class="container">
-        <header class="header">
+        <header id="main-content" class="header">
             <div class="logo"><a href="index.html"><img src="1000074492.png" alt="Tino Le Doc"></a></div>
             <a href="index.html" class="back-link">← Retour à l'accueil</a>
             <h1>✨ Tino Premium</h1>
@@ -206,7 +208,7 @@
             </div>
         </section>
 
-        <footer>
+        <footer role="contentinfo">
             <p><strong>Tino Le Doc</strong> - L'IA qui fait débat</p>
             <div class="footer-links">
                 <a href="index.html">🏠 Accueil</a>
@@ -222,6 +224,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
 
     <script>
     // ==================== CONFIG ====================
@@ -232,20 +235,9 @@
         priceYearly: ''   // price_xxx
     };
 
-    // Firebase
-    const firebaseConfig = {
-        apiKey: "AIzaSyCV0R7uSlyTm2yEL-EoAd6_DZa16R4WiPc",
-        authDomain: "tino-le-doc.firebaseapp.com",
-        databaseURL: "https://tino-le-doc-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "tino-le-doc",
-        storageBucket: "tino-le-doc.firebasestorage.app",
-        messagingSenderId: "865928450606",
-        appId: "1:865928450606:web:20fcb9497f7e0ded2fc5bf"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
+    // Config Firebase chargee depuis js/firebase-config.js
+    const auth = firebaseAuth;
+    const db = firebaseDb;
 
     let stripe = null;
     let stripeConfig = { ...DEFAULT_CONFIG };
@@ -407,13 +399,7 @@
         }
     }
 
-    function showToast(msg, err = false) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.className = 'toast' + (err ? ' error' : '');
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 4000);
-    }
+    // showToast() charge depuis js/firebase-config.js
 
     loadConfig();
     </script>

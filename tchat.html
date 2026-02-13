@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tchat Live 💬 Tino Le Doc</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/common.css">
     <style>
         :root{--bg:#0a0a0f;--cyan:#00f5ff;--magenta:#ff00aa;--yellow:#f5ff00;--orange:#ff9500;--green:#00ff88;--red:#ff4444;--text:#e8e8e8;--glass:rgba(255,255,255,0.05)}
         *{margin:0;padding:0;box-sizing:border-box}
@@ -156,7 +157,8 @@
     </style>
 </head>
 <body>
-<div class="container">
+    <a href="#main-content" class="skip-link">Aller au contenu</a>
+<div class="container" id="main-content">
     <div class="logo"><img src="1000074492.png" alt="Tino Le Doc"></div>
     <a href="index.html" class="back">← Retour</a>
 
@@ -269,11 +271,12 @@
         </div>
     </div>
 
-    <footer><strong>Tino Le Doc</strong> | <a href="avis.html">Avis</a> | <a href="index.html">Débat</a></footer>
+    <footer role="contentinfo"><strong>Tino Le Doc</strong> | <a href="avis.html">Avis</a> | <a href="index.html">Débat</a></footer>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
 <script>
 // ==================== SÉCURITÉ ====================
 
@@ -405,17 +408,10 @@ joinEmbed.addEventListener('click', function() {
 // ==================== FIREBASE ====================
 let user = null, oderId = null, msgsRef, usersRef, typeRef;
 
+    // Config Firebase chargee depuis js/firebase-config.js
+    const auth = firebaseAuth;
+    const db = firebaseDb;
 try {
-    firebase.initializeApp({
-        apiKey: "AIzaSyCV0R7uSlyTm2yEL-EoAd6_DZa16R4WiPc",
-        authDomain: "tino-le-doc.firebaseapp.com",
-        databaseURL: "https://tino-le-doc-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "tino-le-doc",
-        storageBucket: "tino-le-doc.firebasestorage.app",
-        messagingSenderId: "865928450606",
-        appId: "1:865928450606:web:20fcb9497f7e0ded2fc5bf"
-    });
-    const db = firebase.database();
     msgsRef = db.ref('chatMessages');
     usersRef = db.ref('chatUsers');
     typeRef = db.ref('chatTyping');

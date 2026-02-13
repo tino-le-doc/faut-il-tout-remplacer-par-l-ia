@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mon Compte 👤 Tino Le Doc</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/common.css">
     <style>
         :root {
             --bg: #0a0a0f;
@@ -366,6 +367,7 @@
     </style>
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Aller au contenu</a>
     <div class="bg-grid"></div>
 
     <div class="container">
@@ -374,7 +376,7 @@
         </div>
         <a href="index.html" class="back-link">← Retour à l'accueil</a>
 
-        <header>
+        <header id="main-content">
             <h1>👤 Mon Compte</h1>
         </header>
 
@@ -409,7 +411,7 @@
             <div class="form-success" id="formSuccess"></div>
 
             <!-- Login Form -->
-            <form class="auth-form active" id="loginForm">
+            <form class="auth-form active" id="loginForm" aria-label="Formulaire de connexion">
                 <div class="form-group">
                     <label>📧 Email</label>
                     <input type="email" id="loginEmail" placeholder="votre@email.com" required autocomplete="email">
@@ -426,7 +428,7 @@
             </form>
 
             <!-- Register Form -->
-            <form class="auth-form" id="registerForm">
+            <form class="auth-form" id="registerForm" aria-label="Formulaire d'inscription">
                 <div class="form-group">
                     <label>👤 Pseudo</label>
                     <input type="text" id="regPseudo" placeholder="TonPseudo" required minlength="3" maxlength="20" autocomplete="username">
@@ -489,7 +491,7 @@
             </div>
         </div>
 
-        <footer>
+        <footer role="contentinfo">
             <p><strong>Tino Le Doc</strong> - L'IA qui t'écoute</p>
             <div class="footer-links">
                 <a href="index.html">🏠 Accueil</a>
@@ -504,30 +506,15 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    
+    <script src="js/firebase-config.js"></script>
+
     <script>
     // ==================== FIREBASE INIT ====================
-    console.log('🚀 Initialisation Firebase...');
+    // Config Firebase chargee depuis js/firebase-config.js
+    const auth = firebaseAuth;
+    const db = firebaseDb;
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyCV0R7uSlyTm2yEL-EoAd6_DZa16R4WiPc",
-        authDomain: "tino-le-doc.firebaseapp.com",
-        databaseURL: "https://tino-le-doc-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "tino-le-doc",
-        storageBucket: "tino-le-doc.firebasestorage.app",
-        messagingSenderId: "865928450606",
-        appId: "1:865928450606:web:20fcb9497f7e0ded2fc5bf"
-    };
-
-    let app, auth, db;
-
-    try {
-        app = firebase.initializeApp(firebaseConfig);
-        auth = firebase.auth();
-        db = firebase.database();
-        console.log('✅ Firebase initialisé avec succès');
-    } catch (error) {
-        console.error('❌ Erreur Firebase init:', error);
+    if (!firebaseDb) {
         document.getElementById('formError').textContent = 'Erreur de connexion au serveur. Rechargez la page.';
         document.getElementById('formError').classList.add('show');
     }
