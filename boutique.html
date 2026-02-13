@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Boutique 🛒 Tino Le Doc</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/common.css">
     <style>
         :root {
             --bg: #0a0a0f;
@@ -575,9 +576,10 @@
     </style>
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Aller au contenu</a>
     <div class="bg-grid"></div>
 
-    <div class="container">
+    <div class="container" id="main-content">
         <header class="header">
             <div class="logo">
                 <a href="index.html"><img src="1000074492.png" alt="Tino Le Doc"></a>
@@ -639,7 +641,7 @@
             <button class="bundle-btn" onclick="buyProduct('bundle')">🚀 Obtenir le Pack Complet</button>
         </section>
 
-        <footer>
+        <footer role="contentinfo">
             <p><strong>Tino Le Doc</strong> - Boutique IA</p>
             <div class="footer-links">
                 <a href="index.html">🏠 Accueil</a>
@@ -697,22 +699,12 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
 
     <script>
-    // Firebase Init
-    const firebaseConfig = {
-        apiKey: "AIzaSyCV0R7uSlyTm2yEL-EoAd6_DZa16R4WiPc",
-        authDomain: "tino-le-doc.firebaseapp.com",
-        databaseURL: "https://tino-le-doc-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "tino-le-doc",
-        storageBucket: "tino-le-doc.firebasestorage.app",
-        messagingSenderId: "865928450606",
-        appId: "1:865928450606:web:20fcb9497f7e0ded2fc5bf"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
+    // Config Firebase chargee depuis js/firebase-config.js
+    const auth = firebaseAuth;
+    const db = firebaseDb;
 
     // Products
     // ⚠️ CONFIGURATION DES LIENS DE TÉLÉCHARGEMENT

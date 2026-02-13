@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Faut-il tout remplacer par l'IA ? 🤖</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/common.css">
     <style>
         :root {
             --bg-dark: #0a0a0f;
@@ -636,6 +637,7 @@
     </style>
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Aller au contenu</a>
     <div class="bg-grid"></div>
     <div class="floating-orb orb-1"></div>
     <div class="floating-orb orb-2"></div>
@@ -674,7 +676,7 @@
         </div>
 
         <!-- Hero -->
-        <section class="hero">
+        <section class="hero" role="banner">
             <div class="hero-badge">🤖 Débat IA vs Humains</div>
             <h1>Faut-il TOUT remplacer par l'IA ?</h1>
             <p class="subtitle">J'ai posé la question directement à une intelligence artificielle. Voici sa réponse.</p>
@@ -689,7 +691,7 @@
         </div>
 
         <!-- Answer -->
-        <section class="answer-section">
+        <section class="answer-section" role="main" id="main-content">
             <div class="answer-header">
                 <div class="ai-avatar">🧠</div>
                 <div class="answer-meta">
@@ -799,8 +801,9 @@
             <img src="1000074492.png" alt="Tino Le Doc" class="logo-img large">
         </div>
 
-        <footer>
+        <footer role="contentinfo">
             Créé avec ❤️ par <strong>Tino Le Doc</strong> | Propulsé par <a href="https://claude.ai" target="_blank">Claude AI</a>
+            <nav aria-label="Navigation principale">
             <div class="footer-links">
                 <a href="quiz.html">🧠 Quiz</a>
                 <a href="sondages.html">📊 Sondages</a>
@@ -814,26 +817,17 @@
                 <a href="boutique.html">🛒 Boutique</a>
                 <a href="confidentialite.html">🔒 Confidentialité</a>
             </div>
+            </nav>
         </footer>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
     <script>
-        // ==================== FIREBASE ====================
-        firebase.initializeApp({
-            apiKey: "AIzaSyCV0R7uSlyTm2yEL-EoAd6_DZa16R4WiPc",
-            authDomain: "tino-le-doc.firebaseapp.com",
-            databaseURL: "https://tino-le-doc-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "tino-le-doc",
-            storageBucket: "tino-le-doc.firebasestorage.app",
-            messagingSenderId: "865928450606",
-            appId: "1:865928450606:web:20fcb9497f7e0ded2fc5bf"
-        });
-
-        const auth = firebase.auth();
-        const db = firebase.database();
+        // Config Firebase chargee depuis js/firebase-config.js
+        const database = firebaseDb;
 
         // ==================== COMPTEURS ====================
         

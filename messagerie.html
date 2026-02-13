@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Messagerie 💬 Tino Le Doc</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/common.css">
     <style>
         :root {
             --bg: #0a0a0f;
@@ -886,6 +887,7 @@
     </style>
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Aller au contenu</a>
     <!-- Login Required Screen -->
     <div class="login-required" id="loginRequired">
         <div class="icon">🔐</div>
@@ -897,7 +899,7 @@
     </div>
 
     <!-- Main App -->
-    <div class="app-container" id="appContainer" style="display: none;">
+    <div class="app-container" id="main-content" style="display: none;">
         <!-- Mobile Header -->
         <div class="mobile-header">
             <button class="icon-btn" onclick="toggleSidebar()">☰</button>
@@ -1072,20 +1074,11 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
     <script>
-        // ==================== FIREBASE ====================
-        firebase.initializeApp({
-            apiKey: "AIzaSyCV0R7uSlyTm2yEL-EoAd6_DZa16R4WiPc",
-            authDomain: "tino-le-doc.firebaseapp.com",
-            databaseURL: "https://tino-le-doc-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "tino-le-doc",
-            storageBucket: "tino-le-doc.firebasestorage.app",
-            messagingSenderId: "865928450606",
-            appId: "1:865928450606:web:20fcb9497f7e0ded2fc5bf"
-        });
-
-        const auth = firebase.auth();
-        const db = firebase.database();
+        // Config Firebase chargee depuis js/firebase-config.js
+        const auth = firebaseAuth;
+        const db = firebaseDb;
 
         // ==================== STATE ====================
         let currentUser = null;
@@ -1107,7 +1100,7 @@
                     
                     if (currentUserProfile) {
                         document.getElementById('loginRequired').style.display = 'none';
-                        document.getElementById('appContainer').style.display = 'flex';
+                        document.getElementById('main-content').style.display = 'flex';
                         initApp();
                     } else {
                         window.location.href = 'compte.html';
@@ -1117,7 +1110,7 @@
                 }
             } else {
                 document.getElementById('loginRequired').style.display = 'flex';
-                document.getElementById('appContainer').style.display = 'none';
+                document.getElementById('main-content').style.display = 'none';
             }
         });
 
@@ -1857,12 +1850,7 @@
         }
 
         // ==================== UTILITIES ====================
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
+        // Charge depuis js/firebase-config.js
 
         function formatTime(timestamp) {
             const date = new Date(timestamp);

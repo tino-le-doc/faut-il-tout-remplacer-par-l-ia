@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Avis - Tino Le Doc | IA vs Humains</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/common.css">
     <style>
         :root {
             --bg-dark: #0a0a0f;
@@ -526,6 +527,7 @@
     </style>
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Aller au contenu</a>
     <div class="bg-grid"></div>
     <div class="floating-orb orb-1"></div>
     <div class="floating-orb orb-2"></div>
@@ -537,7 +539,7 @@
 
         <a href="index.html" class="back-link">← Retour au débat</a>
 
-        <header class="page-header">
+        <header id="main-content" class="page-header">
             <h1>💬 Donnez votre avis</h1>
             <p>Faut-il tout remplacer par l'IA ? Partagez votre opinion !</p>
             
@@ -575,7 +577,7 @@
         <section class="form-section">
             <h2 class="form-title">✍️ Laissez un commentaire</h2>
             
-            <form id="reviewForm">
+            <form id="reviewForm" aria-label="Formulaire d'avis">
                 <div class="form-group">
                     <label for="name">Votre pseudo *</label>
                     <input type="text" id="name" name="name" placeholder="Ex: TechFan2025" required maxlength="30">
@@ -641,7 +643,7 @@
             <img src="1000074492.png" alt="Tino Le Doc" class="logo-img large">
         </div>
 
-        <footer>
+        <footer role="contentinfo">
             Créé avec ❤️ par <strong>Tino Le Doc</strong> | Propulsé par <a href="https://claude.ai" target="_blank">Claude AI</a> & <a href="https://firebase.google.com" target="_blank">Firebase</a>
         </footer>
     </div>
@@ -649,78 +651,16 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
 
     <script>
-        // 🔥 FIREBASE CONFIG
-        const firebaseConfig = {
-            apiKey: "AIzaSyCV0R7uSlyTm2yEL-EoAd6_DZa16R4WiPc",
-            authDomain: "tino-le-doc.firebaseapp.com",
-            databaseURL: "https://tino-le-doc-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "tino-le-doc",
-            storageBucket: "tino-le-doc.firebasestorage.app",
-            messagingSenderId: "865928450606",
-            appId: "1:865928450606:web:20fcb9497f7e0ded2fc5bf"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        // Config Firebase chargee depuis js/firebase-config.js
+        const database = firebaseDb;
         const reviewsRef = database.ref('reviews');
 
-        // 🛡️ MODÉRATION
-        const ModerationSystem = {
-            bannedPatterns: [
-                /\b(con+ard?|conna?(rd|sse)|put(e|ain)|merde|encul[eé]|batar+d|salop(e|ard)?|pd|fdp|ntm|nique|niqu[eé]|ta\s*gueule|ferme[\s-]?la|d[eé]bile|cr[eé]tin|abrutis?|idiot|imbecile|stupide|mongole?|attard[eé]|gogole?)\b/gi,
-                /\b(n[eè]gr[eo]?|negro|negresse|bougnou?le?|raton|melon|bamboula|macaque|singe|arabe[\s]*de[\s]*merde|sale[\s]*(arabe|noir|blanc|juif|musulman|gay|pd)|youpin|feuj|rebeu[\s]*de[\s]*merde|ching|chintok|chinetoque|bridé|niak|gwer|gaouri|roumi|toubab[\s]*de[\s]*merde)\b/gi,
-                /\b(tapette|tafiole|tarlouze|p[eé]d[eé]|pédé|pédale|gouine|fiotte|tapin)\b/gi,
-                /\b(youtre|feuj[\s]*de[\s]*merde|sale[\s]*juif|youd)\b/gi,
-                /\b(sale[\s]*(musulman|chr[eé]tien|catho)|bougnoule)\b/gi,
-                /\b(salope|pute|catin|trainée|poufiasse|grognasse|morue|thon)\b/gi,
-                /\b(cr[eè]ve|suicide[\s-]?toi|va[\s]*mourir|je[\s]*vais[\s]*te[\s]*(tuer|buter|niquer|défoncer)|mort[\s]*aux?)\b/gi,
-                /\b(c0n|put3|m3rd3|n[i1]qu[e3]|s4l0p[e3])\b/gi,
-                /(mort|haine|tuer|exterminer|éliminer)[\s]*(aux?|les?|tous?)[\s]*(arabes?|noirs?|blancs?|juifs?|musulmans?|gays?|homos?|immigr[eé]s?|[eé]trangers?)/gi,
-                /\b(88|hh|heil|hitler|nazi|sieg\s*heil|white\s*power|kkk)\b/gi
-            ],
+        // ModerationSystem charge depuis js/firebase-config.js
 
-            errorMessages: [
-                "🛡️ Contenu inapproprié détecté. Merci de reformuler avec respect.",
-                "⚠️ Message offensant détecté. Ici, on débat dans le respect !",
-                "🚫 Ce langage n'est pas accepté. Exprimez-vous autrement.",
-                "❌ Message bloqué. Restez courtois et bienveillant.",
-                "🛑 Propos discriminatoires détectés. Pas de haine ici."
-            ],
-
-            checkContent(text) {
-                const normalized = this.normalizeText(text);
-                for (const pattern of this.bannedPatterns) {
-                    if (pattern.test(normalized)) {
-                        pattern.lastIndex = 0;
-                        return { isValid: false, message: this.getRandomErrorMessage() };
-                    }
-                }
-                return { isValid: true };
-            },
-
-            normalizeText(text) {
-                return text.toLowerCase()
-                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                    .replace(/[0@]/g, 'o').replace(/[1!|]/g, 'i')
-                    .replace(/[3€]/g, 'e').replace(/[4]/g, 'a')
-                    .replace(/[5\$]/g, 's').replace(/[7]/g, 't')
-                    .replace(/[8]/g, 'b').replace(/[\*\.\-_]/g, '')
-                    .replace(/(.)\1{2,}/g, '$1$1');
-            },
-
-            getRandomErrorMessage() {
-                return this.errorMessages[Math.floor(Math.random() * this.errorMessages.length)];
-            }
-        };
-
-        // UTILS
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
+        // escapeHtml() charge depuis js/firebase-config.js
 
         function showFeedback(message, isError = true) {
             const feedback = document.getElementById('moderationFeedback');
