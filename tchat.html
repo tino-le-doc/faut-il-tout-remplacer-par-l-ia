@@ -49,11 +49,11 @@
         .video-join-btn:hover{transform:scale(1.05);box-shadow:0 10px 30px rgba(0,255,136,0.3)}
         .video-join-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
 
-        .video-grid{display:none;padding:10px;gap:10px;background:#000;min-height:250px}
-        .video-grid.active{display:flex;flex-wrap:wrap;align-items:flex-start}
+        .video-grid{padding:10px;gap:10px;background:#000}
+        .video-grid.active{display:flex;flex-wrap:wrap}
 
-        .video-cell{position:relative;background:#111;border-radius:12px;overflow:hidden;flex:1 1 100%;max-width:100%;height:300px}
-        .video-cell video{width:100%;height:100%;object-fit:cover;display:block;background:#000}
+        .video-cell{position:relative;background:#222;border-radius:12px;overflow:hidden;width:100%;height:350px}
+        .video-cell video{width:100%;height:100%;object-fit:cover}
         .video-cell.local{border:2px solid var(--cyan)}
         .video-cell .name-tag{position:absolute;bottom:8px;left:8px;padding:4px 10px;background:rgba(0,0,0,0.7);border-radius:8px;font-size:0.75rem;color:#fff;display:flex;align-items:center;gap:6px;z-index:2}
         .video-cell .name-tag .mic-off{color:var(--red)}
@@ -174,7 +174,7 @@
             .tab-btn{padding:10px 15px;font-size:0.85rem;flex:1;justify-content:center}
 
             /* VIDEO */
-            .video-grid{gap:6px;padding:6px;min-height:200px}
+            .video-grid{gap:6px;padding:6px}
             .video-cell{height:250px}
             .video-cell .no-video .av-initial{width:45px;height:45px;font-size:1.1rem}
             .video-join{padding:25px 15px}
@@ -293,7 +293,13 @@
                 <p>Directement dans votre navigateur, sans application.<br>Compatible Android, Mac, Windows.</p>
                 <button class="video-join-btn" id="videoJoinBtn">📹 Rejoindre l'appel</button>
             </div>
-            <div class="video-grid" id="videoGrid"></div>
+            <div id="videoStatus" style="display:none;padding:10px;color:#0f0;background:#000;font-family:monospace;font-size:12px"></div>
+            <div class="video-grid" id="videoGrid">
+                <div class="video-cell local" id="localVideoCell" style="display:none">
+                    <video id="localVideoEl" autoplay playsinline webkit-playsinline muted style="width:100%;height:100%;object-fit:cover;display:block;background:#000"></video>
+                    <div class="name-tag">Moi (vous)</div>
+                </div>
+            </div>
             <div class="video-controls" id="videoControls">
                 <button class="vc-btn" id="vcMic" title="Micro">🎤</button>
                 <button class="vc-btn" id="vcCam" title="Caméra">📹</button>
@@ -558,34 +564,49 @@ const VideoChat = {
         this.joined = true;
         this.myVideoId = 'v_' + crypto.getRandomValues(new Uint32Array(1))[0].toString(36) + '_' + Date.now();
 
+        const status = document.getElementById('videoStatus');
+        const log = (msg) => { status.style.display = 'block'; status.textContent += msg + '\n'; console.log(msg); };
+
         // Afficher l'UI
         document.getElementById('videoJoin').style.display = 'none';
         document.getElementById('videoGrid').classList.add('active');
         document.getElementById('videoControls').classList.add('active');
 
-        // Ajouter la video locale
-        this.addVideoCell(this.myVideoId, user || 'Moi', true);
-        this.updateGridLayout();
-        const localCell = document.querySelector(`[data-peer="${this.myVideoId}"]`);
-        const localVideo = localCell ? localCell.querySelector('video') : null;
-        console.log('Grid visible:', document.getElementById('videoGrid').classList.contains('active'));
-        console.log('Cell found:', !!localCell, 'Video found:', !!localVideo);
-        console.log('Cell dimensions:', localCell ? localCell.offsetWidth + 'x' + localCell.offsetHeight : 'N/A');
-        if (localVideo) {
-            localVideo.muted = true;
-            localVideo.srcObject = this.localStream;
-            console.log('Stream tracks:', this.localStream.getTracks().map(t => t.kind + ':' + t.enabled + ':' + t.readyState));
-            console.log('Video srcObject set:', !!localVideo.srcObject);
-            this.playVideo(localVideo);
-            // Verifier apres un court delai que la video a des dimensions
-            setTimeout(() => {
-                console.log('Video dimensions after 2s:', localVideo.videoWidth + 'x' + localVideo.videoHeight);
-                console.log('Video readyState:', localVideo.readyState);
-                console.log('Cell computed size:', localCell.offsetWidth + 'x' + localCell.offsetHeight);
-            }, 2000);
-        } else {
-            console.error('Local video element not found!');
-        }
+        // Utiliser l'element video HTML directement
+        const localCell = document.getElementById('localVideoCell');
+        const localVideo = document.getElementById('localVideoEl');
+        localCell.style.display = 'block';
+        localCell.dataset.peer = this.myVideoId;
+
+        log('Tracks: ' + this.localStream.getTracks().map(t => t.kind + '=' + t.readyState).join(', '));
+
+        localVideo.srcObject = this.localStream;
+        localVideo.muted = true;
+        localVideo.playsInline = true;
+
+        localVideo.onloadedmetadata = () => {
+            log('Metadata OK: ' + localVideo.videoWidth + 'x' + localVideo.videoHeight);
+            localVideo.play().then(() => {
+                log('Play OK!');
+            }).catch(e => {
+                log('Play ERREUR: ' + e.name + ' ' + e.message);
+            });
+        };
+
+        localVideo.onerror = (e) => {
+            log('Video ERREUR: ' + (e.message || e));
+        };
+
+        // Forcer play apres 2 secondes si pas deja en cours
+        setTimeout(() => {
+            if (localVideo.paused) {
+                log('Forçage play après 2s...');
+                localVideo.play().catch(e => log('Play forcé ERREUR: ' + e.name));
+            }
+            log('État: readyState=' + localVideo.readyState + ' paused=' + localVideo.paused + ' size=' + localVideo.videoWidth + 'x' + localVideo.videoHeight);
+            log('Cell: ' + localCell.offsetWidth + 'x' + localCell.offsetHeight);
+        }, 2000);
+
         if (!this.camEnabled) {
             this.updateVideoOverlay(this.myVideoId, true);
         }
