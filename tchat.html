@@ -146,13 +146,101 @@
         footer{text-align:center;padding:15px;font-size:0.8rem;color:rgba(255,255,255,0.4)}
         footer a{color:var(--cyan);text-decoration:none}
 
+        /* ===== RESPONSIVE MOBILE (Android / iOS) ===== */
         @media(max-width:768px){
-            .video-container iframe{height:300px}
-            .video-btn{min-width:100%;padding:12px 20px}
+            /* Utiliser la hauteur reelle du viewport (sans barre d'adresse) */
+            body{height:100dvh;overflow:hidden}
+            .container{padding:8px;min-height:100dvh;display:flex;flex-direction:column}
+
+            .logo{padding:5px 0}
+            .logo img{max-width:60px}
+            .back{font-size:0.75rem}
+            header{padding:8px 0}
+            header h1{font-size:1.3rem}
+            .badges{gap:5px;margin-top:6px}
+            .badge{padding:3px 8px;font-size:0.65rem}
+
+            .tabs{gap:6px;margin:10px 0}
+            .tab-btn{padding:10px 15px;font-size:0.85rem;flex:1;justify-content:center}
+
+            /* VIDEO */
+            .video-container iframe{height:250px}
+            .video-btn{min-width:100%;padding:14px 20px;font-size:0.95rem}
+            .video-placeholder{padding:25px 15px}
+            .video-placeholder .icon{font-size:2.5rem}
+            .video-placeholder h3{font-size:1.1rem}
+
+            /* CHAT - prend tout l'espace restant */
+            .chat{flex:1;display:flex;flex-direction:column;max-height:none;border-radius:15px;margin:5px 0}
+            .chat.active{display:flex}
+            .chat-head{padding:8px 12px}
+            .chat-head span{font-size:0.85rem}
+
+            /* Messages - scroll flexible */
+            .messages{flex:1;min-height:0;max-height:none;padding:10px;gap:8px;-webkit-overflow-scrolling:touch}
+            .msg-text{font-size:0.92rem}
+            .msg-text img{max-width:150px;max-height:100px}
+            .avatar{width:32px;height:32px;font-size:0.8rem;border-radius:8px}
+            .bubble{max-width:80%;padding:8px 12px;border-radius:14px 14px 14px 4px}
+            .msg.own .bubble{border-radius:14px 14px 4px 14px}
+            .msg-name{font-size:0.8rem}
+            .msg-time{font-size:0.65rem}
+
+            /* Zone de saisie */
+            .input-area{padding:8px 10px}
+
+            /* Toolbar - boutons tactiles min 44px */
+            .toolbar{gap:6px;margin-bottom:6px}
+            .tool-btn{width:44px;height:44px;font-size:1.2rem;border-radius:12px}
+
+            /* Pickers optimises mobile */
+            .picker{border-radius:12px;padding:10px;max-height:200px}
+            .emoji-cats{gap:3px;margin-bottom:8px}
+            .cat-btn{padding:8px;font-size:1rem;min-width:38px;min-height:38px}
+            .emoji-grid{grid-template-columns:repeat(7,1fr);gap:2px;max-height:120px}
+            .emoji-btn{font-size:1.4rem;padding:6px;min-width:40px;min-height:40px}
+
+            .gif-search{padding:10px;font-size:16px;border-radius:10px}
+            .gif-grid{grid-template-columns:repeat(2,1fr);gap:5px;max-height:120px}
+            .gif-item img{height:70px}
+
+            /* Quick reactions */
+            .quick{gap:4px;margin-bottom:6px}
+            .qr{padding:8px;font-size:1.1rem;min-width:40px;min-height:40px;display:flex;align-items:center;justify-content:center;border-radius:12px}
+
+            /* Form - inputs 16px pour eviter le zoom auto */
+            .form{gap:6px}
+            .form input{padding:12px 14px;font-size:16px;border-radius:22px}
+            .form button{padding:12px 16px;font-size:1.1rem;border-radius:22px;min-width:48px;min-height:48px}
+
+            /* Login */
+            .login{padding:20px 15px;border-radius:15px;margin:15px 0}
+            .login h2{font-size:1.2rem;margin-bottom:15px}
+            .login input{padding:14px 18px;font-size:16px;max-width:100%;border-radius:14px}
+            .login button{padding:14px 30px;font-size:1rem;border-radius:14px;min-height:48px}
+
+            footer{padding:10px;font-size:0.7rem}
+        }
+
+        /* Petits ecrans (< 380px, ex: anciens Android) */
+        @media(max-width:380px){
+            header h1{font-size:1.1rem}
+            .badges{display:none}
+            .tab-btn{padding:8px 10px;font-size:0.8rem}
             .emoji-grid{grid-template-columns:repeat(6,1fr)}
-            .gif-grid{grid-template-columns:repeat(2,1fr)}
+            .emoji-btn{font-size:1.2rem;min-width:36px;min-height:36px}
             .bubble{max-width:85%}
-            .tab-btn{padding:10px 15px;font-size:0.85rem}
+            .avatar{width:28px;height:28px;font-size:0.7rem}
+        }
+
+        /* Paysage mobile */
+        @media(max-height:500px) and (orientation:landscape){
+            .logo,.badges{display:none}
+            header{padding:4px 0}
+            header h1{font-size:1rem}
+            .tabs{margin:5px 0}
+            .messages{max-height:none}
+            .picker{max-height:130px}
         }
     </style>
 </head>
@@ -770,6 +858,38 @@ window.addEventListener('beforeunload', () => {
     if (oderId && usersRef) usersRef.child(oderId).remove();
     if (user && msgsRef) msgsRef.push({type: 'system', action: 'leave', user, timestamp: Date.now()});
 });
+
+// ==================== MOBILE KEYBOARD ====================
+if (isMobile) {
+    const msgInput = document.getElementById('msg');
+    const pseudoInput = document.getElementById('pseudo');
+    const chatEl = document.getElementById('chat');
+    const msgsEl = document.getElementById('msgs');
+
+    // Gestion du clavier virtuel Android via visualViewport
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', () => {
+            // Scroll vers le bas quand le clavier s'ouvre
+            if (chatEl.classList.contains('active')) {
+                setTimeout(() => msgsEl.scrollTop = msgsEl.scrollHeight, 100);
+            }
+        });
+    }
+
+    // Scroll au focus sur l'input message
+    msgInput.addEventListener('focus', () => {
+        setTimeout(() => {
+            msgInput.scrollIntoView({block: 'nearest', behavior: 'smooth'});
+            msgsEl.scrollTop = msgsEl.scrollHeight;
+        }, 300);
+    });
+
+    // Fermer les pickers quand on tape
+    msgInput.addEventListener('focus', () => {
+        document.getElementById('emojiPick').classList.remove('active');
+        document.getElementById('gifPick').classList.remove('active');
+    });
+}
 
 // Init
 renderEmojis('faces');
