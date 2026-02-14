@@ -293,7 +293,6 @@
                 <p>Directement dans votre navigateur, sans application.<br>Compatible Android, Mac, Windows.</p>
                 <button class="video-join-btn" id="videoJoinBtn">📹 Rejoindre l'appel</button>
             </div>
-            <div id="videoStatus" style="display:none;padding:10px;color:#0f0;background:#000;font-family:monospace;font-size:12px;white-space:pre-line"></div>
             <div id="videoGrid" style="display:none;padding:10px;background:#000"></div>
             <div class="video-controls" id="videoControls">
                 <button class="vc-btn" id="vcMic" title="Micro">🎤</button>
@@ -527,6 +526,19 @@ const VideoChat = {
             return;
         }
 
+        // Verifier la limite de 6 participants
+        try {
+            const snap = await db.ref('videoRoom/participants').once('value');
+            if (snap.exists() && Object.keys(snap.val()).length >= 6) {
+                alert('L\'appel est complet (6 participants max). Réessayez plus tard.');
+                joinBtn.disabled = false;
+                joinBtn.textContent = '📹 Rejoindre l\'appel';
+                return;
+            }
+        } catch (e) {
+            console.warn('Erreur vérification participants:', e);
+        }
+
         try {
             // Contraintes simples pour Android
             this.localStream = await navigator.mediaDevices.getUserMedia({
@@ -559,9 +571,6 @@ const VideoChat = {
         this.joined = true;
         this.myVideoId = 'v_' + crypto.getRandomValues(new Uint32Array(1))[0].toString(36) + '_' + Date.now();
 
-        const status = document.getElementById('videoStatus');
-        const log = (msg) => { status.style.display = 'block'; status.textContent += msg + '\n'; console.log('[VIDEO] ' + msg); };
-
         // Afficher l'UI
         document.getElementById('videoJoin').style.display = 'none';
         document.getElementById('videoControls').classList.add('active');
@@ -570,7 +579,7 @@ const VideoChat = {
         const grid = document.getElementById('videoGrid');
         grid.style.cssText = 'display:block;padding:10px;background:#000;';
 
-        // Creer la video via JS (readyState=4 confirmé avant)
+        // Creer la video via JS
         const video = document.createElement('video');
         video.autoplay = true;
         video.playsInline = true;
@@ -578,34 +587,23 @@ const VideoChat = {
         video.setAttribute('playsinline', '');
         video.setAttribute('webkit-playsinline', '');
         video.controls = false;
-        // Utiliser vw (viewport width) - ne depend PAS du parent
         video.style.cssText = 'display:block;width:90vw;max-width:800px;height:auto;aspect-ratio:3/4;object-fit:cover;background:#222;border-radius:12px;';
 
-        // Assigner le stream AVANT d'inserer dans le DOM
         video.srcObject = this.localStream;
-        log('Tracks: ' + this.localStream.getTracks().map(t => t.kind + '=' + t.readyState).join(', '));
-        log('srcObject set: ' + !!video.srcObject);
 
-        // Inserer dans la grille
         grid.innerHTML = '';
         grid.appendChild(video);
 
-        // Stocker reference
         this.localVideoEl = video;
 
         video.onloadedmetadata = () => {
-            log('Metadata: ' + video.videoWidth + 'x' + video.videoHeight);
-            video.play().then(() => log('Play OK')).catch(e => log('Play ERR: ' + e.message));
+            video.play().catch(() => {});
         };
 
-        video.onerror = () => log('Video ERROR');
-
-        // Forcer play + diagnostic apres 2s
+        // Forcer play apres 2s si necessaire
         setTimeout(() => {
-            log('2s: ready=' + video.readyState + ' paused=' + video.paused + ' vid=' + video.videoWidth + 'x' + video.videoHeight);
-            log('2s: el=' + video.offsetWidth + 'x' + video.offsetHeight + ' parent=' + grid.offsetWidth + 'x' + grid.offsetHeight);
             if (video.paused && video.srcObject) {
-                video.play().catch(e => log('Retry play: ' + e.message));
+                video.play().catch(() => {});
             }
         }, 2000);
 
@@ -981,8 +979,6 @@ const VideoChat = {
         }
         document.getElementById('videoGrid').innerHTML = '';
         document.getElementById('videoGrid').style.display = 'none';
-        document.getElementById('videoStatus').style.display = 'none';
-        document.getElementById('videoStatus').textContent = '';
         document.getElementById('videoControls').classList.remove('active');
         document.getElementById('videoJoin').style.display = 'block';
         document.getElementById('videoCount').textContent = '👥 0 en appel';
