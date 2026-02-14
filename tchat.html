@@ -513,19 +513,45 @@ const VideoChat = {
         joinBtn.disabled = true;
         joinBtn.textContent = 'Connexion...';
 
+        // Verifier HTTPS (requis pour getUserMedia)
+        if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+            alert('La vidéo nécessite une connexion HTTPS sécurisée.');
+            joinBtn.disabled = false;
+            joinBtn.textContent = '📹 Rejoindre l\'appel';
+            return;
+        }
+
+        // Verifier que getUserMedia est disponible
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            alert('Votre navigateur ne supporte pas la vidéo. Essayez Chrome ou Firefox.');
+            joinBtn.disabled = false;
+            joinBtn.textContent = '📹 Rejoindre l\'appel';
+            return;
+        }
+
         try {
-            // Demander camera + micro
+            // Contraintes simples pour Android
             this.localStream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+                video: { facingMode: 'user' },
                 audio: true
             });
         } catch (err) {
+            console.warn('Camera+audio failed:', err.name, err.message);
             // Si pas de camera, essayer juste audio
             try {
                 this.localStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
                 this.camEnabled = false;
             } catch (err2) {
-                alert('Impossible d\'accéder à la caméra ou au micro. Vérifiez les permissions.');
+                console.error('Audio-only failed:', err2.name, err2.message);
+                let msg = 'Impossible d\'accéder à la caméra ou au micro.\n\n';
+                if (err.name === 'NotAllowedError' || err2.name === 'NotAllowedError') {
+                    msg += 'Autorisez l\'accès dans les paramètres de votre navigateur.';
+                } else if (err.name === 'NotFoundError' || err2.name === 'NotFoundError') {
+                    msg += 'Aucune caméra ou micro détecté sur cet appareil.';
+                } else {
+                    msg += 'Erreur : ' + (err.message || err.name);
+                }
+                alert(msg);
                 joinBtn.disabled = false;
                 joinBtn.textContent = '📹 Rejoindre l\'appel';
                 return;
@@ -546,6 +572,8 @@ const VideoChat = {
         if (localVideo) {
             localVideo.srcObject = this.localStream;
             localVideo.muted = true; // Eviter l'echo
+            // Android necessite un play() explicite
+            localVideo.play().catch(() => {});
         }
         if (!this.camEnabled) {
             this.updateVideoOverlay(this.myVideoId, true);
@@ -717,6 +745,8 @@ const VideoChat = {
                 const videoEl = document.querySelector(`[data-peer="${peerId}"] video`);
                 if (videoEl) {
                     videoEl.srcObject = stream;
+                    // Android/iOS necessite play() explicite
+                    videoEl.play().catch(() => {});
                 }
             }
         };
@@ -747,12 +777,22 @@ const VideoChat = {
         const initial = (name || '?').charAt(0).toUpperCase();
 
         cell.innerHTML = `
-            <video autoplay playsinline ${isLocal ? 'muted' : ''}></video>
             <div class="no-video" style="display:none">
                 <div class="av-initial">${initial}</div>
             </div>
             <div class="name-tag">${Validator.sanitize(name)}${isLocal ? ' (vous)' : ''}</div>
         `;
+
+        // Creer l'element video via JS pour garantir les attributs Android
+        const video = document.createElement('video');
+        video.autoplay = true;
+        video.playsInline = true;
+        video.setAttribute('playsinline', '');
+        video.setAttribute('webkit-playsinline', '');
+        if (isLocal) video.muted = true;
+        // Inserer la video en premier enfant
+        cell.insertBefore(video, cell.firstChild);
+
         grid.appendChild(cell);
     },
 
