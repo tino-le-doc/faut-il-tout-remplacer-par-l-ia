@@ -464,6 +464,18 @@ const Validator = {
 // ==================== DÉTECTION MOBILE ====================
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
+// ==================== FIREBASE ====================
+let user = null, oderId = null, msgsRef, usersRef, typeRef;
+
+// Config Firebase chargee depuis js/firebase-config.js
+const auth = firebaseAuth;
+const db = firebaseDb;
+try {
+    msgsRef = db.ref('chatMessages');
+    usersRef = db.ref('chatUsers');
+    typeRef = db.ref('chatTyping');
+} catch(e) { console.error('Firebase:', e); }
+
 // ==================== TABS ====================
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', function() {
@@ -878,18 +890,6 @@ try {
 window.addEventListener('beforeunload', () => {
     if (VideoChat.joined) VideoChat.leaveCall();
 });
-
-// ==================== FIREBASE ====================
-let user = null, oderId = null, msgsRef, usersRef, typeRef;
-
-    // Config Firebase chargee depuis js/firebase-config.js
-    const auth = firebaseAuth;
-    const db = firebaseDb;
-try {
-    msgsRef = db.ref('chatMessages');
-    usersRef = db.ref('chatUsers');
-    typeRef = db.ref('chatTyping');
-} catch(e) { console.error('Firebase:', e); }
 
 // ==================== MODÉRATION ====================
 const badWords = [
