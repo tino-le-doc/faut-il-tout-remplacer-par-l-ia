@@ -293,13 +293,8 @@
                 <p>Directement dans votre navigateur, sans application.<br>Compatible Android, Mac, Windows.</p>
                 <button class="video-join-btn" id="videoJoinBtn">📹 Rejoindre l'appel</button>
             </div>
-            <div id="videoStatus" style="display:none;padding:10px;color:#0f0;background:#000;font-family:monospace;font-size:12px"></div>
-            <div id="videoGrid" style="display:none;padding:10px;background:#000">
-                <div id="localVideoCell" style="display:none;width:100%;height:350px;background:#222;border-radius:12px;overflow:hidden;position:relative;margin-bottom:10px">
-                    <video id="localVideoEl" autoplay playsinline webkit-playsinline muted style="display:block;width:100%;height:350px;object-fit:cover;background:#111"></video>
-                    <div style="position:absolute;bottom:8px;left:8px;padding:4px 10px;background:rgba(0,0,0,0.7);border-radius:8px;font-size:0.75rem;color:#fff;z-index:2">Moi (vous)</div>
-                </div>
-            </div>
+            <div id="videoStatus" style="display:none;padding:10px;color:#0f0;background:#000;font-family:monospace;font-size:12px;white-space:pre-line"></div>
+            <div id="videoGrid" style="display:none;padding:10px;background:#000"></div>
             <div class="video-controls" id="videoControls">
                 <button class="vc-btn" id="vcMic" title="Micro">🎤</button>
                 <button class="vc-btn" id="vcCam" title="Caméra">📹</button>
@@ -565,47 +560,60 @@ const VideoChat = {
         this.myVideoId = 'v_' + crypto.getRandomValues(new Uint32Array(1))[0].toString(36) + '_' + Date.now();
 
         const status = document.getElementById('videoStatus');
-        const log = (msg) => { status.style.display = 'block'; status.textContent += msg + '\n'; console.log(msg); };
+        const log = (msg) => { status.style.display = 'block'; status.textContent += msg + '\n'; console.log('[VIDEO] ' + msg); };
 
         // Afficher l'UI
         document.getElementById('videoJoin').style.display = 'none';
-        document.getElementById('videoGrid').style.display = 'block';
         document.getElementById('videoControls').classList.add('active');
 
-        // Utiliser l'element video HTML directement
-        const localCell = document.getElementById('localVideoCell');
-        const localVideo = document.getElementById('localVideoEl');
-        localCell.style.display = 'block';
-        log('Cell style: ' + localCell.style.cssText);
-        localCell.dataset.peer = this.myVideoId;
+        // Calculer les dimensions en pixels
+        const section = document.querySelector('.video-section');
+        const w = section ? section.clientWidth - 20 : Math.min(window.innerWidth - 20, 800);
+        const h = Math.round(w * 9 / 16); // ratio 16:9
+        log('Dimensions calculées: ' + w + 'x' + h);
 
+        // Afficher la grille avec dimensions en pixels
+        const grid = document.getElementById('videoGrid');
+        grid.style.cssText = 'display:block;padding:10px;background:#000;width:' + (w + 20) + 'px;';
+
+        // Creer la video via JS (readyState=4 confirmé avant)
+        const video = document.createElement('video');
+        video.autoplay = true;
+        video.playsInline = true;
+        video.muted = true;
+        video.setAttribute('playsinline', '');
+        video.setAttribute('webkit-playsinline', '');
+        video.controls = false;
+        video.width = w;
+        video.height = h;
+        video.style.cssText = 'display:block;width:' + w + 'px;height:' + h + 'px;object-fit:cover;background:#222;border-radius:12px;';
+
+        // Assigner le stream AVANT d'inserer dans le DOM
+        video.srcObject = this.localStream;
         log('Tracks: ' + this.localStream.getTracks().map(t => t.kind + '=' + t.readyState).join(', '));
+        log('srcObject set: ' + !!video.srcObject);
 
-        localVideo.srcObject = this.localStream;
-        localVideo.muted = true;
-        localVideo.playsInline = true;
+        // Inserer dans la grille
+        grid.innerHTML = '';
+        grid.appendChild(video);
 
-        localVideo.onloadedmetadata = () => {
-            log('Metadata OK: ' + localVideo.videoWidth + 'x' + localVideo.videoHeight);
-            localVideo.play().then(() => {
-                log('Play OK!');
-            }).catch(e => {
-                log('Play ERREUR: ' + e.name + ' ' + e.message);
-            });
+        // Stocker reference
+        this.localVideoEl = video;
+
+        video.onloadedmetadata = () => {
+            log('Metadata: ' + video.videoWidth + 'x' + video.videoHeight);
+            video.play().then(() => log('Play OK')).catch(e => log('Play ERR: ' + e.message));
         };
 
-        localVideo.onerror = (e) => {
-            log('Video ERREUR: ' + (e.message || e));
-        };
+        video.onerror = () => log('Video ERROR');
 
-        // Forcer play apres 2 secondes si pas deja en cours
+        // Forcer play + diagnostic apres 2s
         setTimeout(() => {
-            if (localVideo.paused) {
-                log('Forçage play après 2s...');
-                localVideo.play().catch(e => log('Play forcé ERREUR: ' + e.name));
+            log('2s: ready=' + video.readyState + ' paused=' + video.paused + ' vid=' + video.videoWidth + 'x' + video.videoHeight);
+            log('2s: el=' + video.offsetWidth + 'x' + video.offsetHeight + ' parent=' + grid.offsetWidth + 'x' + grid.offsetHeight);
+            if (video.paused && video.srcObject) {
+                video.play().catch(e => log('Retry play: ' + e.message));
             }
-            log('État: readyState=' + localVideo.readyState + ' paused=' + localVideo.paused + ' size=' + localVideo.videoWidth + 'x' + localVideo.videoHeight);
-            log('Cell: ' + localCell.offsetWidth + 'x' + localCell.offsetHeight);
         }, 2000);
 
         if (!this.camEnabled) {
@@ -974,17 +982,11 @@ const VideoChat = {
         }
 
         // Reset UI
-        // Supprimer les cellules distantes
-        document.querySelectorAll('#videoGrid [data-peer]').forEach(el => {
-            if (el.id !== 'localVideoCell') el.remove();
-        });
-        // Cacher la cellule locale
-        const lc = document.getElementById('localVideoCell');
-        if (lc) {
-            const lv = document.getElementById('localVideoEl');
-            if (lv) lv.srcObject = null;
-            lc.style.display = 'none';
+        if (this.localVideoEl) {
+            this.localVideoEl.srcObject = null;
+            this.localVideoEl = null;
         }
+        document.getElementById('videoGrid').innerHTML = '';
         document.getElementById('videoGrid').style.display = 'none';
         document.getElementById('videoStatus').style.display = 'none';
         document.getElementById('videoStatus').textContent = '';
