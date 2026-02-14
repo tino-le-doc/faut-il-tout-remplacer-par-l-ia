@@ -55,8 +55,8 @@
         .video-grid.p3,.video-grid.p4{grid-template-columns:1fr 1fr}
         .video-grid.p5,.video-grid.p6{grid-template-columns:1fr 1fr 1fr}
 
-        .video-cell{position:relative;background:#111;border-radius:12px;overflow:hidden;width:100%;padding-bottom:56.25%}
-        .video-cell video{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block}
+        .video-cell{position:relative;background:#111;border-radius:12px;overflow:hidden;width:100%;min-height:200px}
+        .video-cell video{width:100%;height:100%;min-height:200px;object-fit:cover;display:block;background:#000}
         .video-cell.local{border:2px solid var(--cyan)}
         .video-cell .name-tag{position:absolute;bottom:8px;left:8px;padding:4px 10px;background:rgba(0,0,0,0.7);border-radius:8px;font-size:0.75rem;color:#fff;display:flex;align-items:center;gap:6px;z-index:2}
         .video-cell .name-tag .mic-off{color:var(--red)}
@@ -571,9 +571,12 @@ const VideoChat = {
         this.addVideoCell(this.myVideoId, user || 'Moi', true);
         const localVideo = document.querySelector(`[data-peer="${this.myVideoId}"] video`);
         if (localVideo) {
-            localVideo.srcObject = this.localStream;
             localVideo.muted = true;
+            localVideo.srcObject = this.localStream;
+            console.log('Local stream tracks:', this.localStream.getTracks().map(t => t.kind + ':' + t.readyState));
             this.playVideo(localVideo);
+        } else {
+            console.error('Local video element not found!');
         }
         if (!this.camEnabled) {
             this.updateVideoOverlay(this.myVideoId, true);
@@ -765,20 +768,38 @@ const VideoChat = {
         return pc;
     },
 
-    // Play video avec retry pour Android
-    playVideo(videoEl, retries = 3) {
+    // Play video avec retry et detection metadata
+    playVideo(videoEl, retries = 5) {
         if (!videoEl) return;
+        // Empecher ouverture en fenetre externe
+        videoEl.controls = false;
+        videoEl.playsInline = true;
+        videoEl.setAttribute('playsinline', '');
+        videoEl.setAttribute('webkit-playsinline', '');
+
         const attempt = () => {
-            videoEl.play().catch(err => {
-                console.warn('play() failed:', err.name, '- retries left:', retries);
-                if (retries > 0) {
-                    retries--;
-                    setTimeout(attempt, 500);
-                }
-            });
+            const p = videoEl.play();
+            if (p && p.catch) {
+                p.catch(err => {
+                    console.warn('play() failed:', err.name, '- retries left:', retries);
+                    if (retries > 0) {
+                        retries--;
+                        setTimeout(attempt, 500);
+                    }
+                });
+            }
         };
-        // Premier essai immediat, puis avec delai
-        attempt();
+        // Attendre que le stream soit pret
+        if (videoEl.readyState >= 2) {
+            attempt();
+        } else {
+            videoEl.addEventListener('loadedmetadata', () => {
+                console.log('Video metadata loaded, dimensions:', videoEl.videoWidth, 'x', videoEl.videoHeight);
+                attempt();
+            }, { once: true });
+            // Fallback si loadedmetadata ne se declenche pas
+            setTimeout(attempt, 1000);
+        }
     },
 
     addVideoCell(peerId, name, isLocal) {
@@ -804,8 +825,11 @@ const VideoChat = {
         video.playsInline = true;
         video.setAttribute('playsinline', '');
         video.setAttribute('webkit-playsinline', '');
-        // Styles inline en fallback pour Android
-        video.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;';
+        video.setAttribute('disablePictureInPicture', '');
+        video.setAttribute('disableRemotePlayback', '');
+        video.setAttribute('x-webkit-airplay', 'deny');
+        video.controls = false;
+        video.style.cssText = 'width:100%;height:100%;min-height:200px;object-fit:cover;display:block;background:#000;';
         if (isLocal) video.muted = true;
         // Inserer la video en premier enfant
         cell.insertBefore(video, cell.firstChild);
