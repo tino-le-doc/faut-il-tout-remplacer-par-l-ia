@@ -49,18 +49,18 @@
         .video-join-btn:hover{transform:scale(1.05);box-shadow:0 10px 30px rgba(0,255,136,0.3)}
         .video-join-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
 
-        .video-grid{display:none;padding:10px;gap:10px;background:#000;min-height:300px}
-        .video-grid.active{display:grid;grid-template-columns:1fr;align-content:start}
+        .video-grid{display:none;padding:10px;gap:10px;background:#000}
+        .video-grid.active{display:grid;grid-template-columns:1fr}
         .video-grid.p2{grid-template-columns:1fr 1fr}
         .video-grid.p3,.video-grid.p4{grid-template-columns:1fr 1fr}
         .video-grid.p5,.video-grid.p6{grid-template-columns:1fr 1fr 1fr}
 
-        .video-cell{position:relative;background:#111;border-radius:12px;overflow:hidden;aspect-ratio:16/9}
-        .video-cell video{width:100%;height:100%;object-fit:cover;display:block}
+        .video-cell{position:relative;background:#111;border-radius:12px;overflow:hidden;width:100%;min-height:200px}
+        .video-cell video{width:100%;height:100%;min-height:200px;object-fit:cover;display:block;background:#000}
         .video-cell.local{border:2px solid var(--cyan)}
-        .video-cell .name-tag{position:absolute;bottom:8px;left:8px;padding:4px 10px;background:rgba(0,0,0,0.7);border-radius:8px;font-size:0.75rem;color:#fff;display:flex;align-items:center;gap:6px}
+        .video-cell .name-tag{position:absolute;bottom:8px;left:8px;padding:4px 10px;background:rgba(0,0,0,0.7);border-radius:8px;font-size:0.75rem;color:#fff;display:flex;align-items:center;gap:6px;z-index:2}
         .video-cell .name-tag .mic-off{color:var(--red)}
-        .video-cell .no-video{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a2e,#0a0a0f)}
+        .video-cell .no-video{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a2e,#0a0a0f);z-index:1}
         .video-cell .no-video .av-initial{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--orange),var(--yellow));display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;color:var(--bg)}
 
         .video-controls{display:none;padding:15px;background:rgba(0,0,0,0.8);justify-content:center;gap:12px;align-items:center}
@@ -178,7 +178,8 @@
 
             /* VIDEO */
             .video-grid.p2,.video-grid.p3,.video-grid.p4,.video-grid.p5,.video-grid.p6{grid-template-columns:1fr 1fr}
-            .video-grid{min-height:200px;gap:6px;padding:6px}
+            .video-grid{gap:6px;padding:6px}
+            .video-cell{padding-bottom:56.25%}
             .video-cell .no-video .av-initial{width:45px;height:45px;font-size:1.1rem}
             .video-join{padding:25px 15px}
             .video-join .icon{font-size:2.5rem}
@@ -570,10 +571,12 @@ const VideoChat = {
         this.addVideoCell(this.myVideoId, user || 'Moi', true);
         const localVideo = document.querySelector(`[data-peer="${this.myVideoId}"] video`);
         if (localVideo) {
+            localVideo.muted = true;
             localVideo.srcObject = this.localStream;
-            localVideo.muted = true; // Eviter l'echo
-            // Android necessite un play() explicite
-            localVideo.play().catch(() => {});
+            console.log('Local stream tracks:', this.localStream.getTracks().map(t => t.kind + ':' + t.readyState));
+            this.playVideo(localVideo);
+        } else {
+            console.error('Local video element not found!');
         }
         if (!this.camEnabled) {
             this.updateVideoOverlay(this.myVideoId, true);
@@ -745,8 +748,7 @@ const VideoChat = {
                 const videoEl = document.querySelector(`[data-peer="${peerId}"] video`);
                 if (videoEl) {
                     videoEl.srcObject = stream;
-                    // Android/iOS necessite play() explicite
-                    videoEl.play().catch(() => {});
+                    this.playVideo(videoEl);
                 }
             }
         };
@@ -764,6 +766,40 @@ const VideoChat = {
         };
 
         return pc;
+    },
+
+    // Play video avec retry et detection metadata
+    playVideo(videoEl, retries = 5) {
+        if (!videoEl) return;
+        // Empecher ouverture en fenetre externe
+        videoEl.controls = false;
+        videoEl.playsInline = true;
+        videoEl.setAttribute('playsinline', '');
+        videoEl.setAttribute('webkit-playsinline', '');
+
+        const attempt = () => {
+            const p = videoEl.play();
+            if (p && p.catch) {
+                p.catch(err => {
+                    console.warn('play() failed:', err.name, '- retries left:', retries);
+                    if (retries > 0) {
+                        retries--;
+                        setTimeout(attempt, 500);
+                    }
+                });
+            }
+        };
+        // Attendre que le stream soit pret
+        if (videoEl.readyState >= 2) {
+            attempt();
+        } else {
+            videoEl.addEventListener('loadedmetadata', () => {
+                console.log('Video metadata loaded, dimensions:', videoEl.videoWidth, 'x', videoEl.videoHeight);
+                attempt();
+            }, { once: true });
+            // Fallback si loadedmetadata ne se declenche pas
+            setTimeout(attempt, 1000);
+        }
     },
 
     addVideoCell(peerId, name, isLocal) {
@@ -789,6 +825,11 @@ const VideoChat = {
         video.playsInline = true;
         video.setAttribute('playsinline', '');
         video.setAttribute('webkit-playsinline', '');
+        video.setAttribute('disablePictureInPicture', '');
+        video.setAttribute('disableRemotePlayback', '');
+        video.setAttribute('x-webkit-airplay', 'deny');
+        video.controls = false;
+        video.style.cssText = 'width:100%;height:100%;min-height:200px;object-fit:cover;display:block;background:#000;';
         if (isLocal) video.muted = true;
         // Inserer la video en premier enfant
         cell.insertBefore(video, cell.firstChild);
