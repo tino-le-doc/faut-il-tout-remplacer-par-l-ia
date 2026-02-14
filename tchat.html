@@ -526,6 +526,19 @@ const VideoChat = {
             return;
         }
 
+        // Verifier la limite de 6 participants
+        try {
+            const snap = await db.ref('videoRoom/participants').once('value');
+            if (snap.exists() && Object.keys(snap.val()).length >= 6) {
+                alert('L\'appel est complet (6 participants max). Réessayez plus tard.');
+                joinBtn.disabled = false;
+                joinBtn.textContent = '📹 Rejoindre l\'appel';
+                return;
+            }
+        } catch (e) {
+            console.warn('Erreur vérification participants:', e);
+        }
+
         try {
             // Contraintes simples pour Android
             this.localStream = await navigator.mediaDevices.getUserMedia({
