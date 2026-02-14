@@ -37,32 +37,45 @@
 
         .video-section{background:var(--glass);border:1px solid rgba(255,255,255,0.1);border-radius:20px;overflow:hidden;margin:10px 0}
         .video-header{padding:15px 20px;background:linear-gradient(135deg,rgba(255,68,68,0.2),rgba(255,149,0,0.2));border-bottom:1px solid rgba(255,255,255,0.1)}
-        .video-header h2{font-family:'Syne',sans-serif;font-size:1.1rem;display:flex;align-items:center;gap:10px;margin-bottom:15px}
+        .video-header h2{font-family:'Syne',sans-serif;font-size:1.1rem;display:flex;align-items:center;gap:10px;margin-bottom:10px}
         .video-header h2 .rec{width:12px;height:12px;background:var(--red);border-radius:50%;animation:recPulse 1s infinite}
         @keyframes recPulse{0%,100%{opacity:1;box-shadow:0 0 10px var(--red)}50%{opacity:0.5;box-shadow:0 0 20px var(--red)}}
-        
-        .video-buttons{display:flex;gap:10px;flex-wrap:wrap}
-        .video-btn{padding:15px 25px;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;gap:10px;text-decoration:none;justify-content:center;flex:1;min-width:200px}
-        .video-btn.join{background:linear-gradient(135deg,var(--green),#00cc6a);color:var(--bg)}
-        .video-btn.external{background:linear-gradient(135deg,var(--cyan),var(--magenta));color:white}
-        .video-btn:hover{transform:scale(1.02);box-shadow:0 10px 30px rgba(0,255,136,0.3)}
-        
-        .video-container{position:relative;width:100%;background:#000;display:none}
-        .video-container.active{display:block}
-        .video-container iframe{width:100%;height:500px;border:none}
-        
-        .video-placeholder{padding:40px 20px;text-align:center;background:linear-gradient(135deg,#1a1a2e,#0a0a0f)}
-        .video-placeholder .icon{font-size:4rem;margin-bottom:20px}
-        .video-placeholder h3{font-family:'Syne',sans-serif;font-size:1.3rem;margin-bottom:10px;color:var(--text)}
-        .video-placeholder p{color:rgba(255,255,255,0.6);margin-bottom:20px;line-height:1.6}
+
+        .video-join{padding:40px 20px;text-align:center;background:linear-gradient(135deg,#1a1a2e,#0a0a0f)}
+        .video-join .icon{font-size:4rem;margin-bottom:20px}
+        .video-join h3{font-family:'Syne',sans-serif;font-size:1.3rem;margin-bottom:10px;color:var(--text)}
+        .video-join p{color:rgba(255,255,255,0.6);margin-bottom:20px;line-height:1.6}
+        .video-join-btn{padding:15px 35px;border:none;border-radius:15px;font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;background:linear-gradient(135deg,var(--green),#00cc6a);color:var(--bg);transition:all 0.3s;display:inline-flex;align-items:center;gap:10px}
+        .video-join-btn:hover{transform:scale(1.05);box-shadow:0 10px 30px rgba(0,255,136,0.3)}
+        .video-join-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+
+        .video-grid{display:none;padding:10px;gap:10px;background:#000;min-height:300px}
+        .video-grid.active{display:grid;grid-template-columns:1fr;align-content:start}
+        .video-grid.p2{grid-template-columns:1fr 1fr}
+        .video-grid.p3,.video-grid.p4{grid-template-columns:1fr 1fr}
+        .video-grid.p5,.video-grid.p6{grid-template-columns:1fr 1fr 1fr}
+
+        .video-cell{position:relative;background:#111;border-radius:12px;overflow:hidden;aspect-ratio:16/9}
+        .video-cell video{width:100%;height:100%;object-fit:cover;display:block}
+        .video-cell.local{border:2px solid var(--cyan)}
+        .video-cell .name-tag{position:absolute;bottom:8px;left:8px;padding:4px 10px;background:rgba(0,0,0,0.7);border-radius:8px;font-size:0.75rem;color:#fff;display:flex;align-items:center;gap:6px}
+        .video-cell .name-tag .mic-off{color:var(--red)}
+        .video-cell .no-video{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a2e,#0a0a0f)}
+        .video-cell .no-video .av-initial{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--orange),var(--yellow));display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;color:var(--bg)}
+
+        .video-controls{display:none;padding:15px;background:rgba(0,0,0,0.8);justify-content:center;gap:12px;align-items:center}
+        .video-controls.active{display:flex}
+        .vc-btn{width:50px;height:50px;border:none;border-radius:50%;font-size:1.3rem;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.15);color:#fff}
+        .vc-btn:hover{transform:scale(1.1)}
+        .vc-btn.off{background:rgba(255,68,68,0.3);color:var(--red)}
+        .vc-btn.leave{background:var(--red);color:#fff}
+        .vc-btn.leave:hover{background:#ff2222}
+        .video-count{font-size:0.8rem;color:rgba(255,255,255,0.6);display:flex;align-items:center;gap:5px}
 
         .video-info{padding:20px;background:rgba(255,255,255,0.02)}
         .video-info h4{color:var(--cyan);margin-bottom:10px;font-size:0.95rem}
         .video-info ul{font-size:0.85rem;color:rgba(255,255,255,0.6);padding-left:20px;line-height:1.8}
         .video-info li{margin-bottom:5px}
-
-        .device-notice{background:rgba(0,245,255,0.1);border:1px solid var(--cyan);border-radius:10px;padding:12px 15px;margin:15px 0;font-size:0.85rem;color:var(--cyan);display:flex;align-items:center;gap:10px}
-        .device-notice.mobile{background:rgba(255,149,0,0.1);border-color:var(--orange);color:var(--orange)}
 
         .login{background:var(--glass);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:30px;text-align:center;margin:20px 0}
         .login h2{font-family:'Syne',sans-serif;color:var(--cyan);margin-bottom:20px}
@@ -164,11 +177,15 @@
             .tab-btn{padding:10px 15px;font-size:0.85rem;flex:1;justify-content:center}
 
             /* VIDEO */
-            .video-container iframe{height:250px}
-            .video-btn{min-width:100%;padding:14px 20px;font-size:0.95rem}
-            .video-placeholder{padding:25px 15px}
-            .video-placeholder .icon{font-size:2.5rem}
-            .video-placeholder h3{font-size:1.1rem}
+            .video-grid.p2,.video-grid.p3,.video-grid.p4,.video-grid.p5,.video-grid.p6{grid-template-columns:1fr 1fr}
+            .video-grid{min-height:200px;gap:6px;padding:6px}
+            .video-cell .no-video .av-initial{width:45px;height:45px;font-size:1.1rem}
+            .video-join{padding:25px 15px}
+            .video-join .icon{font-size:2.5rem}
+            .video-join h3{font-size:1.1rem}
+            .video-join-btn{padding:14px 28px;font-size:1rem;min-height:48px}
+            .vc-btn{width:50px;height:50px;min-width:50px;min-height:50px}
+            .video-controls{gap:15px;padding:12px}
 
             /* CHAT - prend tout l'espace restant */
             .chat{flex:1;display:flex;flex-direction:column;max-height:none;border-radius:15px;margin:5px 0}
@@ -271,24 +288,27 @@
         <div class="video-section">
             <div class="video-header">
                 <h2><span class="rec"></span> Salon Vidéo - Tino Le Doc</h2>
-                <div class="device-notice" id="deviceNotice">💻 Vous êtes sur ordinateur</div>
-                <div class="video-buttons">
-                    <a href="#" class="video-btn external" id="joinExternal" target="_blank" rel="noopener noreferrer">📱 Ouvrir la vidéo</a>
-                    <button class="video-btn join" id="joinEmbed">🖥️ Rejoindre ici</button>
-                </div>
+                <div class="video-count" id="videoCount">👥 0 en appel</div>
             </div>
-            <div class="video-placeholder" id="videoPlaceholder">
+            <div class="video-join" id="videoJoin">
                 <div class="icon">📹</div>
                 <h3>Rejoignez le salon vidéo !</h3>
-                <p>Discutez en direct avec la communauté</p>
+                <p>Directement dans votre navigateur, sans application.<br>Compatible Android, Mac, Windows.</p>
+                <button class="video-join-btn" id="videoJoinBtn">📹 Rejoindre l'appel</button>
             </div>
-            <div class="video-container" id="videoContainer"></div>
+            <div class="video-grid" id="videoGrid"></div>
+            <div class="video-controls" id="videoControls">
+                <button class="vc-btn" id="vcMic" title="Micro">🎤</button>
+                <button class="vc-btn" id="vcCam" title="Caméra">📹</button>
+                <button class="vc-btn leave" id="vcLeave" title="Quitter">📞</button>
+            </div>
             <div class="video-info">
                 <h4>💡 Infos :</h4>
                 <ul>
-                    <li>📱 Mobile : ouvrir dans Jitsi</li>
-                    <li>🖥️ PC : rejoindre ici ou nouvel onglet</li>
-                    <li>🔒 Connexion chiffrée</li>
+                    <li>📱 Fonctionne sur Android, iPhone, Mac, Windows</li>
+                    <li>🌐 Aucune application requise, tout dans le navigateur</li>
+                    <li>🔒 Connexion chiffrée (WebRTC)</li>
+                    <li>👥 Jusqu'a 6 participants simultanés</li>
                 </ul>
             </div>
         </div>
@@ -443,22 +463,6 @@ const Validator = {
 
 // ==================== DÉTECTION MOBILE ====================
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-const ROOM_NAME = 'TinoLeDoc-DebatIA';
-const JITSI_URL = `https://meet.jit.si/${ROOM_NAME}`;
-
-const deviceNotice = document.getElementById('deviceNotice');
-const joinExternal = document.getElementById('joinExternal');
-const joinEmbed = document.getElementById('joinEmbed');
-
-if (isMobile) {
-    deviceNotice.className = 'device-notice mobile';
-    deviceNotice.innerHTML = '📱 Mobile détecté';
-    joinEmbed.style.display = 'none';
-} else {
-    deviceNotice.innerHTML = '💻 Ordinateur détecté';
-}
-
-joinExternal.href = JITSI_URL;
 
 // ==================== TABS ====================
 document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -470,27 +474,409 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     });
 });
 
-// ==================== VIDEO ====================
-joinEmbed.addEventListener('click', function() {
-    const container = document.getElementById('videoContainer');
-    const placeholder = document.getElementById('videoPlaceholder');
-    
-    placeholder.style.display = 'none';
-    container.classList.add('active');
-    
-    // Iframe avec sandbox restrictif
-    container.innerHTML = `
-        <iframe 
-            src="${JITSI_URL}#config.prejoinPageEnabled=false"
-            allow="camera; microphone; fullscreen; display-capture"
-            sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-            allowfullscreen="true"
-            style="width:100%;height:500px;border:none;">
-        </iframe>
-    `;
-    
-    this.textContent = '✅ Connecté';
-    this.disabled = true;
+// ==================== WEBRTC VIDEO ====================
+const VideoChat = {
+    localStream: null,
+    peers: {},           // { oderId: RTCPeerConnection }
+    remoteStreams: {},    // { oderId: MediaStream }
+    myVideoId: null,
+    micEnabled: true,
+    camEnabled: true,
+    roomRef: null,
+    participantsRef: null,
+    signalsRef: null,
+    joined: false,
+
+    STUN_SERVERS: {
+        iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' },
+            { urls: 'stun:stun2.l.google.com:19302' }
+        ]
+    },
+
+    async joinCall() {
+        if (this.joined) return;
+        const joinBtn = document.getElementById('videoJoinBtn');
+        joinBtn.disabled = true;
+        joinBtn.textContent = 'Connexion...';
+
+        try {
+            // Demander camera + micro
+            this.localStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+                audio: true
+            });
+        } catch (err) {
+            // Si pas de camera, essayer juste audio
+            try {
+                this.localStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+                this.camEnabled = false;
+            } catch (err2) {
+                alert('Impossible d\'accéder à la caméra ou au micro. Vérifiez les permissions.');
+                joinBtn.disabled = false;
+                joinBtn.textContent = '📹 Rejoindre l\'appel';
+                return;
+            }
+        }
+
+        this.joined = true;
+        this.myVideoId = 'v_' + crypto.getRandomValues(new Uint32Array(1))[0].toString(36) + '_' + Date.now();
+
+        // Afficher l'UI
+        document.getElementById('videoJoin').style.display = 'none';
+        document.getElementById('videoGrid').classList.add('active');
+        document.getElementById('videoControls').classList.add('active');
+
+        // Ajouter la video locale
+        this.addVideoCell(this.myVideoId, user || 'Moi', true);
+        const localVideo = document.querySelector(`[data-peer="${this.myVideoId}"] video`);
+        if (localVideo) {
+            localVideo.srcObject = this.localStream;
+            localVideo.muted = true; // Eviter l'echo
+        }
+        if (!this.camEnabled) {
+            this.updateVideoOverlay(this.myVideoId, true);
+        }
+
+        // Firebase signaling
+        this.roomRef = db.ref('videoRoom');
+        this.participantsRef = this.roomRef.child('participants');
+        this.signalsRef = this.roomRef.child('signals');
+
+        // S'enregistrer comme participant
+        const myRef = this.participantsRef.child(this.myVideoId);
+        myRef.set({
+            name: user || 'Anonyme',
+            joinedAt: Date.now(),
+            mic: this.micEnabled,
+            cam: this.camEnabled
+        });
+        myRef.onDisconnect().remove();
+
+        // Nettoyage des signaux a la deconnexion
+        this.signalsRef.child(this.myVideoId).onDisconnect().remove();
+
+        // Ecouter les nouveaux participants
+        this.participantsRef.on('child_added', snap => {
+            const peerId = snap.key;
+            if (peerId === this.myVideoId) return;
+            const data = snap.val();
+            this.addVideoCell(peerId, data.name, false);
+            this.updateGridLayout();
+            this.updateParticipantCount();
+            // Celui avec le plus grand ID cree l'offre
+            if (this.myVideoId > peerId) {
+                this.createOffer(peerId);
+            }
+        });
+
+        // Ecouter les departs
+        this.participantsRef.on('child_removed', snap => {
+            const peerId = snap.key;
+            this.removePeer(peerId);
+            this.updateGridLayout();
+            this.updateParticipantCount();
+        });
+
+        // Ecouter les mises a jour (mic/cam)
+        this.participantsRef.on('child_changed', snap => {
+            const peerId = snap.key;
+            if (peerId === this.myVideoId) return;
+            const data = snap.val();
+            const nameTag = document.querySelector(`[data-peer="${peerId}"] .name-tag`);
+            if (nameTag) {
+                nameTag.innerHTML = data.name + (!data.mic ? ' <span class="mic-off">🔇</span>' : '');
+            }
+            if (!data.cam) {
+                this.updateVideoOverlay(peerId, true);
+            } else {
+                this.updateVideoOverlay(peerId, false);
+            }
+        });
+
+        // Ecouter les signaux entrants
+        this.signalsRef.child(this.myVideoId).on('child_added', async snap => {
+            const signal = snap.val();
+            if (!signal) return;
+            try {
+                if (signal.type === 'offer') {
+                    await this.handleOffer(signal.from, signal.sdp);
+                } else if (signal.type === 'answer') {
+                    await this.handleAnswer(signal.from, signal.sdp);
+                } else if (signal.type === 'ice') {
+                    await this.handleIce(signal.from, signal.candidate);
+                }
+            } catch (e) {
+                console.error('Signal error:', e);
+            }
+            // Supprimer le signal traite
+            snap.ref.remove();
+        });
+
+        this.updateParticipantCount();
+        this.updateGridLayout();
+    },
+
+    async createOffer(peerId) {
+        const pc = this.createPeerConnection(peerId);
+        try {
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+            await this.signalsRef.child(peerId).push({
+                type: 'offer',
+                from: this.myVideoId,
+                sdp: offer.sdp
+            });
+        } catch (e) {
+            console.error('Offer error:', e);
+        }
+    },
+
+    async handleOffer(fromId, sdp) {
+        const pc = this.createPeerConnection(fromId);
+        try {
+            await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }));
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+            await this.signalsRef.child(fromId).push({
+                type: 'answer',
+                from: this.myVideoId,
+                sdp: answer.sdp
+            });
+        } catch (e) {
+            console.error('Answer error:', e);
+        }
+    },
+
+    async handleAnswer(fromId, sdp) {
+        const pc = this.peers[fromId];
+        if (pc && pc.signalingState !== 'stable') {
+            try {
+                await pc.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp }));
+            } catch (e) {
+                console.error('Set answer error:', e);
+            }
+        }
+    },
+
+    async handleIce(fromId, candidate) {
+        const pc = this.peers[fromId];
+        if (pc && candidate) {
+            try {
+                await pc.addIceCandidate(new RTCIceCandidate(candidate));
+            } catch (e) {
+                console.error('ICE error:', e);
+            }
+        }
+    },
+
+    createPeerConnection(peerId) {
+        if (this.peers[peerId]) {
+            this.peers[peerId].close();
+        }
+
+        const pc = new RTCPeerConnection(this.STUN_SERVERS);
+        this.peers[peerId] = pc;
+
+        // Ajouter les tracks locaux
+        if (this.localStream) {
+            this.localStream.getTracks().forEach(track => {
+                pc.addTrack(track, this.localStream);
+            });
+        }
+
+        // ICE candidates
+        pc.onicecandidate = event => {
+            if (event.candidate) {
+                this.signalsRef.child(peerId).push({
+                    type: 'ice',
+                    from: this.myVideoId,
+                    candidate: event.candidate.toJSON()
+                });
+            }
+        };
+
+        // Recevoir le flux distant
+        pc.ontrack = event => {
+            const stream = event.streams[0];
+            if (stream) {
+                this.remoteStreams[peerId] = stream;
+                const videoEl = document.querySelector(`[data-peer="${peerId}"] video`);
+                if (videoEl) {
+                    videoEl.srcObject = stream;
+                }
+            }
+        };
+
+        // Gerer la reconnexion
+        pc.onconnectionstatechange = () => {
+            if (pc.connectionState === 'failed') {
+                // Retenter la connexion
+                pc.close();
+                delete this.peers[peerId];
+                if (this.myVideoId > peerId) {
+                    setTimeout(() => this.createOffer(peerId), 1000);
+                }
+            }
+        };
+
+        return pc;
+    },
+
+    addVideoCell(peerId, name, isLocal) {
+        const grid = document.getElementById('videoGrid');
+        if (grid.querySelector(`[data-peer="${peerId}"]`)) return;
+
+        const cell = document.createElement('div');
+        cell.className = 'video-cell' + (isLocal ? ' local' : '');
+        cell.dataset.peer = peerId;
+
+        const initial = (name || '?').charAt(0).toUpperCase();
+
+        cell.innerHTML = `
+            <video autoplay playsinline ${isLocal ? 'muted' : ''}></video>
+            <div class="no-video" style="display:none">
+                <div class="av-initial">${initial}</div>
+            </div>
+            <div class="name-tag">${Validator.sanitize(name)}${isLocal ? ' (vous)' : ''}</div>
+        `;
+        grid.appendChild(cell);
+    },
+
+    updateVideoOverlay(peerId, showOverlay) {
+        const cell = document.querySelector(`[data-peer="${peerId}"]`);
+        if (!cell) return;
+        const overlay = cell.querySelector('.no-video');
+        const video = cell.querySelector('video');
+        if (overlay) overlay.style.display = showOverlay ? 'flex' : 'none';
+        if (video) video.style.opacity = showOverlay ? '0' : '1';
+    },
+
+    removePeer(peerId) {
+        if (this.peers[peerId]) {
+            this.peers[peerId].close();
+            delete this.peers[peerId];
+        }
+        delete this.remoteStreams[peerId];
+        const cell = document.querySelector(`[data-peer="${peerId}"]`);
+        if (cell) cell.remove();
+        // Nettoyer les signaux
+        this.signalsRef.child(peerId).child(this.myVideoId).remove();
+    },
+
+    updateGridLayout() {
+        const grid = document.getElementById('videoGrid');
+        const count = grid.children.length;
+        // Reset classes
+        grid.className = 'video-grid active';
+        if (count >= 2) grid.classList.add('p' + Math.min(count, 6));
+    },
+
+    updateParticipantCount() {
+        this.participantsRef.once('value', snap => {
+            const n = snap.numChildren();
+            document.getElementById('videoCount').textContent = '👥 ' + n + ' en appel';
+        });
+    },
+
+    toggleMic() {
+        if (!this.localStream) return;
+        this.micEnabled = !this.micEnabled;
+        this.localStream.getAudioTracks().forEach(t => t.enabled = this.micEnabled);
+        const btn = document.getElementById('vcMic');
+        btn.textContent = this.micEnabled ? '🎤' : '🔇';
+        btn.classList.toggle('off', !this.micEnabled);
+        // Mettre a jour Firebase
+        if (this.participantsRef && this.myVideoId) {
+            this.participantsRef.child(this.myVideoId).update({ mic: this.micEnabled });
+        }
+    },
+
+    toggleCam() {
+        if (!this.localStream) return;
+        const videoTracks = this.localStream.getVideoTracks();
+        if (videoTracks.length === 0) return;
+        this.camEnabled = !this.camEnabled;
+        videoTracks.forEach(t => t.enabled = this.camEnabled);
+        const btn = document.getElementById('vcCam');
+        btn.textContent = this.camEnabled ? '📹' : '📷';
+        btn.classList.toggle('off', !this.camEnabled);
+        this.updateVideoOverlay(this.myVideoId, !this.camEnabled);
+        if (this.participantsRef && this.myVideoId) {
+            this.participantsRef.child(this.myVideoId).update({ cam: this.camEnabled });
+        }
+    },
+
+    leaveCall() {
+        this.joined = false;
+
+        // Fermer toutes les connexions
+        Object.keys(this.peers).forEach(id => {
+            this.peers[id].close();
+        });
+        this.peers = {};
+        this.remoteStreams = {};
+
+        // Arreter le stream local
+        if (this.localStream) {
+            this.localStream.getTracks().forEach(t => t.stop());
+            this.localStream = null;
+        }
+
+        // Se retirer de Firebase
+        if (this.participantsRef && this.myVideoId) {
+            this.participantsRef.child(this.myVideoId).remove();
+        }
+        if (this.signalsRef && this.myVideoId) {
+            this.signalsRef.child(this.myVideoId).remove();
+        }
+
+        // Detacher les listeners
+        if (this.participantsRef) {
+            this.participantsRef.off();
+        }
+        if (this.signalsRef && this.myVideoId) {
+            this.signalsRef.child(this.myVideoId).off();
+        }
+
+        // Reset UI
+        document.getElementById('videoGrid').innerHTML = '';
+        document.getElementById('videoGrid').classList.remove('active');
+        document.getElementById('videoControls').classList.remove('active');
+        document.getElementById('videoJoin').style.display = 'block';
+        document.getElementById('videoCount').textContent = '👥 0 en appel';
+
+        const joinBtn = document.getElementById('videoJoinBtn');
+        joinBtn.disabled = false;
+        joinBtn.textContent = '📹 Rejoindre l\'appel';
+
+        this.micEnabled = true;
+        this.camEnabled = true;
+        document.getElementById('vcMic').textContent = '🎤';
+        document.getElementById('vcMic').classList.remove('off');
+        document.getElementById('vcCam').textContent = '📹';
+        document.getElementById('vcCam').classList.remove('off');
+    }
+};
+
+// Boutons video
+document.getElementById('videoJoinBtn').addEventListener('click', () => VideoChat.joinCall());
+document.getElementById('vcMic').addEventListener('click', () => VideoChat.toggleMic());
+document.getElementById('vcCam').addEventListener('click', () => VideoChat.toggleCam());
+document.getElementById('vcLeave').addEventListener('click', () => VideoChat.leaveCall());
+
+// Compteur participants video en temps reel
+try {
+    db.ref('videoRoom/participants').on('value', snap => {
+        const n = snap.numChildren();
+        document.getElementById('videoCount').textContent = '👥 ' + n + ' en appel';
+    });
+} catch(e) {}
+
+// Cleanup video a la fermeture
+window.addEventListener('beforeunload', () => {
+    if (VideoChat.joined) VideoChat.leaveCall();
 });
 
 // ==================== FIREBASE ====================
