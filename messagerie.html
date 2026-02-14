@@ -239,11 +239,6 @@
             color: white;
         }
 
-        .conv-avatar.public {
-            background: linear-gradient(135deg, var(--green), var(--cyan));
-            color: var(--bg);
-        }
-
         .online-indicator {
             position: absolute;
             bottom: 2px;
@@ -1147,18 +1142,6 @@
 
             <!-- Conversations Tab -->
             <div class="conversations-list" id="conversationsTab">
-                <!-- Public chat always first -->
-                <div class="conv-item" data-type="public" data-id="public" onclick="openChat('public', 'public')">
-                    <div class="conv-avatar public">🌐</div>
-                    <div class="conv-info">
-                        <div class="conv-name">Tchat Public</div>
-                        <div class="conv-preview">Discuter avec tout le monde</div>
-                    </div>
-                    <div class="conv-meta">
-                        <div class="conv-time" id="publicOnline">0 en ligne</div>
-                    </div>
-                </div>
-
                 <div id="conversationsList">
                     <!-- Filled by JS -->
                 </div>
@@ -1338,7 +1321,6 @@
             loadContacts();
             loadFriendRequests();
             loadConversations();
-            setupPublicChatCount();
             setupTabs();
             setupSearch();
 
@@ -1787,16 +1769,7 @@
             const nameEl = document.getElementById('chatName');
             const statusEl = document.getElementById('chatStatus');
 
-            if (type === 'public') {
-                avatar.className = 'conv-avatar public';
-                avatar.textContent = '🌐';
-                nameEl.textContent = 'Tchat Public';
-                statusEl.textContent = 'Tout le monde peut voir';
-                statusEl.className = 'chat-header-status';
-                document.getElementById('leaveGroupBtn').style.display = 'none';
-
-                loadMessages('chatMessages');
-            } else if (type === 'dm') {
+            if (type === 'dm') {
                 const conv = conversations[id];
                 if (conv) {
                     const otherUserId = conv.participants.find(p => p !== currentUser.uid);
@@ -1901,9 +1874,7 @@
             if (!text || !currentChat) return;
 
             let path;
-            if (currentChatType === 'public') {
-                path = 'chatMessages';
-            } else if (currentChatType === 'dm') {
+            if (currentChatType === 'dm') {
                 path = 'dmMessages/' + currentChat;
             } else if (currentChatType === 'group') {
                 path = 'groupMessages/' + currentChat;
@@ -1955,24 +1926,11 @@
             input.value = '';
         }
 
-        // ==================== PUBLIC CHAT COUNT ====================
-        function setupPublicChatCount() {
-            db.ref('chatUsers').on('value', snapshot => {
-                const count = snapshot.numChildren();
-                document.getElementById('publicOnline').textContent = count + ' en ligne';
-            });
-        }
-
         // ==================== CHAT INFO ====================
         async function openChatInfo() {
             const content = document.getElementById('chatInfoContent');
 
-            if (currentChatType === 'public') {
-                content.innerHTML = `
-                    <h3 style="margin-bottom: 15px;">🌐 Tchat Public</h3>
-                    <p>Ce tchat est accessible à tous les visiteurs du site.</p>
-                `;
-            } else if (currentChatType === 'dm') {
+            if (currentChatType === 'dm') {
                 const conv = conversations[currentChat];
                 if (conv) {
                     const otherUserId = conv.participants.find(p => p !== currentUser.uid);
