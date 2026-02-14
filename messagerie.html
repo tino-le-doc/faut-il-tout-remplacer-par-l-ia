@@ -847,41 +847,254 @@
             font-size: 1.1rem;
         }
 
-        /* Responsive */
+        /* ===== RESPONSIVE MOBILE (Android / iOS) ===== */
         @media (max-width: 768px) {
+            body { height: 100dvh; overflow: hidden; }
+
+            .app-container {
+                flex-direction: column;
+                height: 100dvh;
+            }
+
+            /* Sidebar en overlay plein ecran */
             .sidebar {
                 position: fixed;
                 left: 0;
                 top: 0;
                 bottom: 0;
+                width: 100%;
                 z-index: 100;
                 transform: translateX(-100%);
-                transition: transform 0.3s;
+                transition: transform 0.3s ease;
             }
 
             .sidebar.open {
                 transform: translateX(0);
             }
 
+            /* Overlay sombre derriere la sidebar */
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.6);
+                z-index: 99;
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+            }
+
+            /* Header mobile */
             .mobile-header {
                 display: flex;
-                padding: 15px;
+                align-items: center;
+                padding: 10px 15px;
                 background: var(--bg-secondary);
                 border-bottom: 1px solid var(--glass-border);
+                flex-shrink: 0;
+                gap: 12px;
+                min-height: 50px;
             }
 
+            .mobile-header .icon-btn {
+                width: 44px;
+                height: 44px;
+                font-size: 1.3rem;
+            }
+
+            .mobile-header span {
+                font-family: 'Syne', sans-serif;
+                font-size: 1rem;
+                font-weight: 700;
+            }
+
+            /* Zone de chat plein ecran */
             .chat-area {
                 width: 100%;
+                height: 100dvh;
+                display: flex;
+                flex-direction: column;
             }
 
-            .message {
-                max-width: 85%;
+            /* Chat header mobile */
+            .chat-header {
+                padding: 10px 12px;
+                gap: 10px;
             }
+
+            .chat-header .conv-avatar {
+                width: 36px;
+                height: 36px;
+                font-size: 0.9rem;
+                border-radius: 10px;
+            }
+
+            .chat-header-name { font-size: 0.95rem; }
+            .chat-header-status { font-size: 0.75rem; }
+
+            #mobileBackBtn {
+                display: flex !important;
+                width: 44px;
+                height: 44px;
+                font-size: 1.2rem;
+            }
+
+            /* Messages */
+            .messages-container {
+                flex: 1;
+                min-height: 0;
+                padding: 12px;
+                gap: 10px;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .message { max-width: 85%; }
+
+            .message-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.8rem;
+                border-radius: 8px;
+            }
+
+            .message-content {
+                padding: 10px 12px;
+                border-radius: 14px 14px 14px 4px;
+            }
+
+            .message.own .message-content {
+                border-radius: 14px 14px 4px 14px;
+            }
+
+            .message-sender { font-size: 0.8rem; }
+            .message-text { font-size: 0.92rem; }
+            .message-text img { max-width: 180px; max-height: 120px; }
+            .message-time { font-size: 0.65rem; }
+
+            /* Zone de saisie - fixee en bas */
+            .input-area {
+                padding: 10px 12px;
+                flex-shrink: 0;
+            }
+
+            .input-toolbar { margin-bottom: 8px; }
+
+            .input-toolbar .icon-btn {
+                width: 44px;
+                height: 44px;
+            }
+
+            .input-form { gap: 8px; }
+
+            .input-form input {
+                padding: 12px 16px;
+                font-size: 16px;
+                border-radius: 22px;
+            }
+
+            .input-form button {
+                padding: 12px 16px;
+                font-size: 1.1rem;
+                border-radius: 22px;
+                min-width: 48px;
+                min-height: 48px;
+            }
+
+            /* Boutons tactiles globaux min 44px */
+            .icon-btn {
+                width: 44px;
+                height: 44px;
+                font-size: 1.2rem;
+            }
+
+            .tab-btn {
+                padding: 12px 8px;
+                font-size: 0.8rem;
+                min-height: 44px;
+            }
+
+            /* Sidebar contenu mobile */
+            .sidebar-header { padding: 15px; }
+            .sidebar-header h1 { font-size: 1.1rem; }
+
+            .search-input {
+                padding: 12px 15px;
+                font-size: 16px;
+            }
+
+            .conv-item {
+                padding: 12px;
+                gap: 10px;
+                min-height: 60px;
+            }
+
+            .conv-avatar {
+                width: 44px;
+                height: 44px;
+                font-size: 1.1rem;
+            }
+
+            .conv-name { font-size: 0.9rem; }
+            .conv-preview { font-size: 0.8rem; }
+
+            /* No chat selected */
+            .no-chat { padding: 30px 20px; }
+            .no-chat .icon { font-size: 3rem; }
+            .no-chat h2 { font-size: 1.2rem; }
+            .no-chat p { font-size: 0.9rem; }
+
+            /* Login required */
+            .login-required { padding: 30px 20px; }
+            .login-required .icon { font-size: 3.5rem; }
+            .login-required h1 { font-size: 1.5rem; }
+            .login-required p { font-size: 0.9rem; }
+            .login-required .btn { padding: 14px 30px; font-size: 1rem; min-height: 48px; }
+
+            /* Modals sur mobile */
+            .modal-overlay { padding: 10px; }
+            .modal { border-radius: 15px; max-height: 90vh; }
+            .modal-header { padding: 15px; }
+            .modal-header h2 { font-size: 1rem; }
+            .modal-body { padding: 15px; }
+            .modal-footer { padding: 12px 15px; }
+
+            .form-group input,
+            .form-group textarea {
+                font-size: 16px;
+                padding: 12px 15px;
+            }
+
+            .btn { min-height: 44px; padding: 12px 20px; }
+
+            .user-item { padding: 10px; gap: 10px; }
+            .user-item-actions button { min-height: 36px; min-width: 44px; padding: 8px 14px; }
+        }
+
+        /* Petits ecrans Android */
+        @media (max-width: 380px) {
+            .sidebar-header h1 { font-size: 1rem; }
+            .chat-header-name { font-size: 0.85rem; }
+            .conv-avatar { width: 38px; height: 38px; font-size: 1rem; }
+            .message { max-width: 90%; }
+            .message-avatar { width: 28px; height: 28px; font-size: 0.7rem; }
+        }
+
+        /* Paysage mobile */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .mobile-header { padding: 5px 10px; min-height: 40px; }
+            .chat-header { padding: 8px 12px; }
+            .messages-container { padding: 8px; gap: 6px; }
+            .input-area { padding: 6px 10px; }
         }
 
         @media (min-width: 769px) {
             .mobile-header {
                 display: none;
+            }
+
+            .sidebar-overlay {
+                display: none !important;
             }
         }
     </style>
@@ -900,10 +1113,13 @@
 
     <!-- Main App -->
     <div class="app-container" id="main-content" style="display: none;">
+        <!-- Overlay sidebar mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
         <!-- Mobile Header -->
         <div class="mobile-header">
             <button class="icon-btn" onclick="toggleSidebar()">☰</button>
-            <span style="margin-left: 15px; font-family: 'Syne', sans-serif;">Messagerie</span>
+            <span>Messagerie</span>
         </div>
 
         <!-- Sidebar -->
@@ -1622,7 +1838,7 @@
             });
 
             // Mobile: close sidebar
-            document.getElementById('sidebar').classList.remove('open');
+            closeSidebar();
         }
 
         // ==================== MESSAGES ====================
@@ -1846,7 +2062,37 @@
 
         // ==================== MOBILE ====================
         function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active', sidebar.classList.contains('open'));
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('active');
+        }
+
+        // Gestion du clavier virtuel Android
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        if (isMobile && window.visualViewport) {
+            window.visualViewport.addEventListener('resize', () => {
+                const container = document.getElementById('messagesContainer');
+                if (container) {
+                    setTimeout(() => container.scrollTop = container.scrollHeight, 100);
+                }
+            });
+
+            const msgInput = document.getElementById('messageInput');
+            if (msgInput) {
+                msgInput.addEventListener('focus', () => {
+                    setTimeout(() => {
+                        const container = document.getElementById('messagesContainer');
+                        if (container) container.scrollTop = container.scrollHeight;
+                        msgInput.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                    }, 300);
+                });
+            }
         }
 
         // ==================== UTILITIES ====================
