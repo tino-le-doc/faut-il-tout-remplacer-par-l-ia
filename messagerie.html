@@ -1468,25 +1468,25 @@
                 return;
             }
 
-            // Check if already contact
-            const contactSnap = await db.ref('contacts/' + currentUser.uid + '/' + oderId).once('value');
-            if (contactSnap.exists()) {
-                alert('Déjà dans vos contacts !');
-                return;
+            try {
+                // Vérifie si déjà en contact (lecture autorisée : c'est notre propre noeud)
+                const contactSnap = await db.ref('contacts/' + currentUser.uid + '/' + oderId).once('value');
+                if (contactSnap.exists()) {
+                    alert('Déjà dans vos contacts !');
+                    return;
+                }
+
+                // Envoie la demande (écriture idempotente, pas besoin de vérifier si déjà envoyée)
+                await db.ref('friendRequests/' + oderId + '/' + currentUser.uid).set({
+                    from: currentUser.uid,
+                    timestamp: Date.now()
+                });
+
+                alert('Demande envoyée ! ✅');
+            } catch (err) {
+                console.error('Erreur envoi demande:', err);
+                alert('Erreur lors de l\'envoi de la demande.');
             }
-
-            // Check if request already sent
-            const reqSnap = await db.ref('friendRequests/' + oderId + '/' + currentUser.uid).once('value');
-            if (reqSnap.exists()) {
-                alert('Demande déjà envoyée !');
-                return;
-            }
-
-            await db.ref('friendRequests/' + oderId + '/' + currentUser.uid).set({
-                timestamp: Date.now()
-            });
-
-            alert('Demande envoyée ! ✅');
         }
 
         async function acceptFriendRequest(oderId) {
