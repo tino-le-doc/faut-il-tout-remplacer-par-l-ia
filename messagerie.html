@@ -1515,7 +1515,8 @@
             resultsDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Recherche...</p>';
 
             try {
-                const snapshot = await db.ref('users').once('value');
+                // Utilise le noeud "pseudos" (lecture publique) au lieu de "users" (lecture privée)
+                const snapshot = await db.ref('pseudos').once('value');
 
                 if (!snapshot.exists()) {
                     resultsDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Aucun utilisateur trouvé</p>';
@@ -1526,15 +1527,17 @@
                 let count = 0;
                 snapshot.forEach(child => {
                     if (count >= 10) return;
-                    const user = child.val();
-                    const oderId = child.key;
+                    const pseudo = child.key;    // clé = pseudo en minuscules
+                    const oderId = child.val();  // valeur = uid de l'utilisateur
 
-                    if (oderId !== currentUser.uid && user.pseudo && user.pseudo.toLowerCase().includes(query)) {
+                    if (oderId !== currentUser.uid && pseudo.includes(query)) {
+                        // Affiche le pseudo avec la première lettre en majuscule
+                        const displayPseudo = pseudo.charAt(0).toUpperCase() + pseudo.slice(1);
                         html += `
                             <div class="user-item">
-                                <div class="user-item-avatar">${user.pseudo.charAt(0).toUpperCase()}</div>
+                                <div class="user-item-avatar">${displayPseudo.charAt(0).toUpperCase()}</div>
                                 <div class="user-item-info">
-                                    <div class="user-item-name">${escapeHtml(user.pseudo)}</div>
+                                    <div class="user-item-name">${escapeHtml(displayPseudo)}</div>
                                 </div>
                                 <div class="user-item-actions">
                                     <button class="add" onclick="sendFriendRequest('${oderId}')">➕ Ajouter</button>
