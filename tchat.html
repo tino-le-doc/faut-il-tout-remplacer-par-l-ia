@@ -496,13 +496,70 @@ const VideoChat = {
     signalsRef: null,
     joined: false,
 
-    STUN_SERVERS: {
+    ICE_SERVERS: {
         iceServers: [
             { urls: 'stun:stun.l.google.com:19302' },
             { urls: 'stun:stun1.l.google.com:19302' },
-            { urls: 'stun:stun2.l.google.com:19302' }
-        ]
+            { urls: 'stun:stun2.l.google.com:19302' },
+            { urls: 'stun:stun3.l.google.com:19302' },
+            { urls: 'stun:stun4.l.google.com:19302' },
+            {
+                urls: 'turn:openrelay.metered.ca:80',
+                username: 'openrelayproject',
+                credential: 'openrelayproject'
+            },
+            {
+                urls: 'turn:openrelay.metered.ca:443',
+                username: 'openrelayproject',
+                credential: 'openrelayproject'
+            },
+            {
+                urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+                username: 'openrelayproject',
+                credential: 'openrelayproject'
+            }
+        ],
+        iceCandidatePoolSize: 10
     },
+
+    // Contraintes video HD avec fallback progressif
+    VIDEO_CONSTRAINTS: {
+        high: {
+            width: { ideal: 1280, max: 1920 },
+            height: { ideal: 720, max: 1080 },
+            frameRate: { ideal: 30, max: 30 },
+            facingMode: 'user'
+        },
+        medium: {
+            width: { ideal: 640, max: 1280 },
+            height: { ideal: 480, max: 720 },
+            frameRate: { ideal: 24, max: 30 },
+            facingMode: 'user'
+        },
+        low: {
+            width: { ideal: 320, max: 640 },
+            height: { ideal: 240, max: 480 },
+            frameRate: { ideal: 15, max: 24 },
+            facingMode: 'user'
+        }
+    },
+
+    AUDIO_CONSTRAINTS: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+        sampleRate: 48000,
+        channelCount: 1
+    },
+
+    // Bitrate cibles en kbps
+    BITRATE: {
+        videoMax: 1500,
+        videoMin: 150,
+        audioMax: 64
+    },
+
+    currentQuality: 'high',
 
     async joinCall() {
         if (this.joined) return;
@@ -539,27 +596,41 @@ const VideoChat = {
             console.warn('Erreur vérification participants:', e);
         }
 
-        try {
-            // Contraintes simples pour Android
-            this.localStream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: 'user' },
-                audio: true
-            });
-        } catch (err) {
-            console.warn('Camera+audio failed:', err.name, err.message);
-            // Si pas de camera, essayer juste audio
+        // Essayer HD d'abord, puis degrader progressivement
+        const qualities = ['high', 'medium', 'low'];
+        let streamOk = false;
+        for (const q of qualities) {
             try {
-                this.localStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+                this.localStream = await navigator.mediaDevices.getUserMedia({
+                    video: this.VIDEO_CONSTRAINTS[q],
+                    audio: this.AUDIO_CONSTRAINTS
+                });
+                this.currentQuality = q;
+                streamOk = true;
+                console.log('Video quality:', q, '- tracks:', this.localStream.getVideoTracks()[0]?.getSettings());
+                break;
+            } catch (err) {
+                console.warn('getUserMedia failed at quality', q, ':', err.name);
+            }
+        }
+        if (!streamOk) {
+            // Derniere tentative : audio seul
+            try {
+                this.localStream = await navigator.mediaDevices.getUserMedia({
+                    video: false,
+                    audio: this.AUDIO_CONSTRAINTS
+                });
                 this.camEnabled = false;
+                streamOk = true;
             } catch (err2) {
                 console.error('Audio-only failed:', err2.name, err2.message);
                 let msg = 'Impossible d\'accéder à la caméra ou au micro.\n\n';
-                if (err.name === 'NotAllowedError' || err2.name === 'NotAllowedError') {
+                if (err2.name === 'NotAllowedError') {
                     msg += 'Autorisez l\'accès dans les paramètres de votre navigateur.';
-                } else if (err.name === 'NotFoundError' || err2.name === 'NotFoundError') {
+                } else if (err2.name === 'NotFoundError') {
                     msg += 'Aucune caméra ou micro détecté sur cet appareil.';
                 } else {
-                    msg += 'Erreur : ' + (err.message || err.name);
+                    msg += 'Erreur : ' + (err2.message || err2.name);
                 }
                 alert(msg);
                 joinBtn.disabled = false;
@@ -587,7 +658,7 @@ const VideoChat = {
         video.setAttribute('playsinline', '');
         video.setAttribute('webkit-playsinline', '');
         video.controls = false;
-        video.style.cssText = 'display:block;width:90vw;max-width:800px;height:auto;aspect-ratio:3/4;object-fit:cover;background:#222;border-radius:12px;';
+        video.style.cssText = 'display:block;width:90vw;max-width:800px;height:auto;aspect-ratio:16/9;object-fit:cover;background:#222;border-radius:12px;';
 
         video.srcObject = this.localStream;
 
@@ -606,6 +677,9 @@ const VideoChat = {
                 video.play().catch(() => {});
             }
         }, 2000);
+
+        // Demarrer le monitoring de qualite
+        this.startQualityMonitor();
 
         if (!this.camEnabled) {
             this.updateVideoOverlay(this.myVideoId, true);
@@ -748,13 +822,19 @@ const VideoChat = {
             this.peers[peerId].close();
         }
 
-        const pc = new RTCPeerConnection(this.STUN_SERVERS);
+        const pc = new RTCPeerConnection(this.ICE_SERVERS);
         this.peers[peerId] = pc;
 
-        // Ajouter les tracks locaux
+        // Ajouter les tracks locaux avec parametres de qualite
         if (this.localStream) {
             this.localStream.getTracks().forEach(track => {
-                pc.addTrack(track, this.localStream);
+                const sender = pc.addTrack(track, this.localStream);
+                // Appliquer les limites de bitrate
+                if (track.kind === 'video') {
+                    this.applyBitrateLimit(sender, 'video');
+                } else if (track.kind === 'audio') {
+                    this.applyBitrateLimit(sender, 'audio');
+                }
             });
         }
 
@@ -785,7 +865,6 @@ const VideoChat = {
         // Gerer la reconnexion
         pc.onconnectionstatechange = () => {
             if (pc.connectionState === 'failed') {
-                // Retenter la connexion
                 pc.close();
                 delete this.peers[peerId];
                 if (this.myVideoId > peerId) {
@@ -795,6 +874,113 @@ const VideoChat = {
         };
 
         return pc;
+    },
+
+    // Appliquer limite de bitrate sur un sender
+    async applyBitrateLimit(sender, kind) {
+        try {
+            const params = sender.getParameters();
+            if (!params.encodings || params.encodings.length === 0) {
+                params.encodings = [{}];
+            }
+            if (kind === 'video') {
+                params.encodings[0].maxBitrate = this.BITRATE.videoMax * 1000;
+                params.encodings[0].scaleResolutionDownBy = 1.0;
+                // Prioriser la fluidite
+                params.degradationPreference = 'balanced';
+            } else if (kind === 'audio') {
+                params.encodings[0].maxBitrate = this.BITRATE.audioMax * 1000;
+            }
+            await sender.setParameters(params);
+        } catch (e) {
+            console.warn('Bitrate limit not supported:', e.message);
+        }
+    },
+
+    // Surveillance qualite reseau et adaptation
+    _qualityInterval: null,
+    startQualityMonitor() {
+        if (this._qualityInterval) clearInterval(this._qualityInterval);
+        this._qualityInterval = setInterval(() => this.checkNetworkQuality(), 5000);
+    },
+
+    stopQualityMonitor() {
+        if (this._qualityInterval) {
+            clearInterval(this._qualityInterval);
+            this._qualityInterval = null;
+        }
+    },
+
+    async checkNetworkQuality() {
+        for (const [peerId, pc] of Object.entries(this.peers)) {
+            try {
+                const stats = await pc.getStats();
+                stats.forEach(report => {
+                    if (report.type === 'outbound-rtp' && report.kind === 'video') {
+                        // Detecter perte de paquets
+                        const packetsLost = report.packetsLost || 0;
+                        const packetsSent = report.packetsSent || 1;
+                        const lossRate = packetsLost / (packetsSent + packetsLost);
+
+                        if (lossRate > 0.1 && this.currentQuality !== 'low') {
+                            // Degrader la qualite si trop de pertes
+                            this.downgradeQuality();
+                        } else if (lossRate < 0.02 && this.currentQuality !== 'high') {
+                            // Ameliorer si le reseau est bon
+                            this.upgradeQuality();
+                        }
+                    }
+                });
+            } catch (e) {
+                // Stats non disponibles
+            }
+        }
+    },
+
+    async downgradeQuality() {
+        const levels = ['high', 'medium', 'low'];
+        const idx = levels.indexOf(this.currentQuality);
+        if (idx < levels.length - 1) {
+            this.currentQuality = levels[idx + 1];
+            console.log('Qualite video degradee:', this.currentQuality);
+            await this.applyVideoConstraints(this.currentQuality);
+        }
+    },
+
+    async upgradeQuality() {
+        const levels = ['high', 'medium', 'low'];
+        const idx = levels.indexOf(this.currentQuality);
+        if (idx > 0) {
+            this.currentQuality = levels[idx - 1];
+            console.log('Qualite video amelioree:', this.currentQuality);
+            await this.applyVideoConstraints(this.currentQuality);
+        }
+    },
+
+    async applyVideoConstraints(quality) {
+        if (!this.localStream) return;
+        const videoTrack = this.localStream.getVideoTracks()[0];
+        if (!videoTrack) return;
+        try {
+            const constraints = this.VIDEO_CONSTRAINTS[quality];
+            await videoTrack.applyConstraints(constraints);
+            // Mettre a jour le bitrate sur tous les peers
+            const bitrateMap = { high: 1500, medium: 800, low: 300 };
+            for (const pc of Object.values(this.peers)) {
+                const senders = pc.getSenders();
+                for (const sender of senders) {
+                    if (sender.track && sender.track.kind === 'video') {
+                        const params = sender.getParameters();
+                        if (params.encodings && params.encodings.length > 0) {
+                            params.encodings[0].maxBitrate = (bitrateMap[quality] || 800) * 1000;
+                            await sender.setParameters(params);
+                        }
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('applyConstraints error:', e.message);
+        }
     },
 
     // Play video avec retry et detection metadata
@@ -849,7 +1035,7 @@ const VideoChat = {
         video.setAttribute('playsinline', '');
         video.setAttribute('webkit-playsinline', '');
         video.controls = false;
-        video.style.cssText = 'display:block;width:90vw;max-width:800px;height:auto;aspect-ratio:3/4;object-fit:cover;background:#111;';
+        video.style.cssText = 'display:block;width:90vw;max-width:800px;height:auto;aspect-ratio:16/9;object-fit:cover;background:#111;';
         if (isLocal) video.muted = true;
         cell.appendChild(video);
 
@@ -942,6 +1128,7 @@ const VideoChat = {
 
     leaveCall() {
         this.joined = false;
+        this.stopQualityMonitor();
 
         // Fermer toutes les connexions
         Object.keys(this.peers).forEach(id => {
