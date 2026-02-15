@@ -1514,34 +1514,41 @@
 
             resultsDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Recherche...</p>';
 
-            const snapshot = await db.ref('users').orderByChild('pseudo').startAt(query).endAt(query + '\uf8ff').limitToFirst(10).once('value');
+            try {
+                const snapshot = await db.ref('users').once('value');
 
-            if (!snapshot.exists()) {
-                resultsDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Aucun utilisateur trouvé</p>';
-                return;
-            }
-
-            let html = '';
-            snapshot.forEach(child => {
-                const user = child.val();
-                const oderId = child.key;
-
-                if (oderId !== currentUser.uid) {
-                    html += `
-                        <div class="user-item">
-                            <div class="user-item-avatar">${user.pseudo.charAt(0).toUpperCase()}</div>
-                            <div class="user-item-info">
-                                <div class="user-item-name">${escapeHtml(user.pseudo)}</div>
-                            </div>
-                            <div class="user-item-actions">
-                                <button class="add" onclick="sendFriendRequest('${oderId}')">➕ Ajouter</button>
-                            </div>
-                        </div>
-                    `;
+                if (!snapshot.exists()) {
+                    resultsDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Aucun utilisateur trouvé</p>';
+                    return;
                 }
-            });
 
-            resultsDiv.innerHTML = html || '<p style="color: var(--text-secondary); text-align: center;">Aucun résultat</p>';
+                let html = '';
+                let count = 0;
+                snapshot.forEach(child => {
+                    if (count >= 10) return;
+                    const user = child.val();
+                    const oderId = child.key;
+
+                    if (oderId !== currentUser.uid && user.pseudo && user.pseudo.toLowerCase().includes(query)) {
+                        html += `
+                            <div class="user-item">
+                                <div class="user-item-avatar">${user.pseudo.charAt(0).toUpperCase()}</div>
+                                <div class="user-item-info">
+                                    <div class="user-item-name">${escapeHtml(user.pseudo)}</div>
+                                </div>
+                                <div class="user-item-actions">
+                                    <button class="add" onclick="sendFriendRequest('${oderId}')">➕ Ajouter</button>
+                                </div>
+                            </div>
+                        `;
+                        count++;
+                    }
+                });
+
+                resultsDiv.innerHTML = html || '<p style="color: var(--text-secondary); text-align: center;">Aucun résultat</p>';
+            } catch (err) {
+                resultsDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Erreur lors de la recherche</p>';
+            }
         }
 
         // ==================== CONVERSATIONS ====================
