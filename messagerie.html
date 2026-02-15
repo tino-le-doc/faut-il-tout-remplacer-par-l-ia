@@ -1384,34 +1384,32 @@
                 let groupHTML = '';
 
                 for (const [oderId, data] of Object.entries(snapshot.val())) {
-                    const userSnap = await db.ref('users/' + oderId).once('value');
-                    const user = userSnap.val();
-                    if (user) {
-                        contacts[oderId] = { ...user, oderId };
+                    // Le pseudo est stocké dans le contact (pas besoin de lire users/)
+                    const pseudo = data.pseudo || 'Utilisateur';
+                    contacts[oderId] = { pseudo, oderId };
 
-                        contactsHTML += `
-                            <div class="user-item">
-                                <div class="user-item-avatar">${user.pseudo.charAt(0).toUpperCase()}</div>
-                                <div class="user-item-info">
-                                    <div class="user-item-name">${escapeHtml(user.pseudo)}</div>
-                                    <div class="user-item-status">Contact</div>
-                                </div>
-                                <div class="user-item-actions">
-                                    <button class="message" onclick="startDM('${oderId}')">💬</button>
-                                </div>
+                    contactsHTML += `
+                        <div class="user-item">
+                            <div class="user-item-avatar">${pseudo.charAt(0).toUpperCase()}</div>
+                            <div class="user-item-info">
+                                <div class="user-item-name">${escapeHtml(pseudo)}</div>
+                                <div class="user-item-status">Contact</div>
                             </div>
-                        `;
+                            <div class="user-item-actions">
+                                <button class="message" onclick="startDM('${oderId}')">💬</button>
+                            </div>
+                        </div>
+                    `;
 
-                        groupHTML += `
-                            <div class="user-item" onclick="toggleGroupMember('${oderId}', '${escapeHtml(user.pseudo)}')" style="cursor:pointer;">
-                                <div class="user-item-avatar">${user.pseudo.charAt(0).toUpperCase()}</div>
-                                <div class="user-item-info">
-                                    <div class="user-item-name">${escapeHtml(user.pseudo)}</div>
-                                </div>
-                                <input type="checkbox" id="check_${oderId}">
+                    groupHTML += `
+                        <div class="user-item" onclick="toggleGroupMember('${oderId}', '${escapeHtml(pseudo)}')" style="cursor:pointer;">
+                            <div class="user-item-avatar">${pseudo.charAt(0).toUpperCase()}</div>
+                            <div class="user-item-info">
+                                <div class="user-item-name">${escapeHtml(pseudo)}</div>
                             </div>
-                        `;
-                    }
+                            <input type="checkbox" id="check_${oderId}">
+                        </div>
+                    `;
                 }
 
                 contactsDiv.innerHTML = contactsHTML || '<p style="color: var(--text-secondary); padding: 20px;">Aucun contact</p>';
@@ -1432,32 +1430,44 @@
                 }
 
                 const requests = snapshot.val();
-                const count = Object.keys(requests).length;
-                badge.textContent = count;
-                badge.style.display = count > 0 ? 'inline-flex' : 'none';
+                let manualCount = 0;
 
-                let html = '<h4 style="padding: 10px; color: var(--magenta);">📨 Demandes d\'amis</h4>';
+                let html = '';
 
                 for (const [oderId, data] of Object.entries(requests)) {
-                    const userSnap = await db.ref('users/' + oderId).once('value');
-                    const user = userSnap.val();
-                    if (user) {
-                        html += `
-                            <div class="user-item">
-                                <div class="user-item-avatar">${user.pseudo.charAt(0).toUpperCase()}</div>
-                                <div class="user-item-info">
-                                    <div class="user-item-name">${escapeHtml(user.pseudo)}</div>
-                                    <div class="user-item-status">Veut vous ajouter</div>
-                                </div>
-                                <div class="user-item-actions">
-                                    <button class="accept" onclick="acceptFriendRequest('${oderId}')">✓</button>
-                                    <button class="reject" onclick="rejectFriendRequest('${oderId}')">✕</button>
-                                </div>
-                            </div>
-                        `;
+                    // Auto-accept : l'autre a déjà accepté, on s'ajoute mutuellement
+                    if (data.autoAccept) {
+                        await db.ref('contacts/' + currentUser.uid + '/' + oderId).set({
+                            pseudo: data.pseudo || 'Utilisateur',
+                            addedAt: Date.now()
+                        });
+                        await db.ref('friendRequests/' + currentUser.uid + '/' + oderId).remove();
+                        continue;
                     }
+
+                    manualCount++;
+                    const pseudo = data.pseudo || 'Utilisateur';
+                    html += `
+                        <div class="user-item">
+                            <div class="user-item-avatar">${pseudo.charAt(0).toUpperCase()}</div>
+                            <div class="user-item-info">
+                                <div class="user-item-name">${escapeHtml(pseudo)}</div>
+                                <div class="user-item-status">Veut vous ajouter</div>
+                            </div>
+                            <div class="user-item-actions">
+                                <button class="accept" onclick="acceptFriendRequest('${oderId}', '${escapeHtml(pseudo)}')">✓</button>
+                                <button class="reject" onclick="rejectFriendRequest('${oderId}')">✕</button>
+                            </div>
+                        </div>
+                    `;
                 }
 
+                badge.textContent = manualCount;
+                badge.style.display = manualCount > 0 ? 'inline-flex' : 'none';
+
+                if (html) {
+                    html = '<h4 style="padding: 10px; color: var(--magenta);">📨 Demandes d\'amis</h4>' + html;
+                }
                 requestsDiv.innerHTML = html;
             });
         }
@@ -1476,9 +1486,10 @@
                     return;
                 }
 
-                // Envoie la demande (écriture idempotente, pas besoin de vérifier si déjà envoyée)
+                // Envoie la demande avec le pseudo (évite de lire users/ côté destinataire)
                 await db.ref('friendRequests/' + oderId + '/' + currentUser.uid).set({
                     from: currentUser.uid,
+                    pseudo: currentUserProfile.pseudo,
                     timestamp: Date.now()
                 });
 
@@ -1489,13 +1500,28 @@
             }
         }
 
-        async function acceptFriendRequest(oderId) {
-            // Add to both contacts
-            await db.ref('contacts/' + currentUser.uid + '/' + oderId).set({ addedAt: Date.now() });
-            await db.ref('contacts/' + oderId + '/' + currentUser.uid).set({ addedAt: Date.now() });
+        async function acceptFriendRequest(oderId, pseudo) {
+            try {
+                // Ajouter à MES contacts (autorisé : auth.uid == $oderId)
+                await db.ref('contacts/' + currentUser.uid + '/' + oderId).set({
+                    pseudo: pseudo || 'Utilisateur',
+                    addedAt: Date.now()
+                });
 
-            // Remove request
-            await db.ref('friendRequests/' + currentUser.uid + '/' + oderId).remove();
+                // Envoyer une demande inverse pour que l'autre nous ajoute automatiquement
+                // (on ne peut pas écrire dans contacts/{autreUid}, mais on peut écrire dans friendRequests/{autreUid})
+                await db.ref('friendRequests/' + oderId + '/' + currentUser.uid).set({
+                    from: currentUser.uid,
+                    pseudo: currentUserProfile.pseudo,
+                    timestamp: Date.now(),
+                    autoAccept: true
+                });
+
+                // Supprimer la demande reçue
+                await db.ref('friendRequests/' + currentUser.uid + '/' + oderId).remove();
+            } catch (err) {
+                console.error('Erreur acceptation:', err);
+            }
         }
 
         async function rejectFriendRequest(oderId) {
