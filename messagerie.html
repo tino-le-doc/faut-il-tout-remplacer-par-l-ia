@@ -1515,8 +1515,14 @@
             resultsDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Recherche...</p>';
 
             try {
-                // Utilise le noeud "pseudos" (lecture publique) au lieu de "users" (lecture privée)
-                const snapshot = await db.ref('pseudos').once('value');
+                // Requête par préfixe sur le noeud "pseudos" (lecture publique)
+                // Les pseudos sont stockés en minuscules comme clés
+                const snapshot = await db.ref('pseudos')
+                    .orderByKey()
+                    .startAt(query)
+                    .endAt(query + '\uf8ff')
+                    .limitToFirst(11)
+                    .once('value');
 
                 if (!snapshot.exists()) {
                     resultsDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Aucun utilisateur trouvé</p>';
@@ -1528,10 +1534,9 @@
                 snapshot.forEach(child => {
                     if (count >= 10) return;
                     const pseudo = child.key;    // clé = pseudo en minuscules
-                    const oderId = child.val();  // valeur = uid de l'utilisateur
+                    const uid = child.val();     // valeur = uid de l'utilisateur
 
-                    if (oderId !== currentUser.uid && pseudo.includes(query)) {
-                        // Affiche le pseudo avec la première lettre en majuscule
+                    if (uid !== currentUser.uid) {
                         const displayPseudo = pseudo.charAt(0).toUpperCase() + pseudo.slice(1);
                         html += `
                             <div class="user-item">
@@ -1540,7 +1545,7 @@
                                     <div class="user-item-name">${escapeHtml(displayPseudo)}</div>
                                 </div>
                                 <div class="user-item-actions">
-                                    <button class="add" onclick="sendFriendRequest('${oderId}')">➕ Ajouter</button>
+                                    <button class="add" onclick="sendFriendRequest('${uid}')">➕ Ajouter</button>
                                 </div>
                             </div>
                         `;
@@ -1550,6 +1555,7 @@
 
                 resultsDiv.innerHTML = html || '<p style="color: var(--text-secondary); text-align: center;">Aucun résultat</p>';
             } catch (err) {
+                console.error('Erreur recherche:', err);
                 resultsDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Erreur lors de la recherche</p>';
             }
         }
