@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
     <title>Messagerie 💬 Tino Le Doc</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/common.css">
@@ -479,8 +479,6 @@
             background: var(--bg-secondary);
             border-top: 1px solid var(--glass-border);
             flex-shrink: 0;
-            position: sticky;
-            bottom: 0;
             z-index: 10;
         }
 
@@ -913,6 +911,22 @@
                 display: flex;
                 flex-direction: column;
                 overflow: hidden;
+                position: relative;
+            }
+
+            #activeChat {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                min-height: 0;
+                overflow: hidden;
+                height: 100%;
+            }
+
+            .messages-container {
+                flex: 1;
+                min-height: 0;
+                overflow-y: auto;
             }
 
             /* Chat header mobile */
@@ -973,7 +987,12 @@
             /* Zone de saisie - fixee en bas */
             .input-area {
                 padding: 10px 12px;
+                padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
                 flex-shrink: 0;
+                position: relative;
+                background: var(--bg-secondary);
+                border-top: 1px solid var(--glass-border);
+                z-index: 10;
             }
 
             .input-toolbar { margin-bottom: 8px; }
@@ -1373,6 +1392,26 @@
                 e.preventDefault();
                 sendMessage();
             });
+
+            // Fix clavier Android : garder l'input visible
+            const msgInputEl = document.getElementById('messageInput');
+            if (msgInputEl) {
+                msgInputEl.addEventListener('focus', () => {
+                    setTimeout(() => {
+                        msgInputEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                    }, 300);
+                });
+            }
+
+            // Gestion du resize par le clavier virtuel
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', () => {
+                    document.documentElement.style.height = window.visualViewport.height + 'px';
+                });
+                window.visualViewport.addEventListener('scroll', () => {
+                    document.documentElement.style.height = window.visualViewport.height + 'px';
+                });
+            }
 
             // Search user
             document.getElementById('searchUserInput').addEventListener('input', debounce(searchUsers, 500));
