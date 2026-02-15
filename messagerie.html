@@ -1604,13 +1604,9 @@
                     conversations[convId] = data;
 
                     if (data.type === 'dm') {
-                        const otherUserId = data.participants.find(p => p !== currentUser.uid);
-                        const userSnap = await db.ref('users/' + otherUserId).once('value');
-                        const otherUser = userSnap.val();
-
-                        if (otherUser) {
-                            html += createConvItem(convId, 'dm', otherUser.pseudo, data.lastMessage, data.lastTime, data.unread);
-                        }
+                        const otherUserId = data.participants ? data.participants.find(p => p !== currentUser.uid) : null;
+                        const otherPseudo = data.otherPseudo || (otherUserId && contacts[otherUserId] && contacts[otherUserId].pseudo) || 'Utilisateur';
+                        html += createConvItem(convId, 'dm', otherPseudo, data.lastMessage, data.lastTime, data.unread);
                     } else if (data.type === 'group') {
                         html += createConvItem(convId, 'group', data.name, data.lastMessage, data.lastTime, data.unread);
                     }
@@ -1758,35 +1754,38 @@
 
         // ==================== DM ====================
         async function startDM(otherUserId) {
-            // Check if DM already exists
-            const convId = [currentUser.uid, otherUserId].sort().join('_');
-            const existingConv = await db.ref('userConversations/' + currentUser.uid + '/' + convId).once('value');
+            try {
+                const convId = [currentUser.uid, otherUserId].sort().join('_');
+                const existingConv = await db.ref('userConversations/' + currentUser.uid + '/' + convId).once('value');
 
-            if (!existingConv.exists()) {
-                // Get other user info
-                const otherUserSnap = await db.ref('users/' + otherUserId).once('value');
-                const otherUser = otherUserSnap.val();
+                if (!existingConv.exists()) {
+                    // Pseudo depuis les contacts locaux (pas de lecture users/)
+                    const otherPseudo = (contacts[otherUserId] && contacts[otherUserId].pseudo) || 'Utilisateur';
 
-                // Create conversation for both users
-                await db.ref('userConversations/' + currentUser.uid + '/' + convId).set({
-                    type: 'dm',
-                    participants: [currentUser.uid, otherUserId],
-                    lastMessage: '',
-                    lastTime: Date.now(),
-                    unread: 0
-                });
+                    await db.ref('userConversations/' + currentUser.uid + '/' + convId).set({
+                        type: 'dm',
+                        otherPseudo: otherPseudo,
+                        participants: [currentUser.uid, otherUserId],
+                        lastMessage: '',
+                        lastTime: Date.now(),
+                        unread: 0
+                    });
 
-                await db.ref('userConversations/' + otherUserId + '/' + convId).set({
-                    type: 'dm',
-                    participants: [currentUser.uid, otherUserId],
-                    lastMessage: '',
-                    lastTime: Date.now(),
-                    unread: 0
-                });
+                    await db.ref('userConversations/' + otherUserId + '/' + convId).set({
+                        type: 'dm',
+                        otherPseudo: currentUserProfile.pseudo,
+                        participants: [currentUser.uid, otherUserId],
+                        lastMessage: '',
+                        lastTime: Date.now(),
+                        unread: 0
+                    });
+                }
+
+                openChat('dm', convId);
+                closeModal('addContact');
+            } catch (err) {
+                console.error('Erreur startDM:', err);
             }
-
-            openChat('dm', convId);
-            closeModal('addContact');
         }
 
         // ==================== OPEN CHAT ====================
@@ -1814,13 +1813,13 @@
             if (type === 'dm') {
                 const conv = conversations[id];
                 if (conv) {
-                    const otherUserId = conv.participants.find(p => p !== currentUser.uid);
-                    const userSnap = await db.ref('users/' + otherUserId).once('value');
-                    const otherUser = userSnap.val();
+                    // Pseudo stocké dans la conversation ou depuis les contacts locaux
+                    const otherUserId = conv.participants ? conv.participants.find(p => p !== currentUser.uid) : null;
+                    const otherPseudo = conv.otherPseudo || (otherUserId && contacts[otherUserId] && contacts[otherUserId].pseudo) || 'Utilisateur';
 
                     avatar.className = 'conv-avatar user';
-                    avatar.textContent = otherUser.pseudo.charAt(0).toUpperCase();
-                    nameEl.textContent = otherUser.pseudo;
+                    avatar.textContent = otherPseudo.charAt(0).toUpperCase();
+                    nameEl.textContent = otherPseudo;
                     statusEl.textContent = 'Message privé';
                     statusEl.className = 'chat-header-status';
                 }
@@ -1975,16 +1974,15 @@
             if (currentChatType === 'dm') {
                 const conv = conversations[currentChat];
                 if (conv) {
-                    const otherUserId = conv.participants.find(p => p !== currentUser.uid);
-                    const userSnap = await db.ref('users/' + otherUserId).once('value');
-                    const otherUser = userSnap.val();
+                    const otherUserId = conv.participants ? conv.participants.find(p => p !== currentUser.uid) : null;
+                    const otherPseudo = conv.otherPseudo || (otherUserId && contacts[otherUserId] && contacts[otherUserId].pseudo) || 'Utilisateur';
 
                     content.innerHTML = `
                         <div style="text-align: center; margin-bottom: 20px;">
                             <div class="conv-avatar user" style="width: 80px; height: 80px; font-size: 2rem; margin: 0 auto 15px;">
-                                ${otherUser.pseudo.charAt(0).toUpperCase()}
+                                ${otherPseudo.charAt(0).toUpperCase()}
                             </div>
-                            <h3>${escapeHtml(otherUser.pseudo)}</h3>
+                            <h3>${escapeHtml(otherPseudo)}</h3>
                             <p style="color: var(--text-secondary);">Message privé</p>
                         </div>
                     `;
@@ -1996,20 +1994,20 @@
                 if (group) {
                     let membersHTML = '';
                     for (const [oderId, data] of Object.entries(group.members)) {
-                        const userSnap = await db.ref('users/' + oderId).once('value');
-                        const user = userSnap.val();
-                        if (user) {
-                            const role = data.role === 'admin' ? '👑 Admin' : 'Membre';
-                            membersHTML += `
-                                <div class="user-item">
-                                    <div class="user-item-avatar">${user.pseudo.charAt(0).toUpperCase()}</div>
-                                    <div class="user-item-info">
-                                        <div class="user-item-name">${escapeHtml(user.pseudo)}</div>
-                                        <div class="user-item-status">${role}</div>
-                                    </div>
+                        // Pseudo depuis contacts locaux ou profil courant
+                        const pseudo = oderId === currentUser.uid
+                            ? currentUserProfile.pseudo
+                            : (contacts[oderId] && contacts[oderId].pseudo) || 'Utilisateur';
+                        const role = data.role === 'admin' ? '👑 Admin' : 'Membre';
+                        membersHTML += `
+                            <div class="user-item">
+                                <div class="user-item-avatar">${pseudo.charAt(0).toUpperCase()}</div>
+                                <div class="user-item-info">
+                                    <div class="user-item-name">${escapeHtml(pseudo)}</div>
+                                    <div class="user-item-status">${role}</div>
                                 </div>
-                            `;
-                        }
+                            </div>
+                        `;
                     }
 
                     content.innerHTML = `
