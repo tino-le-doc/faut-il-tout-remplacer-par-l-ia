@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
     <title>Tchat Live 💬 Tino Le Doc</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/common.css">
@@ -116,7 +116,7 @@
         .typing{display:none;padding:8px 15px;font-size:0.8rem;color:rgba(255,255,255,0.5);font-style:italic}
         .typing.active{display:block}
 
-        .input-area{padding:12px 15px;background:rgba(255,255,255,0.03);border-top:1px solid rgba(255,255,255,0.08)}
+        .input-area{padding:12px 15px;background:rgba(255,255,255,0.03);border-top:1px solid rgba(255,255,255,0.08);flex-shrink:0}
         .warn{display:none;padding:8px 12px;background:rgba(255,68,68,0.15);border:1px solid var(--red);border-radius:10px;margin-bottom:10px;color:var(--red);font-size:0.8rem}
         .rate-limit{display:none;padding:8px 12px;background:rgba(255,149,0,0.15);border:1px solid var(--orange);border-radius:10px;margin-bottom:10px;color:var(--orange);font-size:0.8rem}
 
@@ -160,18 +160,21 @@
         @media(max-width:768px){
             /* Utiliser la hauteur reelle du viewport (sans barre d'adresse) */
             body{height:100dvh;overflow:hidden}
-            .container{padding:8px;min-height:100dvh;display:flex;flex-direction:column}
+            .container{padding:8px;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
 
-            .logo{padding:5px 0}
+            .logo{padding:5px 0;flex-shrink:0}
             .logo img{max-width:60px}
             .back{font-size:0.75rem}
-            header{padding:8px 0}
+            header{padding:8px 0;flex-shrink:0}
             header h1{font-size:1.3rem}
             .badges{gap:5px;margin-top:6px}
             .badge{padding:3px 8px;font-size:0.65rem}
 
-            .tabs{gap:6px;margin:10px 0}
+            .tabs{gap:6px;margin:10px 0;flex-shrink:0}
             .tab-btn{padding:10px 15px;font-size:0.85rem;flex:1;justify-content:center}
+
+            /* Tab content prend l'espace restant */
+            .tab-content.active{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
 
             /* VIDEO */
             .video-grid{gap:6px;padding:6px}
@@ -185,13 +188,13 @@
             .video-controls{gap:15px;padding:12px}
 
             /* CHAT - prend tout l'espace restant */
-            .chat{flex:1;display:flex;flex-direction:column;max-height:none;border-radius:15px;margin:5px 0}
+            .chat{flex:1;display:flex;flex-direction:column;max-height:none;border-radius:15px;margin:5px 0;min-height:0;overflow:hidden}
             .chat.active{display:flex}
-            .chat-head{padding:8px 12px}
+            .chat-head{padding:8px 12px;flex-shrink:0}
             .chat-head span{font-size:0.85rem}
 
             /* Messages - scroll flexible */
-            .messages{flex:1;min-height:0;max-height:none;padding:10px;gap:8px;-webkit-overflow-scrolling:touch}
+            .messages{flex:1;min-height:0;max-height:none;padding:10px;gap:8px;-webkit-overflow-scrolling:touch;overflow-y:auto}
             .msg-text{font-size:0.92rem}
             .msg-text img{max-width:150px;max-height:100px}
             .avatar{width:32px;height:32px;font-size:0.8rem;border-radius:8px}
@@ -200,8 +203,8 @@
             .msg-name{font-size:0.8rem}
             .msg-time{font-size:0.65rem}
 
-            /* Zone de saisie */
-            .input-area{padding:8px 10px}
+            /* Zone de saisie - toujours visible en bas */
+            .input-area{padding:8px 10px;padding-bottom:calc(8px + env(safe-area-inset-bottom, 0px));flex-shrink:0;position:relative;z-index:10}
 
             /* Toolbar - boutons tactiles min 44px */
             .toolbar{gap:6px;margin-bottom:6px}
@@ -233,7 +236,7 @@
             .login input{padding:14px 18px;font-size:16px;max-width:100%;border-radius:14px}
             .login button{padding:14px 30px;font-size:1rem;border-radius:14px;min-height:48px}
 
-            footer{padding:10px;font-size:0.7rem}
+            footer{padding:10px;font-size:0.7rem;flex-shrink:0}
         }
 
         /* Petits ecrans (< 380px, ex: anciens Android) */
@@ -1436,10 +1439,30 @@ function displayMessage(d) {
 }
 
 // ==================== SEND ====================
-document.getElementById('form').addEventListener('submit', e => { 
-    e.preventDefault(); 
-    sendMsg(); 
+document.getElementById('form').addEventListener('submit', e => {
+    e.preventDefault();
+    sendMsg();
 });
+
+// Fix clavier Android : garder l'input visible
+const msgEl = document.getElementById('msg');
+if (msgEl) {
+    msgEl.addEventListener('focus', () => {
+        setTimeout(() => {
+            msgEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }, 300);
+    });
+}
+
+// Gestion du resize par le clavier virtuel
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => {
+        document.documentElement.style.height = window.visualViewport.height + 'px';
+    });
+    window.visualViewport.addEventListener('scroll', () => {
+        document.documentElement.style.height = window.visualViewport.height + 'px';
+    });
+}
 
 function sendMsg() {
     const inp = document.getElementById('msg');
