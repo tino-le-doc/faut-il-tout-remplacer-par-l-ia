@@ -1095,6 +1095,19 @@
                 display: none !important;
             }
         }
+        /* Video Call */
+        .vc-rec{display:inline-block;width:12px;height:12px;background:var(--red);border-radius:50%;animation:vcPulse 1s infinite}
+        @keyframes vcPulse{0%,100%{opacity:1}50%{opacity:0.3}}
+        #vcVideoGrid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+        .vc-cell{position:relative;background:#222;border-radius:12px;overflow:hidden;flex:1 1 45%;max-width:48%;aspect-ratio:16/9}
+        .vc-cell.local{border:2px solid var(--cyan)}
+        .vc-cell video{width:100%;height:100%;object-fit:cover;display:block}
+        .vc-cell .vc-nametag{position:absolute;bottom:8px;left:8px;padding:4px 10px;background:rgba(0,0,0,0.7);border-radius:8px;font-size:0.75rem;color:#fff;z-index:2}
+        #vcControls .icon-btn{width:50px;height:50px;font-size:1.3rem;border-radius:50%}
+        #vcControls .icon-btn.off{background:var(--red);color:white}
+        @media(max-width:768px){
+            .vc-cell{flex:1 1 100%;max-width:100%}
+        }
     </style>
 </head>
 <body>
@@ -1188,6 +1201,7 @@
                         <div class="chat-header-status" id="chatStatus">-</div>
                     </div>
                     <div class="chat-header-actions">
+                        <button class="icon-btn" id="videoCallBtn" onclick="startVideoCall()" style="display:none;" title="Appel vidéo">📹</button>
                         <button class="icon-btn" id="chatInfoBtn" onclick="openChatInfo()">ℹ️</button>
                     </div>
                 </div>
@@ -1269,6 +1283,36 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" id="leaveGroupBtn" onclick="leaveGroup()" style="display: none;">🚪 Quitter le groupe</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Video Call -->
+    <div class="modal-overlay" id="modalVideoCall" style="background:rgba(0,0,0,0.95);">
+        <div class="modal" style="max-width:900px;max-height:95vh;background:#0a0a0f;">
+            <div class="modal-header" style="background:linear-gradient(135deg,rgba(255,68,68,0.2),rgba(255,149,0,0.2));">
+                <h2><span class="vc-rec"></span> Appel vidéo - <span id="vcCallName">...</span></h2>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span id="vcParticipantCount" style="font-size:0.8rem;color:rgba(255,255,255,0.6);">0 en appel</span>
+                    <button class="modal-close" onclick="DMVideoChat.leaveCall()">✕</button>
+                </div>
+            </div>
+            <div class="modal-body" style="padding:0;max-height:none;overflow:hidden;">
+                <!-- Ecran de jointure -->
+                <div id="vcJoinScreen" style="padding:40px 20px;text-align:center;">
+                    <div style="font-size:4rem;margin-bottom:20px;">📹</div>
+                    <h3 style="font-family:'Syne',sans-serif;font-size:1.3rem;margin-bottom:10px;">Appel vidéo privé</h3>
+                    <p style="color:rgba(255,255,255,0.6);margin-bottom:20px;">Démarrez un appel vidéo en direct avec votre contact</p>
+                    <button id="vcJoinBtn" onclick="DMVideoChat.joinCall()" style="padding:15px 35px;border:none;border-radius:15px;font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#00ff88,#00cc6a);color:#0a0a0f;transition:all 0.3s;">📹 Rejoindre l'appel</button>
+                </div>
+                <!-- Grille vidéo -->
+                <div id="vcVideoGrid" style="display:none;padding:10px;background:#000;"></div>
+                <!-- Controles -->
+                <div id="vcControls" style="display:none;padding:15px;background:rgba(0,0,0,0.8);justify-content:center;gap:12px;align-items:center;">
+                    <button class="icon-btn" id="vcMicBtn" onclick="DMVideoChat.toggleMic()" title="Micro">🎤</button>
+                    <button class="icon-btn" id="vcCamBtn" onclick="DMVideoChat.toggleCam()" title="Caméra">📹</button>
+                    <button class="icon-btn danger" id="vcLeaveBtn" onclick="DMVideoChat.leaveCall()" title="Raccrocher" style="background:var(--red);color:white;">📞</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1824,6 +1868,7 @@
                     statusEl.className = 'chat-header-status';
                 }
                 document.getElementById('leaveGroupBtn').style.display = 'none';
+                document.getElementById('videoCallBtn').style.display = 'flex';
 
                 loadMessages('dmMessages/' + id);
             } else if (type === 'group') {
@@ -1839,6 +1884,7 @@
                     statusEl.className = 'chat-header-status';
                 }
                 document.getElementById('leaveGroupBtn').style.display = 'block';
+                document.getElementById('videoCallBtn').style.display = 'none';
 
                 loadMessages('groupMessages/' + id);
             }
@@ -2121,6 +2167,515 @@
                 timeout = setTimeout(() => func.apply(this, args), wait);
             };
         }
+
+        // ==================== VIDEO CALL PRIVE (DM) ====================
+        function startVideoCall() {
+            if (!currentChat || currentChatType !== 'dm') return;
+            const conv = conversations[currentChat];
+            if (!conv) return;
+            const otherUserId = conv.participants ? conv.participants.find(p => p !== currentUser.uid) : null;
+            const otherPseudo = conv.otherPseudo || (otherUserId && contacts[otherUserId] && contacts[otherUserId].pseudo) || 'Utilisateur';
+            document.getElementById('vcCallName').textContent = otherPseudo;
+            DMVideoChat.currentConvId = currentChat;
+            openModal('videoCall');
+        }
+
+        const DMVideoChat = {
+            joined: false,
+            localStream: null,
+            localVideoEl: null,
+            peers: {},
+            remoteStreams: {},
+            myVideoId: null,
+            currentConvId: null,
+            roomRef: null,
+            participantsRef: null,
+            signalsRef: null,
+            micEnabled: true,
+            camEnabled: true,
+            _qualityInterval: null,
+            currentQuality: 'high',
+
+            ICE_SERVERS: {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' },
+                    { urls: 'stun:stun2.l.google.com:19302' },
+                    {
+                        urls: 'turn:openrelay.metered.ca:80',
+                        username: 'openrelayproject',
+                        credential: 'openrelayproject'
+                    },
+                    {
+                        urls: 'turn:openrelay.metered.ca:443',
+                        username: 'openrelayproject',
+                        credential: 'openrelayproject'
+                    },
+                    {
+                        urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+                        username: 'openrelayproject',
+                        credential: 'openrelayproject'
+                    }
+                ],
+                iceCandidatePoolSize: 10
+            },
+
+            VIDEO_CONSTRAINTS: {
+                high: { width: { ideal: 1280, max: 1920 }, height: { ideal: 720, max: 1080 }, frameRate: { ideal: 30 }, facingMode: 'user' },
+                medium: { width: { ideal: 640, max: 1280 }, height: { ideal: 480, max: 720 }, frameRate: { ideal: 24 }, facingMode: 'user' },
+                low: { width: { ideal: 320, max: 640 }, height: { ideal: 240, max: 480 }, frameRate: { ideal: 15 }, facingMode: 'user' }
+            },
+
+            AUDIO_CONSTRAINTS: {
+                echoCancellation: true,
+                noiseSuppression: true,
+                autoGainControl: true,
+                sampleRate: 48000,
+                channelCount: 1
+            },
+
+            BITRATE: { videoMax: 1500, videoMin: 150, audioMax: 64 },
+
+            async joinCall() {
+                if (this.joined || !this.currentConvId) return;
+                const joinBtn = document.getElementById('vcJoinBtn');
+                joinBtn.disabled = true;
+                joinBtn.textContent = 'Connexion...';
+
+                if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                    alert('La vidéo nécessite une connexion HTTPS sécurisée.');
+                    joinBtn.disabled = false;
+                    joinBtn.textContent = '📹 Rejoindre l\'appel';
+                    return;
+                }
+
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    alert('Votre navigateur ne supporte pas la vidéo.');
+                    joinBtn.disabled = false;
+                    joinBtn.textContent = '📹 Rejoindre l\'appel';
+                    return;
+                }
+
+                // Limite 2 participants pour DM
+                try {
+                    const snap = await db.ref('dmVideoRoom/' + this.currentConvId + '/participants').once('value');
+                    if (snap.exists() && Object.keys(snap.val()).length >= 2) {
+                        alert('L\'appel est déjà en cours avec 2 participants.');
+                        joinBtn.disabled = false;
+                        joinBtn.textContent = '📹 Rejoindre l\'appel';
+                        return;
+                    }
+                } catch (e) {}
+
+                // Obtenir le flux media
+                const qualities = ['high', 'medium', 'low'];
+                let streamOk = false;
+                for (const q of qualities) {
+                    try {
+                        this.localStream = await navigator.mediaDevices.getUserMedia({
+                            video: this.VIDEO_CONSTRAINTS[q],
+                            audio: this.AUDIO_CONSTRAINTS
+                        });
+                        this.currentQuality = q;
+                        streamOk = true;
+                        break;
+                    } catch (err) {
+                        console.warn('getUserMedia failed at', q, ':', err.name);
+                    }
+                }
+                if (!streamOk) {
+                    try {
+                        this.localStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: this.AUDIO_CONSTRAINTS });
+                        this.camEnabled = false;
+                        streamOk = true;
+                    } catch (err2) {
+                        let msg = 'Impossible d\'accéder à la caméra ou au micro.\n\n';
+                        if (err2.name === 'NotAllowedError') msg += 'Autorisez l\'accès dans les paramètres de votre navigateur.';
+                        else if (err2.name === 'NotFoundError') msg += 'Aucune caméra ou micro détecté.';
+                        else msg += 'Erreur : ' + (err2.message || err2.name);
+                        alert(msg);
+                        joinBtn.disabled = false;
+                        joinBtn.textContent = '📹 Rejoindre l\'appel';
+                        return;
+                    }
+                }
+
+                this.joined = true;
+                this.myVideoId = 'v_' + crypto.getRandomValues(new Uint32Array(1))[0].toString(36) + '_' + Date.now();
+
+                // Afficher l'UI
+                document.getElementById('vcJoinScreen').style.display = 'none';
+                document.getElementById('vcControls').style.display = 'flex';
+
+                const grid = document.getElementById('vcVideoGrid');
+                grid.style.display = 'flex';
+                grid.innerHTML = '';
+
+                // Video locale
+                this.addVideoCell(this.myVideoId, currentUserProfile.pseudo + ' (vous)', true);
+                const localVideoEl = document.querySelector(`[data-peer="${this.myVideoId}"] video`);
+                if (localVideoEl) {
+                    localVideoEl.srcObject = this.localStream;
+                    localVideoEl.muted = true;
+                    this.playVideo(localVideoEl);
+                }
+                this.localVideoEl = localVideoEl;
+
+                this.startQualityMonitor();
+
+                // Firebase signaling par conversation
+                this.roomRef = db.ref('dmVideoRoom/' + this.currentConvId);
+                this.participantsRef = this.roomRef.child('participants');
+                this.signalsRef = this.roomRef.child('signals');
+
+                const myRef = this.participantsRef.child(this.myVideoId);
+                myRef.set({
+                    uid: currentUser.uid,
+                    name: currentUserProfile.pseudo,
+                    joinedAt: Date.now(),
+                    mic: this.micEnabled,
+                    cam: this.camEnabled
+                });
+                myRef.onDisconnect().remove();
+                this.signalsRef.child(this.myVideoId).onDisconnect().remove();
+
+                // Ecouter les participants
+                this.participantsRef.on('child_added', snap => {
+                    const peerId = snap.key;
+                    if (peerId === this.myVideoId) return;
+                    const data = snap.val();
+                    this.addVideoCell(peerId, data.name, false);
+                    this.updateParticipantCount();
+                    if (this.myVideoId > peerId) {
+                        this.createOffer(peerId);
+                    }
+                });
+
+                this.participantsRef.on('child_removed', snap => {
+                    const peerId = snap.key;
+                    this.removePeer(peerId);
+                    this.updateParticipantCount();
+                });
+
+                this.participantsRef.on('child_changed', snap => {
+                    const peerId = snap.key;
+                    if (peerId === this.myVideoId) return;
+                    const data = snap.val();
+                    const nameTag = document.querySelector(`[data-peer="${peerId}"] .vc-nametag`);
+                    if (nameTag) {
+                        nameTag.innerHTML = data.name + (!data.mic ? ' 🔇' : '');
+                    }
+                });
+
+                // Ecouter les signaux
+                this.signalsRef.child(this.myVideoId).on('child_added', async snap => {
+                    const signal = snap.val();
+                    if (!signal) return;
+                    try {
+                        if (signal.type === 'offer') await this.handleOffer(signal.from, signal.sdp);
+                        else if (signal.type === 'answer') await this.handleAnswer(signal.from, signal.sdp);
+                        else if (signal.type === 'ice') await this.handleIce(signal.from, signal.candidate);
+                    } catch (e) {
+                        console.error('Signal error:', e);
+                    }
+                    snap.ref.remove();
+                });
+
+                this.updateParticipantCount();
+            },
+
+            async createOffer(peerId) {
+                const pc = this.createPeerConnection(peerId);
+                try {
+                    const offer = await pc.createOffer();
+                    await pc.setLocalDescription(offer);
+                    await this.signalsRef.child(peerId).push({
+                        type: 'offer', from: this.myVideoId, sdp: offer.sdp
+                    });
+                } catch (e) { console.error('Offer error:', e); }
+            },
+
+            async handleOffer(fromId, sdp) {
+                const pc = this.createPeerConnection(fromId);
+                try {
+                    await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }));
+                    const answer = await pc.createAnswer();
+                    await pc.setLocalDescription(answer);
+                    await this.signalsRef.child(fromId).push({
+                        type: 'answer', from: this.myVideoId, sdp: answer.sdp
+                    });
+                } catch (e) { console.error('Answer error:', e); }
+            },
+
+            async handleAnswer(fromId, sdp) {
+                const pc = this.peers[fromId];
+                if (pc && pc.signalingState !== 'stable') {
+                    try { await pc.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp })); }
+                    catch (e) { console.error('Set answer error:', e); }
+                }
+            },
+
+            async handleIce(fromId, candidate) {
+                const pc = this.peers[fromId];
+                if (pc && candidate) {
+                    try { await pc.addIceCandidate(new RTCIceCandidate(candidate)); }
+                    catch (e) { console.error('ICE error:', e); }
+                }
+            },
+
+            createPeerConnection(peerId) {
+                if (this.peers[peerId]) this.peers[peerId].close();
+                const pc = new RTCPeerConnection(this.ICE_SERVERS);
+                this.peers[peerId] = pc;
+
+                if (this.localStream) {
+                    this.localStream.getTracks().forEach(track => {
+                        const sender = pc.addTrack(track, this.localStream);
+                        if (track.kind === 'video') this.applyBitrateLimit(sender, 'video');
+                        else if (track.kind === 'audio') this.applyBitrateLimit(sender, 'audio');
+                    });
+                }
+
+                pc.onicecandidate = event => {
+                    if (event.candidate) {
+                        this.signalsRef.child(peerId).push({
+                            type: 'ice', from: this.myVideoId, candidate: event.candidate.toJSON()
+                        });
+                    }
+                };
+
+                pc.ontrack = event => {
+                    const stream = event.streams[0];
+                    if (stream) {
+                        this.remoteStreams[peerId] = stream;
+                        const videoEl = document.querySelector(`[data-peer="${peerId}"] video`);
+                        if (videoEl) {
+                            videoEl.srcObject = stream;
+                            this.playVideo(videoEl);
+                        }
+                    }
+                };
+
+                pc.onconnectionstatechange = () => {
+                    if (pc.connectionState === 'failed') {
+                        pc.close();
+                        delete this.peers[peerId];
+                        if (this.myVideoId > peerId) {
+                            setTimeout(() => this.createOffer(peerId), 1000);
+                        }
+                    }
+                };
+
+                return pc;
+            },
+
+            async applyBitrateLimit(sender, kind) {
+                try {
+                    const params = sender.getParameters();
+                    if (!params.encodings || params.encodings.length === 0) params.encodings = [{}];
+                    if (kind === 'video') {
+                        params.encodings[0].maxBitrate = this.BITRATE.videoMax * 1000;
+                        params.degradationPreference = 'balanced';
+                    } else {
+                        params.encodings[0].maxBitrate = this.BITRATE.audioMax * 1000;
+                    }
+                    await sender.setParameters(params);
+                } catch (e) {}
+            },
+
+            startQualityMonitor() {
+                if (this._qualityInterval) clearInterval(this._qualityInterval);
+                this._qualityInterval = setInterval(() => this.checkNetworkQuality(), 5000);
+            },
+
+            stopQualityMonitor() {
+                if (this._qualityInterval) { clearInterval(this._qualityInterval); this._qualityInterval = null; }
+            },
+
+            async checkNetworkQuality() {
+                for (const [peerId, pc] of Object.entries(this.peers)) {
+                    try {
+                        const stats = await pc.getStats();
+                        stats.forEach(report => {
+                            if (report.type === 'outbound-rtp' && report.kind === 'video') {
+                                const lossRate = (report.packetsLost || 0) / ((report.packetsSent || 1) + (report.packetsLost || 0));
+                                if (lossRate > 0.1 && this.currentQuality !== 'low') this.downgradeQuality();
+                                else if (lossRate < 0.02 && this.currentQuality !== 'high') this.upgradeQuality();
+                            }
+                        });
+                    } catch (e) {}
+                }
+            },
+
+            async downgradeQuality() {
+                const levels = ['high', 'medium', 'low'];
+                const idx = levels.indexOf(this.currentQuality);
+                if (idx < levels.length - 1) {
+                    this.currentQuality = levels[idx + 1];
+                    await this.applyVideoConstraints(this.currentQuality);
+                }
+            },
+
+            async upgradeQuality() {
+                const levels = ['high', 'medium', 'low'];
+                const idx = levels.indexOf(this.currentQuality);
+                if (idx > 0) {
+                    this.currentQuality = levels[idx - 1];
+                    await this.applyVideoConstraints(this.currentQuality);
+                }
+            },
+
+            async applyVideoConstraints(quality) {
+                if (!this.localStream) return;
+                const videoTrack = this.localStream.getVideoTracks()[0];
+                if (!videoTrack) return;
+                try {
+                    await videoTrack.applyConstraints(this.VIDEO_CONSTRAINTS[quality]);
+                    const bitrateMap = { high: 1500, medium: 800, low: 300 };
+                    for (const pc of Object.values(this.peers)) {
+                        for (const sender of pc.getSenders()) {
+                            if (sender.track && sender.track.kind === 'video') {
+                                const params = sender.getParameters();
+                                if (params.encodings && params.encodings.length > 0) {
+                                    params.encodings[0].maxBitrate = (bitrateMap[quality] || 800) * 1000;
+                                    await sender.setParameters(params);
+                                }
+                            }
+                        }
+                    }
+                } catch (e) {}
+            },
+
+            playVideo(videoEl, retries = 5) {
+                if (!videoEl) return;
+                videoEl.controls = false;
+                videoEl.playsInline = true;
+                videoEl.setAttribute('playsinline', '');
+                const attempt = () => {
+                    const p = videoEl.play();
+                    if (p && p.catch) {
+                        p.catch(() => {
+                            if (retries > 0) { retries--; setTimeout(attempt, 500); }
+                        });
+                    }
+                };
+                if (videoEl.readyState >= 2) attempt();
+                else {
+                    videoEl.addEventListener('loadedmetadata', () => attempt(), { once: true });
+                    setTimeout(attempt, 1000);
+                }
+            },
+
+            addVideoCell(peerId, name, isLocal) {
+                const grid = document.getElementById('vcVideoGrid');
+                if (grid.querySelector(`[data-peer="${peerId}"]`)) return;
+
+                const cell = document.createElement('div');
+                cell.className = 'vc-cell' + (isLocal ? ' local' : '');
+                cell.dataset.peer = peerId;
+
+                const video = document.createElement('video');
+                video.autoplay = true;
+                video.playsInline = true;
+                video.setAttribute('playsinline', '');
+                video.controls = false;
+                if (isLocal) video.muted = true;
+                cell.appendChild(video);
+
+                const tag = document.createElement('div');
+                tag.className = 'vc-nametag';
+                tag.textContent = name || '?';
+                cell.appendChild(tag);
+
+                grid.appendChild(cell);
+            },
+
+            removePeer(peerId) {
+                if (this.peers[peerId]) { this.peers[peerId].close(); delete this.peers[peerId]; }
+                delete this.remoteStreams[peerId];
+                const cell = document.querySelector(`[data-peer="${peerId}"]`);
+                if (cell) cell.remove();
+                if (this.signalsRef) this.signalsRef.child(peerId).child(this.myVideoId).remove();
+            },
+
+            updateParticipantCount() {
+                if (!this.participantsRef) return;
+                this.participantsRef.once('value', snap => {
+                    const n = snap.numChildren();
+                    document.getElementById('vcParticipantCount').textContent = n + ' en appel';
+                });
+            },
+
+            toggleMic() {
+                if (!this.localStream) return;
+                this.micEnabled = !this.micEnabled;
+                this.localStream.getAudioTracks().forEach(t => t.enabled = this.micEnabled);
+                const btn = document.getElementById('vcMicBtn');
+                btn.textContent = this.micEnabled ? '🎤' : '🔇';
+                btn.classList.toggle('off', !this.micEnabled);
+                if (this.participantsRef && this.myVideoId) {
+                    this.participantsRef.child(this.myVideoId).update({ mic: this.micEnabled });
+                }
+            },
+
+            toggleCam() {
+                if (!this.localStream) return;
+                const videoTracks = this.localStream.getVideoTracks();
+                if (videoTracks.length === 0) return;
+                this.camEnabled = !this.camEnabled;
+                videoTracks.forEach(t => t.enabled = this.camEnabled);
+                const btn = document.getElementById('vcCamBtn');
+                btn.textContent = this.camEnabled ? '📹' : '📷';
+                btn.classList.toggle('off', !this.camEnabled);
+                if (this.participantsRef && this.myVideoId) {
+                    this.participantsRef.child(this.myVideoId).update({ cam: this.camEnabled });
+                }
+            },
+
+            leaveCall() {
+                this.joined = false;
+                this.stopQualityMonitor();
+
+                Object.keys(this.peers).forEach(id => { this.peers[id].close(); });
+                this.peers = {};
+                this.remoteStreams = {};
+
+                if (this.localStream) {
+                    this.localStream.getTracks().forEach(t => t.stop());
+                    this.localStream = null;
+                }
+
+                if (this.participantsRef && this.myVideoId) this.participantsRef.child(this.myVideoId).remove();
+                if (this.signalsRef && this.myVideoId) this.signalsRef.child(this.myVideoId).remove();
+
+                if (this.participantsRef) this.participantsRef.off();
+                if (this.signalsRef && this.myVideoId) this.signalsRef.child(this.myVideoId).off();
+
+                if (this.localVideoEl) { this.localVideoEl.srcObject = null; this.localVideoEl = null; }
+                document.getElementById('vcVideoGrid').innerHTML = '';
+                document.getElementById('vcVideoGrid').style.display = 'none';
+                document.getElementById('vcControls').style.display = 'none';
+                document.getElementById('vcJoinScreen').style.display = 'block';
+
+                const joinBtn = document.getElementById('vcJoinBtn');
+                joinBtn.disabled = false;
+                joinBtn.textContent = '📹 Rejoindre l\'appel';
+
+                this.micEnabled = true;
+                this.camEnabled = true;
+                document.getElementById('vcMicBtn').textContent = '🎤';
+                document.getElementById('vcMicBtn').classList.remove('off');
+                document.getElementById('vcCamBtn').textContent = '📹';
+                document.getElementById('vcCamBtn').classList.remove('off');
+
+                closeModal('videoCall');
+            }
+        };
+
+        // Cleanup video a la fermeture
+        window.addEventListener('beforeunload', () => {
+            if (DMVideoChat.joined) DMVideoChat.leaveCall();
+        });
     </script>
 </body>
 </html>
