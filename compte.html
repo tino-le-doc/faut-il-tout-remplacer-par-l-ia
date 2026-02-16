@@ -235,6 +235,93 @@
         }
         .forgot-link:hover { text-decoration: underline; }
 
+        /* Separateur "ou" */
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--glass-border);
+        }
+
+        /* Bouton Google */
+        .google-btn {
+            width: 100%;
+            padding: 14px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .google-btn:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        .google-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .google-btn svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        /* Modal pseudo Google */
+        .pseudo-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .pseudo-modal-overlay.active { display: flex; }
+        .pseudo-modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+        }
+        .pseudo-modal h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--cyan), var(--magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .pseudo-modal p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
         /* Profile (logged in) */
         .profile-container { display: none; }
         .profile-container.active { display: block; }
@@ -425,6 +512,11 @@
                 </div>
                 <button type="submit" class="submit-btn" id="loginBtn">Se connecter</button>
                 <span class="forgot-link" onclick="resetPassword()">Mot de passe oublié ?</span>
+                <div class="auth-divider">ou</div>
+                <button type="button" class="google-btn" onclick="signInWithGoogle()">
+                    <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                    Continuer avec Google
+                </button>
             </form>
 
             <!-- Register Form -->
@@ -457,7 +549,26 @@
                     </div>
                 </div>
                 <button type="submit" class="submit-btn" id="registerBtn">Créer mon compte</button>
+                <div class="auth-divider">ou</div>
+                <button type="button" class="google-btn" onclick="signInWithGoogle()">
+                    <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                    S'inscrire avec Google
+                </button>
             </form>
+        </div>
+
+        <!-- Modal choix pseudo pour Google -->
+        <div class="pseudo-modal-overlay" id="pseudoModal">
+            <div class="pseudo-modal">
+                <h3>Bienvenue !</h3>
+                <p>Choisissez un pseudo pour votre profil :</p>
+                <div class="form-error" id="pseudoError"></div>
+                <div class="form-group">
+                    <input type="text" id="googlePseudo" placeholder="TonPseudo" minlength="3" maxlength="20" autocomplete="username">
+                    <div class="password-hint">3-20 caractères, lettres, chiffres et _ uniquement</div>
+                </div>
+                <button class="submit-btn" id="savePseudoBtn" onclick="saveGooglePseudo()">Valider mon pseudo</button>
+            </div>
         </div>
 
         <!-- Profile (when logged in) -->
@@ -879,6 +990,109 @@
             console.error('❌ Erreur déconnexion:', error);
             showError('Erreur lors de la déconnexion');
         }
+    }
+
+    // ==================== GOOGLE SIGN-IN ====================
+    const googleProvider = new firebase.auth.GoogleAuthProvider();
+    let pendingGoogleUser = null;
+
+    async function signInWithGoogle() {
+        hideMessages();
+        const btns = document.querySelectorAll('.google-btn');
+        btns.forEach(b => { b.disabled = true; b.querySelector('svg').style.display = 'none'; });
+
+        try {
+            const result = await auth.signInWithPopup(googleProvider);
+            const user = result.user;
+            console.log('Google sign-in:', user.uid);
+
+            // Verifier si le profil existe deja
+            const snapshot = await db.ref('users/' + user.uid).once('value');
+            if (snapshot.exists()) {
+                // Utilisateur existant - connexion directe
+                console.log('Utilisateur Google existant');
+                showSuccess('Connexion reussie !');
+            } else {
+                // Nouvel utilisateur - demander un pseudo
+                pendingGoogleUser = user;
+                const suggested = (user.displayName || user.email.split('@')[0])
+                    .replace(/[^a-zA-Z0-9_]/g, '_').substring(0, 20);
+                document.getElementById('googlePseudo').value = suggested;
+                document.getElementById('pseudoModal').classList.add('active');
+            }
+        } catch (error) {
+            console.error('Erreur Google:', error.code, error.message);
+            if (error.code === 'auth/popup-closed-by-user') {
+                // L'utilisateur a ferme la popup, pas d'erreur a afficher
+            } else if (error.code === 'auth/popup-blocked') {
+                showError('Popup bloquee par le navigateur. Autorisez les popups pour ce site.');
+            } else if (error.code === 'auth/cancelled-popup-request') {
+                // Ignore
+            } else {
+                showError('Erreur de connexion Google : ' + (error.message || 'Erreur inconnue'));
+            }
+        }
+
+        btns.forEach(b => { b.disabled = false; b.querySelector('svg').style.display = ''; });
+    }
+
+    async function saveGooglePseudo() {
+        if (!pendingGoogleUser) return;
+
+        const pseudo = document.getElementById('googlePseudo').value.trim();
+        const errorEl = document.getElementById('pseudoError');
+        const btn = document.getElementById('savePseudoBtn');
+
+        errorEl.classList.remove('show');
+
+        if (!validatePseudo(pseudo)) {
+            errorEl.textContent = 'Pseudo invalide (3-20 caracteres, lettres/chiffres/_ uniquement)';
+            errorEl.classList.add('show');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Verification...';
+
+        try {
+            // Verifier unicite du pseudo
+            const pseudoSnapshot = await db.ref('pseudos/' + pseudo.toLowerCase()).once('value');
+            if (pseudoSnapshot.exists()) {
+                errorEl.textContent = 'Ce pseudo est deja pris. Choisissez-en un autre.';
+                errorEl.classList.add('show');
+                btn.disabled = false;
+                btn.textContent = 'Valider mon pseudo';
+                return;
+            }
+
+            // Creer le profil
+            await db.ref('users/' + pendingGoogleUser.uid).set({
+                pseudo: pseudo,
+                email: pendingGoogleUser.email,
+                createdAt: Date.now(),
+                messagesCount: 0,
+                avisCount: 0
+            });
+
+            // Reserver le pseudo
+            await db.ref('pseudos/' + pseudo.toLowerCase()).set(pendingGoogleUser.uid);
+
+            // Incrementer le compteur de membres
+            await db.ref('counters/subscribers').transaction(count => (count || 0) + 1);
+
+            // Fermer la modal
+            document.getElementById('pseudoModal').classList.remove('active');
+            pendingGoogleUser = null;
+            showSuccess('Compte cree avec succes ! Bienvenue ' + pseudo);
+
+        } catch (error) {
+            console.error('Erreur sauvegarde pseudo:', error);
+            errorEl.textContent = 'Erreur lors de la sauvegarde. Reessayez.';
+            errorEl.classList.add('show');
+        }
+
+        btn.disabled = false;
+        btn.textContent = 'Valider mon pseudo';
     }
 
     // ==================== INIT ====================
