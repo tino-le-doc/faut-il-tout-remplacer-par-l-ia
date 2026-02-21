@@ -1490,6 +1490,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script src="js/firebase-config.js"></script>
     <script>
         // Config Firebase chargee depuis js/firebase-config.js
@@ -1728,6 +1729,9 @@
                 });
 
                 alert('Demande envoyée ! ✅');
+
+                // Email notification au destinataire
+                EmailNotifier.notifyContactRequest(oderId, currentUserProfile.pseudo);
             } catch (err) {
                 console.error('Erreur envoi demande:', err);
                 alert('Erreur lors de l\'envoi de la demande.');
@@ -2180,9 +2184,10 @@
                         for (const oderId of conv.participants) {
                             await db.ref('userConversations/' + oderId + '/' + currentChat).update(update);
 
-                            // Increment unread for other user
+                            // Increment unread + email notification for other user
                             if (oderId !== currentUser.uid) {
                                 await db.ref('userConversations/' + oderId + '/' + currentChat + '/unread').transaction(n => (n || 0) + 1);
+                                EmailNotifier.notifyNewMessage(oderId, currentUserProfile.pseudo, text);
                             }
                         }
                     }
@@ -2194,6 +2199,7 @@
 
                             if (oderId !== currentUser.uid) {
                                 await db.ref('userConversations/' + oderId + '/' + currentChat + '/unread').transaction(n => (n || 0) + 1);
+                                EmailNotifier.notifyNewMessage(oderId, currentUserProfile.pseudo, text);
                             }
                         }
                     }
@@ -3142,11 +3148,125 @@
             }
         };
 
+        // ==================== EMAIL NOTIFICATIONS (EmailJS) ====================
+        const EmailNotifier = {
+            // ⚠️ À CONFIGURER : crée un compte sur https://www.emailjs.com (gratuit)
+            // Puis remplis ces 4 valeurs :
+            SERVICE_ID: 'YOUR_EMAILJS_SERVICE_ID',
+            TEMPLATE_MESSAGE_ID: 'YOUR_TEMPLATE_MESSAGE',
+            TEMPLATE_CONTACT_ID: 'YOUR_TEMPLATE_CONTACT',
+            PUBLIC_KEY: 'YOUR_EMAILJS_PUBLIC_KEY',
+
+            COOLDOWN_MS: 30 * 60 * 1000, // 30 min entre chaque email par utilisateur
+            _enabled: false,
+
+            init() {
+                if (typeof emailjs === 'undefined') return;
+                if (this.PUBLIC_KEY && this.PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY') {
+                    emailjs.init(this.PUBLIC_KEY);
+                    this._enabled = true;
+                    console.log('📧 Email notifications activées');
+                } else {
+                    console.log('📧 EmailJS non configuré - emails désactivés');
+                }
+            },
+
+            async notifyNewMessage(recipientUid, senderPseudo, messagePreview) {
+                if (!this._enabled) return;
+                if (recipientUid === currentUser.uid) return;
+
+                try {
+                    // Vérifier le cooldown
+                    if (!await this._shouldSend(recipientUid, 'msg')) return;
+
+                    // Vérifier les préférences du destinataire
+                    const prefSnap = await db.ref('users/' + recipientUid + '/emailNotifications').once('value');
+                    if (prefSnap.val() === false) return;
+
+                    // Récupérer l'email du destinataire
+                    const emailSnap = await db.ref('users/' + recipientUid + '/email').once('value');
+                    const recipientEmail = emailSnap.val();
+                    if (!recipientEmail) return;
+
+                    // Récupérer le pseudo du destinataire
+                    const pseudoSnap = await db.ref('users/' + recipientUid + '/pseudo').once('value');
+                    const recipientPseudo = pseudoSnap.val() || 'Utilisateur';
+
+                    // Envoyer l'email via EmailJS
+                    await emailjs.send(this.SERVICE_ID, this.TEMPLATE_MESSAGE_ID, {
+                        to_email: recipientEmail,
+                        to_name: recipientPseudo,
+                        from_name: senderPseudo,
+                        message_preview: messagePreview.substring(0, 100),
+                        app_url: window.location.origin + '/messagerie.html'
+                    });
+
+                    // Marquer l'envoi pour le cooldown
+                    await this._markSent(recipientUid, 'msg');
+                    console.log('📧 Email envoyé à', recipientPseudo);
+
+                } catch (e) {
+                    console.error('📧 Erreur envoi email:', e);
+                }
+            },
+
+            async notifyContactRequest(recipientUid, senderPseudo) {
+                if (!this._enabled) return;
+                if (recipientUid === currentUser.uid) return;
+
+                try {
+                    if (!await this._shouldSend(recipientUid, 'contact')) return;
+
+                    const prefSnap = await db.ref('users/' + recipientUid + '/emailNotifications').once('value');
+                    if (prefSnap.val() === false) return;
+
+                    const emailSnap = await db.ref('users/' + recipientUid + '/email').once('value');
+                    const recipientEmail = emailSnap.val();
+                    if (!recipientEmail) return;
+
+                    const pseudoSnap = await db.ref('users/' + recipientUid + '/pseudo').once('value');
+                    const recipientPseudo = pseudoSnap.val() || 'Utilisateur';
+
+                    await emailjs.send(this.SERVICE_ID, this.TEMPLATE_CONTACT_ID, {
+                        to_email: recipientEmail,
+                        to_name: recipientPseudo,
+                        from_name: senderPseudo,
+                        app_url: window.location.origin + '/messagerie.html'
+                    });
+
+                    await this._markSent(recipientUid, 'contact');
+                    console.log('📧 Email demande de contact envoyé à', recipientPseudo);
+
+                } catch (e) {
+                    console.error('📧 Erreur envoi email contact:', e);
+                }
+            },
+
+            async _shouldSend(uid, type) {
+                try {
+                    const snap = await db.ref('emailCooldowns/' + uid + '/' + type).once('value');
+                    if (!snap.exists()) return true;
+                    return (Date.now() - snap.val()) > this.COOLDOWN_MS;
+                } catch (e) {
+                    return false;
+                }
+            },
+
+            async _markSent(uid, type) {
+                try {
+                    await db.ref('emailCooldowns/' + uid + '/' + type).set(Date.now());
+                } catch (e) {
+                    console.error('📧 Erreur cooldown:', e);
+                }
+            }
+        };
+
         // ==================== INIT NOTIFICATIONS ====================
         const _origInitApp = initApp;
         initApp = function() {
             _origInitApp();
             NotifSystem.init();
+            EmailNotifier.init();
         };
     </script>
 </body>
