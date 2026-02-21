@@ -592,7 +592,7 @@
         <!-- Stats -->
         <div class="shop-stats">
             <div class="shop-stat">
-                <div class="shop-stat-value" id="totalProducts">8</div>
+                <div class="shop-stat-value" id="totalProducts">22</div>
                 <div class="shop-stat-label">Produits</div>
             </div>
             <div class="shop-stat">
@@ -604,7 +604,7 @@
                 <div class="shop-stat-label">Note moyenne</div>
             </div>
             <div class="shop-stat">
-                <div class="shop-stat-value" id="freeProducts">3</div>
+                <div class="shop-stat-value" id="freeProducts">18</div>
                 <div class="shop-stat-label">Gratuits</div>
             </div>
         </div>
@@ -630,13 +630,14 @@
             <div class="bundle-items">
                 <div class="bundle-item">📚 E-book complet</div>
                 <div class="bundle-item">💡 100 Prompts</div>
-                <div class="bundle-item">🎓 Formation vidéo</div>
-                <div class="bundle-item">📋 Templates</div>
+                <div class="bundle-item">🎓 15 Modules Formation PDF</div>
+                <div class="bundle-item">🎨 Guide Midjourney</div>
+                <div class="bundle-item">📋 Templates Notion</div>
             </div>
             <div class="bundle-price">
-                <span class="old">89,96€</span>
-                49,99€
-                <span class="savings">✨ Économisez 40€ !</span>
+                <span class="old">30,96€</span>
+                19,99€
+                <span class="savings">✨ Économisez 11€ !</span>
             </div>
             <button class="bundle-btn" onclick="buyProduct('bundle')">🚀 Obtenir le Pack Complet</button>
         </section>
@@ -713,7 +714,8 @@
     // Option 2 - Google Drive : 'https://drive.google.com/uc?export=download&id=TON_ID_FICHIER'
     
     const DOWNLOAD_BASE_URL = ''; // Fichiers PDF a la racine du site
-    
+    const MODULES_BASE_URL = 'PDFs/modules-formation/';
+
     const products = [
         {
             id: 'ebook-ia',
@@ -738,18 +740,6 @@
             price: 4.99,
             oldPrice: 9.99,
             downloadUrl: DOWNLOAD_BASE_URL + '100-prompts-chatgpt-pro.pdf'
-        },
-        {
-            id: 'formation-ia',
-            icon: '🎓',
-            category: 'formation',
-            badge: 'new',
-            title: 'Formation Vidéo : IA au Quotidien',
-            desc: '3 heures de vidéo pour apprendre à utiliser l\'IA dans votre vie personnelle et professionnelle.',
-            features: ['3h de vidéo', '15 modules', 'Certificat', 'Support'],
-            price: 29.99,
-            oldPrice: 49.99,
-            downloadUrl: '' // À configurer quand la formation sera prête
         },
         {
             id: 'templates-notion',
@@ -805,6 +795,159 @@
             features: ['PDF', '100 définitions', 'De A à Z'],
             price: 0,
             downloadUrl: DOWNLOAD_BASE_URL + 'glossaire-ia-100-termes.pdf'
+        },
+        // ===== FORMATION : 15 MODULES (PDF) =====
+        {
+            id: 'module-01',
+            icon: '1️⃣',
+            category: 'formation',
+            badge: 'new',
+            title: 'Module 1 : Pourquoi l\'IA change tout',
+            desc: 'Introduction : comprendre l\'IA, démystifier les idées reçues, et pourquoi c\'est accessible à tous.',
+            features: ['10 min', 'PDF', '3 prompts', 'Objectif + Exercices'],
+            price: 0,
+            downloadUrl: MODULES_BASE_URL + 'Module-01-introduction-pourquoi-lia-change-tout.pdf'
+        },
+        {
+            id: 'module-02',
+            icon: '2️⃣',
+            category: 'formation',
+            badge: 'new',
+            title: 'Module 2 : L\'art du prompt',
+            desc: 'Maîtrisez la méthode RACE (Rôle, Action, Contexte, Exemple) pour des prompts efficaces.',
+            features: ['15 min', 'PDF', '4 prompts', 'Méthode RACE'],
+            price: 0,
+            downloadUrl: MODULES_BASE_URL + 'Module-02-bien-parler-a-lia-lart-du-prompt.pdf'
+        },
+        {
+            id: 'module-03',
+            icon: '3️⃣',
+            category: 'formation',
+            title: 'Module 3 : Emails professionnels',
+            desc: 'Rédiger, reformuler et répondre à des emails en quelques secondes avec l\'IA.',
+            features: ['12 min', 'PDF', '4 prompts', 'Ton adaptatif'],
+            price: 0,
+            downloadUrl: MODULES_BASE_URL + 'Module-03-rediger-des-emails-professionnels-parfaits.pdf'
+        },
+        {
+            id: 'module-04',
+            icon: '4️⃣',
+            category: 'formation',
+            title: 'Module 4 : Réseaux sociaux',
+            desc: 'Générer des posts LinkedIn, Instagram, calendriers éditoriaux et hashtags optimisés.',
+            features: ['15 min', 'PDF', '4 prompts', 'Multi-plateformes'],
+            price: 0,
+            downloadUrl: MODULES_BASE_URL + 'Module-04-creer-du-contenu-pour-les-reseaux-sociaux.pdf'
+        },
+        {
+            id: 'module-05',
+            icon: '5️⃣',
+            category: 'formation',
+            title: 'Module 5 : Apprendre plus vite',
+            desc: 'Transformez l\'IA en professeur particulier pour apprendre n\'importe quel sujet.',
+            features: ['12 min', 'PDF', '4 prompts', 'Méthode Feynman'],
+            price: 0,
+            downloadUrl: MODULES_BASE_URL + 'Module-05-lia-pour-apprendre-plus-vite.pdf'
+        },
+        {
+            id: 'module-06',
+            icon: '6️⃣',
+            category: 'formation',
+            title: 'Module 6 : Finances personnelles',
+            desc: 'Budget, économies, comparaison d\'offres et simulation de projets avec l\'IA.',
+            features: ['12 min', 'PDF', '4 prompts', 'Méthode 50/30/20'],
+            price: 0,
+            downloadUrl: MODULES_BASE_URL + 'Module-06-gerer-ses-finances-personnelles-avec-lia.pdf'
+        },
+        {
+            id: 'module-07',
+            icon: '7️⃣',
+            category: 'formation',
+            title: 'Module 7 : Productivité au travail',
+            desc: 'Automatiser les tâches répétitives : comptes-rendus, planning, résumés de documents.',
+            features: ['12 min', 'PDF', '4 prompts', 'Time-blocking'],
+            price: 0,
+            downloadUrl: MODULES_BASE_URL + 'Module-07-booster-sa-productivite-au-travail.pdf'
+        },
+        {
+            id: 'module-08',
+            icon: '8️⃣',
+            category: 'formation',
+            title: 'Module 8 : Images IA (Midjourney, DALL-E)',
+            desc: 'Générer des images pro : photos réalistes, illustrations, logos, décoration intérieure.',
+            features: ['15 min', 'PDF', '4 prompts', 'Formule visuelle'],
+            price: 0,
+            downloadUrl: MODULES_BASE_URL + 'Module-08-creer-des-images-avec-lia-midjourney-dall-e.pdf'
+        },
+        {
+            id: 'module-09',
+            icon: '9️⃣',
+            category: 'formation',
+            title: 'Module 9 : Recherche d\'emploi',
+            desc: 'CV optimisé ATS, lettre de motivation, simulation d\'entretien et négociation salariale.',
+            features: ['12 min', 'PDF', '4 prompts', 'Filtres ATS'],
+            price: 0,
+            downloadUrl: MODULES_BASE_URL + 'Module-09-lia-pour-la-recherche-demploi.pdf'
+        },
+        {
+            id: 'module-10',
+            icon: '🔟',
+            category: 'formation',
+            title: 'Module 10 : Écrire avec l\'IA',
+            desc: 'Articles SEO, blogs, livres : l\'IA comme co-auteur pour du contenu unique.',
+            features: ['12 min', 'PDF', '4 prompts', 'SEO inclus'],
+            price: 0,
+            downloadUrl: MODULES_BASE_URL + 'Module-10-ecrire-avec-lia-articles-blogs-livres.pdf'
+        },
+        {
+            id: 'module-11',
+            icon: '👨‍👩‍👧‍👦',
+            category: 'formation',
+            title: 'Module 11 : Parents et famille',
+            desc: 'Aide aux devoirs, planning familial, activités créatives et recettes adaptées.',
+            features: ['10 min', 'PDF', '4 prompts', 'Vie de famille'],
+            price: 0,
+            downloadUrl: MODULES_BASE_URL + 'Module-11-lia-pour-les-parents-et-la-famille.pdf'
+        },
+        {
+            id: 'module-12',
+            icon: '💻',
+            category: 'formation',
+            title: 'Module 12 : Coder sans savoir coder',
+            desc: 'Créer des sites web, automatiser Excel, Google Apps Script — sans connaître la programmation.',
+            features: ['15 min', 'PDF', '4 prompts', 'HTML/CSS/JS'],
+            price: 0,
+            downloadUrl: MODULES_BASE_URL + 'Module-12-coder-sans-savoir-coder.pdf'
+        },
+        {
+            id: 'module-13',
+            icon: '🏥',
+            category: 'formation',
+            title: 'Module 13 : Santé et bien-être',
+            desc: 'Programme sportif, routine bien-être, plan alimentaire — sans remplacer un médecin.',
+            features: ['10 min', 'PDF', '4 prompts', 'Disclaimer santé'],
+            price: 0,
+            downloadUrl: MODULES_BASE_URL + 'Module-13-lia-et-la-sante-le-bien-etre.pdf'
+        },
+        {
+            id: 'module-14',
+            icon: '🚀',
+            category: 'formation',
+            title: 'Module 14 : Créer son business',
+            desc: 'Validation d\'idée, business plan, stratégie marketing et page de vente avec l\'IA.',
+            features: ['15 min', 'PDF', '4 prompts', 'Plan 90 jours'],
+            price: 0,
+            downloadUrl: MODULES_BASE_URL + 'Module-14-creer-son-business-avec-lia.pdf'
+        },
+        {
+            id: 'module-15',
+            icon: '🔮',
+            category: 'formation',
+            title: 'Module 15 : Futur de l\'IA et bonnes pratiques',
+            desc: 'Tendances, éthique, charte personnelle d\'utilisation et plan d\'action 90 jours.',
+            features: ['10 min', 'PDF', '4 prompts', 'Éthique IA'],
+            price: 0,
+            downloadUrl: MODULES_BASE_URL + 'Module-15-le-futur-de-lia-et-bonnes-pratiques.pdf'
         }
     ];
 
@@ -880,7 +1023,7 @@
                 id: 'bundle',
                 icon: '🎁',
                 title: 'Pack Complet IA Master',
-                price: 49.99
+                price: 19.99
             };
         } else {
             currentProduct = products.find(p => p.id === productId);
