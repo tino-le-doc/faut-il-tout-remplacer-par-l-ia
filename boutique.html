@@ -592,7 +592,7 @@
         <!-- Stats -->
         <div class="shop-stats">
             <div class="shop-stat">
-                <div class="shop-stat-value" id="totalProducts">22</div>
+                <div class="shop-stat-value" id="totalProducts">18</div>
                 <div class="shop-stat-label">Produits</div>
             </div>
             <div class="shop-stat">
@@ -623,8 +623,8 @@
             <!-- Products loaded by JS -->
         </div>
 
-        <!-- Bundle -->
-        <section class="bundle-section">
+        <!-- Bundle (masqué temporairement - en attente déclaration entreprise) -->
+        <section class="bundle-section" style="display: none;">
             <h2 class="bundle-title">🎁 Pack Complet IA Master</h2>
             <p class="bundle-desc">Tous nos produits réunis dans un pack exceptionnel à prix réduit</p>
             <div class="bundle-items">
@@ -954,12 +954,24 @@
     let currentProduct = null;
     let currentFilter = 'all';
 
+    // ⚠️ TEMPORAIRE : En attendant la déclaration d'entreprise,
+    // on n'affiche que les produits gratuits. Les produits payants
+    // restent dans le code et seront réactivés plus tard.
+    // Pour réactiver : supprimer le filtre "p.price === 0" ci-dessous
+    // et remettre visible la section bundle + mettre à jour les stats.
+    const SHOW_ONLY_FREE = true;
+
     // Display products
     function displayProducts() {
         const grid = document.getElementById('productsGrid');
-        const filtered = currentFilter === 'all' 
-            ? products 
+        let filtered = currentFilter === 'all'
+            ? products
             : products.filter(p => p.category === currentFilter);
+
+        // Filtre temporaire : uniquement les gratuits
+        if (SHOW_ONLY_FREE) {
+            filtered = filtered.filter(p => p.price === 0);
+        }
 
         grid.innerHTML = filtered.map(product => `
             <div class="product-card" data-category="${product.category}">
@@ -1168,6 +1180,12 @@
     }
 
     // Init
+    // Mise à jour dynamique des stats selon le mode
+    if (SHOW_ONLY_FREE) {
+        const freeProducts = products.filter(p => p.price === 0);
+        document.getElementById('totalProducts').textContent = freeProducts.length;
+        document.getElementById('freeProducts').textContent = freeProducts.length;
+    }
     displayProducts();
     </script>
 </body>
