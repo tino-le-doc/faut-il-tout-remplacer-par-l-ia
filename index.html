@@ -589,6 +589,144 @@
             }
         }
 
+        /* ===== Zone Pub Payante ===== */
+        .ad-zone {
+            margin: 50px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(255, 149, 0, 0.08), rgba(255, 215, 0, 0.08));
+            border: 2px dashed rgba(255, 149, 0, 0.4);
+            border-radius: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 1s ease-out 1s backwards;
+        }
+
+        .ad-zone::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-yellow), var(--accent-orange));
+            animation: adShimmer 3s linear infinite;
+        }
+
+        @keyframes adShimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .ad-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            background: rgba(255, 149, 0, 0.2);
+            border: 1px solid rgba(255, 149, 0, 0.4);
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: var(--accent-orange);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .ad-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .ad-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-yellow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .ad-description {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .ad-image {
+            width: 100%;
+            max-width: 468px;
+            height: 120px;
+            background: linear-gradient(135deg, rgba(255, 149, 0, 0.15), rgba(255, 215, 0, 0.15));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.4);
+            overflow: hidden;
+        }
+
+        .ad-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .ad-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-yellow));
+            color: var(--bg-dark);
+            border: none;
+            border-radius: 50px;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .ad-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 149, 0, 0.4);
+        }
+
+        .ad-footer {
+            margin-top: 15px;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .ad-footer a {
+            color: rgba(255, 255, 255, 0.4);
+            text-decoration: underline;
+        }
+
+        /* Ad zone responsive */
+        @media (max-width: 600px) {
+            .ad-zone {
+                padding: 20px 15px;
+                margin: 30px 0;
+            }
+
+            .ad-title {
+                font-size: 1.3rem;
+            }
+
+            .ad-image {
+                height: 80px;
+            }
+        }
+
         /* Mobile responsive */
         @media (max-width: 600px) {
             .container {
@@ -749,6 +887,26 @@
                 <p>
                     L'idéal serait une <span class="highlight">complémentarité</span> — l'IA comme outil qui <span class="highlight">augmente nos capacités</span>, pas qui nous remplace. Libérer du temps pour ce qui compte vraiment, pas créer une humanité spectatrice.
                 </p>
+            </div>
+        </section>
+
+        <!-- ===== Zone Pub Payante ===== -->
+        <section class="ad-zone" id="adZone">
+            <div class="ad-badge">📢 Sponsorisé</div>
+            <div class="ad-content">
+                <h3 class="ad-title">Votre publicité ici</h3>
+                <div class="ad-image" id="adImage">
+                    <span>468 × 120 — Espace publicitaire</span>
+                </div>
+                <p class="ad-description">
+                    Touchez une audience passionnée par l'IA et les nouvelles technologies. Boostez votre visibilité auprès de milliers de visiteurs engagés.
+                </p>
+                <a href="mailto:contact@tinole.doc?subject=Publicité sur Faut-il tout remplacer par l'IA" class="ad-cta">
+                    💼 Réserver cet espace
+                </a>
+                <div class="ad-footer">
+                    Annonce • <a href="confidentialite.html">Pourquoi cette pub ?</a>
+                </div>
             </div>
         </section>
 
