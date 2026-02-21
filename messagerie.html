@@ -1591,10 +1591,19 @@
         function setupSearch() {
             document.getElementById('searchInput').addEventListener('input', function() {
                 const query = this.value.toLowerCase();
-                document.querySelectorAll('.conv-item').forEach(item => {
-                    const name = item.querySelector('.conv-name')?.textContent.toLowerCase() || '';
-                    item.style.display = name.includes(query) ? 'flex' : 'none';
-                });
+                const isContactsTab = document.getElementById('contactsTab').style.display !== 'none';
+
+                if (isContactsTab) {
+                    document.querySelectorAll('#contactsList .user-item').forEach(item => {
+                        const name = item.querySelector('.user-item-name')?.textContent.toLowerCase() || '';
+                        item.style.display = name.includes(query) ? 'flex' : 'none';
+                    });
+                } else {
+                    document.querySelectorAll('.conv-item').forEach(item => {
+                        const name = item.querySelector('.conv-name')?.textContent.toLowerCase() || '';
+                        item.style.display = name.includes(query) ? 'flex' : 'none';
+                    });
+                }
             });
         }
 
