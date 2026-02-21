@@ -1123,6 +1123,144 @@
                 display: none !important;
             }
         }
+        /* ===== NOTIFICATIONS ===== */
+        .notif-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 380px;
+            pointer-events: none;
+        }
+
+        .notif-toast {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            animation: notifSlideIn 0.4s ease, notifFadeOut 0.4s ease 4.6s forwards;
+            pointer-events: auto;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .notif-toast:hover {
+            transform: scale(1.02);
+        }
+
+        .notif-toast.message {
+            border-left: 4px solid var(--cyan);
+        }
+
+        .notif-toast.contact {
+            border-left: 4px solid var(--magenta);
+        }
+
+        .notif-toast-icon {
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
+
+        .notif-toast-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notif-toast-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 3px;
+            color: var(--text);
+        }
+
+        .notif-toast-text {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .notif-toast-close {
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: var(--glass);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notif-toast-close:hover {
+            background: var(--red);
+            color: white;
+        }
+
+        @keyframes notifSlideIn {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes notifFadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; transform: translateY(-10px); }
+        }
+
+        /* Badge pulsation pour demandes de contact */
+        .tab-btn .badge.pulse {
+            animation: badgePulse 1.5s infinite;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.25); box-shadow: 0 0 12px var(--magenta); }
+        }
+
+        /* Indicateur total non lu dans le header mobile */
+        .notif-total-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            background: var(--magenta);
+            border-radius: 10px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: white;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--bg-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .notif-container {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+
+            .notif-toast {
+                padding: 12px 14px;
+            }
+        }
+
         /* Video Call */
         .vc-rec{display:inline-block;width:12px;height:12px;background:var(--red);border-radius:50%;animation:vcPulse 1s infinite}
         @keyframes vcPulse{0%,100%{opacity:1}50%{opacity:0.3}}
@@ -1140,6 +1278,10 @@
 </head>
 <body>
     <a href="#main-content" class="skip-link">Aller au contenu</a>
+
+    <!-- Notification Toasts -->
+    <div class="notif-container" id="notifContainer"></div>
+
     <!-- Login Required Screen -->
     <div class="login-required" id="loginRequired">
         <div class="icon">🔐</div>
@@ -1157,7 +1299,7 @@
 
         <!-- Mobile Header -->
         <div class="mobile-header">
-            <button class="icon-btn" onclick="toggleSidebar()">☰</button>
+            <button class="icon-btn" onclick="toggleSidebar()" style="position:relative;">☰<span class="notif-total-badge" id="mobileUnreadBadge">0</span></button>
             <span>Messagerie</span>
         </div>
 
@@ -2724,6 +2866,288 @@
         window.addEventListener('beforeunload', () => {
             if (DMVideoChat.joined) DMVideoChat.leaveCall();
         });
+
+        // ==================== NOTIFICATION SYSTEM ====================
+        const NotifSystem = {
+            _soundCtx: null,
+            _permissionAsked: false,
+            _pageTitle: document.title,
+            _titleInterval: null,
+            _totalUnread: 0,
+
+            init() {
+                // Demander la permission pour les notifications navigateur
+                if ('Notification' in window && Notification.permission === 'default') {
+                    // On demande apres une interaction utilisateur
+                    const askOnce = () => {
+                        Notification.requestPermission();
+                        document.removeEventListener('click', askOnce);
+                    };
+                    document.addEventListener('click', askOnce);
+                }
+
+                // Ecouter les nouveaux messages (toutes les conversations)
+                this.listenNewMessages();
+                // Ecouter les nouvelles demandes de contact
+                this.listenContactRequests();
+                // Gerer le focus/blur pour le titre clignotant
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden) {
+                        this.stopTitleBlink();
+                    }
+                });
+            },
+
+            // --- Son de notification ---
+            playSound(type) {
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    gain.gain.value = 0.15;
+
+                    if (type === 'message') {
+                        osc.frequency.value = 880;
+                        osc.type = 'sine';
+                        osc.start();
+                        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                        osc.stop(ctx.currentTime + 0.3);
+                    } else if (type === 'contact') {
+                        osc.frequency.value = 660;
+                        osc.type = 'triangle';
+                        osc.start();
+                        setTimeout(() => {
+                            const osc2 = ctx.createOscillator();
+                            const gain2 = ctx.createGain();
+                            osc2.connect(gain2);
+                            gain2.connect(ctx.destination);
+                            gain2.gain.value = 0.15;
+                            osc2.frequency.value = 990;
+                            osc2.type = 'triangle';
+                            osc2.start();
+                            gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                            osc2.stop(ctx.currentTime + 0.3);
+                        }, 150);
+                        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+                        osc.stop(ctx.currentTime + 0.2);
+                    }
+                } catch (e) { /* Audio non supporte */ }
+            },
+
+            // --- Toast in-app ---
+            showToast(type, title, text, onClick) {
+                const container = document.getElementById('notifContainer');
+                const toast = document.createElement('div');
+                toast.className = 'notif-toast ' + type;
+                toast.innerHTML = `
+                    <div class="notif-toast-icon">${type === 'message' ? '💬' : '👋'}</div>
+                    <div class="notif-toast-body">
+                        <div class="notif-toast-title">${escapeHtml(title)}</div>
+                        <div class="notif-toast-text">${escapeHtml(text)}</div>
+                    </div>
+                    <button class="notif-toast-close" onclick="event.stopPropagation();this.parentElement.remove();">✕</button>
+                `;
+
+                if (onClick) {
+                    toast.addEventListener('click', () => {
+                        onClick();
+                        toast.remove();
+                    });
+                }
+
+                container.appendChild(toast);
+
+                // Auto-suppression apres 5s
+                setTimeout(() => {
+                    if (toast.parentElement) toast.remove();
+                }, 5000);
+            },
+
+            // --- Notification navigateur ---
+            showBrowserNotif(title, body, onClick) {
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    const notif = new Notification(title, {
+                        body,
+                        icon: '💬',
+                        tag: 'msg-' + Date.now(),
+                        silent: true // On a deja notre propre son
+                    });
+                    if (onClick) {
+                        notif.onclick = () => {
+                            window.focus();
+                            onClick();
+                            notif.close();
+                        };
+                    }
+                    setTimeout(() => notif.close(), 5000);
+                }
+            },
+
+            // --- Titre clignotant ---
+            startTitleBlink(text) {
+                if (this._titleInterval) return;
+                let show = true;
+                this._titleInterval = setInterval(() => {
+                    document.title = show ? text : this._pageTitle;
+                    show = !show;
+                }, 1000);
+            },
+
+            stopTitleBlink() {
+                if (this._titleInterval) {
+                    clearInterval(this._titleInterval);
+                    this._titleInterval = null;
+                    document.title = this._pageTitle;
+                }
+            },
+
+            // --- Badge total non lu (mobile) ---
+            updateTotalUnread(count) {
+                this._totalUnread = count;
+                const badge = document.getElementById('mobileUnreadBadge');
+                if (badge) {
+                    badge.textContent = count;
+                    badge.style.display = count > 0 ? 'inline-flex' : 'none';
+                }
+                // Mettre a jour le titre de la page
+                if (count > 0) {
+                    this._pageTitle = `(${count}) Messagerie 💬 Tino Le Doc`;
+                } else {
+                    this._pageTitle = 'Messagerie 💬 Tino Le Doc';
+                }
+                if (!this._titleInterval) {
+                    document.title = this._pageTitle;
+                }
+            },
+
+            // --- Ecouter les nouveaux messages ---
+            listenNewMessages() {
+                db.ref('userConversations/' + currentUser.uid).on('value', snapshot => {
+                    if (!snapshot.exists()) {
+                        this.updateTotalUnread(0);
+                        return;
+                    }
+
+                    let totalUnread = 0;
+                    const convs = snapshot.val();
+
+                    for (const [convId, data] of Object.entries(convs)) {
+                        totalUnread += (data.unread || 0);
+                    }
+
+                    this.updateTotalUnread(totalUnread);
+                });
+
+                // Ecouter les changements specifiques pour les notifications temps reel
+                db.ref('userConversations/' + currentUser.uid).on('child_changed', snapshot => {
+                    const data = snapshot.val();
+                    const convId = snapshot.key;
+                    if (!data || !data.unread || data.unread <= 0) return;
+
+                    // Ne pas notifier si c'est la conversation active
+                    if (convId === currentChat) return;
+
+                    const senderName = data.type === 'dm' ? (data.otherPseudo || 'Quelqu\'un') : (data.name || 'Groupe');
+                    const preview = data.lastMessage || 'Nouveau message';
+
+                    // Toast in-app
+                    this.showToast('message', senderName, preview, () => {
+                        openChat(data.type, convId);
+                    });
+
+                    // Son
+                    this.playSound('message');
+
+                    // Notification navigateur (si onglet pas actif)
+                    if (document.hidden) {
+                        this.showBrowserNotif(
+                            '💬 ' + senderName,
+                            preview,
+                            () => openChat(data.type, convId)
+                        );
+                        this.startTitleBlink('💬 Nouveau message !');
+                    }
+                });
+            },
+
+            // --- Ecouter les demandes de contact ---
+            listenContactRequests() {
+                let firstLoad = true;
+                let knownRequests = {};
+
+                db.ref('friendRequests/' + currentUser.uid).on('value', snapshot => {
+                    const badge = document.getElementById('requestsBadge');
+
+                    if (!snapshot.exists()) {
+                        knownRequests = {};
+                        if (badge) badge.classList.remove('pulse');
+                        if (firstLoad) firstLoad = false;
+                        return;
+                    }
+
+                    const requests = snapshot.val();
+                    let newCount = 0;
+
+                    for (const [uid, data] of Object.entries(requests)) {
+                        // Ignorer les auto-accept
+                        if (data.autoAccept) continue;
+
+                        // Verifier si c'est une NOUVELLE demande
+                        if (!firstLoad && !knownRequests[uid]) {
+                            const pseudo = data.pseudo || 'Quelqu\'un';
+
+                            // Toast in-app
+                            this.showToast('contact', 'Demande de contact', pseudo + ' veut vous ajouter', () => {
+                                // Basculer vers l'onglet Contacts
+                                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                                const contactTab = document.querySelector('[data-tab="contacts"]');
+                                if (contactTab) contactTab.classList.add('active');
+                                document.getElementById('conversationsTab').style.display = 'none';
+                                document.getElementById('contactsTab').style.display = 'block';
+                            });
+
+                            // Son
+                            this.playSound('contact');
+
+                            // Notification navigateur
+                            if (document.hidden) {
+                                this.showBrowserNotif(
+                                    '👋 Demande de contact',
+                                    pseudo + ' veut vous ajouter'
+                                );
+                                this.startTitleBlink('👋 Nouvelle demande !');
+                            }
+
+                            newCount++;
+                        }
+
+                        knownRequests[uid] = true;
+                    }
+
+                    // Pulsation du badge
+                    if (badge && newCount > 0) {
+                        badge.classList.add('pulse');
+                        setTimeout(() => badge.classList.remove('pulse'), 5000);
+                    }
+
+                    // Nettoyer les demandes supprimees
+                    for (const uid of Object.keys(knownRequests)) {
+                        if (!requests[uid]) delete knownRequests[uid];
+                    }
+
+                    firstLoad = false;
+                });
+            }
+        };
+
+        // ==================== INIT NOTIFICATIONS ====================
+        const _origInitApp = initApp;
+        initApp = function() {
+            _origInitApp();
+            NotifSystem.init();
+        };
     </script>
 </body>
 </html>
