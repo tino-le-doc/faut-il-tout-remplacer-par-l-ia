@@ -410,6 +410,103 @@
         .profile-btn.danger { border-color: var(--red); color: var(--red); }
         .profile-btn.danger:hover { background: rgba(255,68,68,0.15); }
 
+        /* Notification preferences */
+        .notif-prefs {
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+        }
+
+        .notif-prefs h4 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            color: var(--cyan);
+        }
+
+        .notif-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .notif-toggle:last-child {
+            border-bottom: none;
+        }
+
+        .notif-toggle-info {
+            flex: 1;
+        }
+
+        .notif-toggle-label {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 3px;
+        }
+
+        .notif-toggle-desc {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 28px;
+            flex-shrink: 0;
+            margin-left: 15px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.15);
+            border-radius: 28px;
+            transition: all 0.3s;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background: linear-gradient(135deg, var(--magenta), var(--cyan));
+        }
+
+        .toggle-switch input:checked + .toggle-slider::before {
+            transform: translateX(22px);
+        }
+
+        .notif-status {
+            font-size: 0.8rem;
+            color: var(--green);
+            margin-top: 10px;
+            display: none;
+        }
+
+        .notif-status.show {
+            display: block;
+        }
+
         /* Loading */
         .loading { display: none; text-align: center; padding: 40px; }
         .loading.active { display: block; }
@@ -602,6 +699,32 @@
                 </div>
             </div>
 
+            <!-- Préférences de notifications -->
+            <div class="notif-prefs">
+                <h4>🔔 Notifications</h4>
+                <div class="notif-toggle">
+                    <div class="notif-toggle-info">
+                        <div class="notif-toggle-label">📧 Notifications par email</div>
+                        <div class="notif-toggle-desc">Recevoir un email quand vous avez des messages ou demandes de contact en attente</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="emailNotifToggle" onchange="toggleEmailNotifications(this.checked)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="notif-toggle">
+                    <div class="notif-toggle-info">
+                        <div class="notif-toggle-label">🔔 Notifications navigateur</div>
+                        <div class="notif-toggle-desc">Recevoir des alertes même quand l'onglet est en arrière-plan</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="browserNotifToggle" onchange="toggleBrowserNotifications(this.checked)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="notif-status" id="notifStatus"></div>
+            </div>
+
             <div class="profile-actions">
                 <a href="tchat.html" class="profile-btn">💬 Aller au tchat</a>
                 <a href="messagerie.html" class="profile-btn">✉️ Messagerie privée</a>
@@ -693,6 +816,9 @@
                         const days = Math.floor((Date.now() - profile.createdAt) / (1000 * 60 * 60 * 24));
                         document.getElementById('userDays').textContent = days;
                     }
+
+                    // Charger les préférences de notifications
+                    loadNotificationPrefs(user.uid);
                 } else {
                     document.getElementById('profileName').textContent = user.email;
                 }
@@ -1100,6 +1226,70 @@
 
         btn.disabled = false;
         btn.textContent = 'Valider mon pseudo';
+    }
+
+    // ==================== NOTIFICATION PREFERENCES ====================
+    async function loadNotificationPrefs(uid) {
+        try {
+            // Email notifications
+            const emailSnap = await db.ref('users/' + uid + '/emailNotifications').once('value');
+            const emailToggle = document.getElementById('emailNotifToggle');
+            if (emailToggle) {
+                emailToggle.checked = emailSnap.val() !== false; // Activé par défaut
+            }
+
+            // Browser notifications
+            const browserToggle = document.getElementById('browserNotifToggle');
+            if (browserToggle) {
+                browserToggle.checked = 'Notification' in window && Notification.permission === 'granted';
+            }
+        } catch (e) {
+            console.error('Erreur chargement préférences notif:', e);
+        }
+    }
+
+    async function toggleEmailNotifications(enabled) {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        try {
+            await db.ref('users/' + user.uid + '/emailNotifications').set(enabled);
+            showNotifStatus(enabled
+                ? '📧 Notifications email activées'
+                : '📧 Notifications email désactivées');
+        } catch (e) {
+            console.error('Erreur toggle email notif:', e);
+            showNotifStatus('Erreur lors de la sauvegarde', true);
+        }
+    }
+
+    async function toggleBrowserNotifications(enabled) {
+        if (!('Notification' in window)) {
+            showNotifStatus('Votre navigateur ne supporte pas les notifications', true);
+            document.getElementById('browserNotifToggle').checked = false;
+            return;
+        }
+
+        if (enabled) {
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                showNotifStatus('🔔 Notifications navigateur activées');
+            } else {
+                document.getElementById('browserNotifToggle').checked = false;
+                showNotifStatus('Notifications bloquées. Autorisez-les dans les paramètres du navigateur.', true);
+            }
+        } else {
+            showNotifStatus('🔔 Notifications navigateur désactivées (modifiable dans les paramètres navigateur)');
+        }
+    }
+
+    function showNotifStatus(msg, isError) {
+        const el = document.getElementById('notifStatus');
+        if (!el) return;
+        el.textContent = msg;
+        el.style.color = isError ? 'var(--red)' : 'var(--green)';
+        el.classList.add('show');
+        setTimeout(() => el.classList.remove('show'), 4000);
     }
 
     // ==================== INIT ====================
