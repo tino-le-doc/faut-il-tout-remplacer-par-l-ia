@@ -341,7 +341,6 @@
         </footer>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -349,21 +348,7 @@
     <script>
         const db = firebaseDb;
         const RECAPTCHA_SITE_KEY = '6Ld1ZXMsAAAAAA21gs6gWSD4jo0dJR_7cEGKaWNJ';
-
-        // ==================== EMAILJS CONFIG ====================
-        // A CONFIGURER : remplace ces valeurs par celles de ton compte EmailJS
-        const EMAILJS_SERVICE_ID = 'YOUR_EMAILJS_SERVICE_ID';
-        const EMAILJS_TEMPLATE_ID = 'YOUR_EMAILJS_TEMPLATE_ID';
-        const EMAILJS_PUBLIC_KEY = 'YOUR_EMAILJS_PUBLIC_KEY';
         const OWNER_EMAIL = 'martialfabrice@tino-le-doc.com';
-
-        // Initialiser EmailJS
-        if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY') {
-            emailjs.init(EMAILJS_PUBLIC_KEY);
-            console.log('📧 EmailJS initialise pour les notifications contact');
-        } else {
-            console.log('📧 EmailJS non configure - les messages seront sauvegardes dans Firebase uniquement');
-        }
 
         // ==================== RECAPTCHA ====================
         async function getRecaptchaToken(action) {
@@ -471,21 +456,15 @@
                     read: false
                 });
 
-                // Envoyer notification par email via EmailJS
-                if (typeof emailjs !== 'undefined' && EMAILJS_SERVICE_ID !== 'YOUR_EMAILJS_SERVICE_ID') {
-                    try {
-                        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-                            to_email: OWNER_EMAIL,
-                            from_name: name,
-                            from_email: email,
-                            subject: subject,
-                            message: message
-                        });
-                        console.log('📧 Notification email envoyee');
-                    } catch (emailError) {
-                        console.error('📧 Erreur envoi email (message sauvegarde dans Firebase):', emailError);
-                    }
-                }
+                // Ouvrir le client mail du visiteur avec les infos pre-remplies
+                const mailSubject = encodeURIComponent('[Contact Tino] ' + subject);
+                const mailBody = encodeURIComponent(
+                    'Nom : ' + name + '\n' +
+                    'Email : ' + email + '\n' +
+                    'Sujet : ' + subject + '\n\n' +
+                    message
+                );
+                window.open('mailto:' + OWNER_EMAIL + '?subject=' + mailSubject + '&body=' + mailBody, '_blank');
 
                 localStorage.setItem('tino_contact_last', Date.now().toString());
 
