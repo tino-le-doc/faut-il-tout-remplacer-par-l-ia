@@ -175,6 +175,13 @@
           }
         }
       }
+    },
+
+    // ==================== VEILLE TECHNOLOGIQUE ====================
+    "veilleArticles": {
+      ".read": true,
+      ".write": "auth != null",
+      ".indexOn": ["timestamp", "likesCount", "category"]
     }
   }
 }

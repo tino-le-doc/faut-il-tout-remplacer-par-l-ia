@@ -885,6 +885,13 @@
                 return;
             }
 
+            let source = '';
+            try { source = new URL(url).hostname.replace('www.', ''); } catch(e) { source = url; }
+
+            const submitBtn = document.querySelector('.submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Envoi...';
+
             try {
                 await db.ref(ARTICLES_PATH).push({
                     title: title,
@@ -892,18 +899,20 @@
                     summary: summary,
                     category: category,
                     tags: extractTags(title + ' ' + summary),
-                    source: new URL(url).hostname.replace('www.', ''),
+                    source: source,
                     timestamp: Date.now(),
                     authorUid: currentUser.uid,
                     authorName: currentUser.displayName || 'Anonyme',
-                    likesCount: 0,
-                    likes: {}
+                    likesCount: 0
                 });
                 document.getElementById('submitForm').reset();
                 showToast('Article soumis avec succes ! 🚀');
             } catch (err) {
-                console.error(err);
-                showToast('Erreur lors de la soumission', 'error');
+                console.error('Erreur soumission:', err);
+                showToast('Erreur : ' + (err.message || 'impossible de soumettre'), 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '🚀 Soumettre';
             }
         });
 
