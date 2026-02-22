@@ -9,11 +9,14 @@ const firebaseConfig = {
     projectId: "tino-le-doc",
     storageBucket: "tino-le-doc.firebasestorage.app",
     messagingSenderId: "865928450606",
-    appId: "1:865928450606:web:20fcb9497f7e0ded2fc5bf"
+    appId: "1:865928450606:web:20fcb9497f7e0ded2fc5bf",
+    measurementId: "G-GBHKF8BCP1"
 };
 
 // Initialisation Firebase
 let firebaseApp, firebaseAuth, firebaseDb;
+
+let firebaseAnalytics;
 
 try {
     firebaseApp = firebase.initializeApp(firebaseConfig);
@@ -21,6 +24,10 @@ try {
     // Auth n'est pas toujours charge (ex: avis.html)
     if (firebase.auth) {
         firebaseAuth = firebase.auth();
+    }
+    // Analytics n'est pas toujours charge
+    if (firebase.analytics) {
+        firebaseAnalytics = firebase.analytics();
     }
 } catch (error) {
     console.error('Erreur Firebase init:', error);
