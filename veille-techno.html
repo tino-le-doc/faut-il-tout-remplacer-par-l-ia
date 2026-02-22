@@ -968,9 +968,37 @@
             if (allArticles.length > 0) renderArticles();
         });
 
+        // ==================== PERSISTANCE LIKES (localStorage) ====================
+        const LIKES_STORAGE_KEY = 'veilleLikes';
+
+        function saveLikesToStorage() {
+            const data = {};
+            allArticles.forEach(a => {
+                if (a.likesCount > 0 || (a.likes && Object.keys(a.likes).length > 0)) {
+                    data[a.id] = { likesCount: a.likesCount || 0, likes: a.likes || {} };
+                }
+            });
+            try { localStorage.setItem(LIKES_STORAGE_KEY, JSON.stringify(data)); } catch(e) {}
+        }
+
+        function loadLikesFromStorage(articles) {
+            try {
+                const raw = localStorage.getItem(LIKES_STORAGE_KEY);
+                if (!raw) return;
+                const data = JSON.parse(raw);
+                articles.forEach(a => {
+                    if (data[a.id]) {
+                        a.likesCount = data[a.id].likesCount;
+                        a.likes = data[a.id].likes || {};
+                    }
+                });
+            } catch(e) {}
+        }
+
         // ==================== ARTICLES ====================
         // Afficher les articles locaux immediatement (avant Firebase)
         allArticles = SEED_ARTICLES.slice();
+        loadLikesFromStorage(allArticles);
         updateStats();
         renderArticles();
 
@@ -983,8 +1011,11 @@
                 // Utiliser les articles Firebase s'il y en a, sinon garder les locaux
                 if (firebaseArticles.length > 0) {
                     allArticles = firebaseArticles;
+                    // Sauvegarder les likes Firebase dans le storage local
+                    saveLikesToStorage();
                 } else {
                     allArticles = SEED_ARTICLES.slice();
+                    loadLikesFromStorage(allArticles);
                 }
                 allArticles.reverse();
                 updateStats();
@@ -1104,7 +1135,8 @@
                 article.likesCount = (article.likesCount || 0) + 1;
             }
 
-            // Re-render immediatement
+            // Persister + re-render immediatement
+            saveLikesToStorage();
             updateStats();
             renderArticles();
 
