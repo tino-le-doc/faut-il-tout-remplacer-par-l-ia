@@ -923,19 +923,29 @@
         });
 
         // ==================== ARTICLES ====================
+        // Afficher les articles locaux immediatement (avant Firebase)
+        allArticles = SEED_ARTICLES.slice();
+        updateStats();
+        renderArticles();
+
         function loadArticles() {
             db.ref(ARTICLES_PATH).orderByChild('timestamp').on('value', snap => {
-                allArticles = [];
+                const firebaseArticles = [];
                 snap.forEach(child => {
-                    allArticles.push({ id: child.key, ...child.val() });
+                    firebaseArticles.push({ id: child.key, ...child.val() });
                 });
-                // Si la base Firebase est vide, afficher les articles locaux
-                if (allArticles.length === 0) {
+                // Utiliser les articles Firebase s'il y en a, sinon garder les locaux
+                if (firebaseArticles.length > 0) {
+                    allArticles = firebaseArticles;
+                } else {
                     allArticles = SEED_ARTICLES.slice();
                 }
                 allArticles.reverse();
                 updateStats();
                 renderArticles();
+            }, err => {
+                console.warn('Firebase indisponible, articles locaux affiches:', err.message);
+                // Garder les articles locaux deja affiches
             });
         }
 
@@ -1057,6 +1067,28 @@
         }
 
         // ==================== TRENDING ====================
+        function renderTrending(items) {
+            const list = document.getElementById('trendingList');
+            if (items.length === 0) {
+                list.innerHTML = '<p style="color:var(--text-secondary);font-size:0.9rem;">Pas encore de tendances. Like des articles !</p>';
+                return;
+            }
+            list.innerHTML = items.map((item, i) => {
+                return '<div class="trending-item">' +
+                    '<span class="trending-rank">' + (i + 1) + '</span>' +
+                    '<div>' +
+                        '<div class="trending-text">' + escapeHtml(item.title || '') + '</div>' +
+                        '<div class="trending-meta">❤️ ' + (item.likesCount || 0) + ' likes</div>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+        }
+
+        // Afficher les trending locaux immediatement
+        const localTrending = SEED_ARTICLES.filter(a => a.likesCount > 0)
+            .sort((a, b) => (b.likesCount || 0) - (a.likesCount || 0)).slice(0, 5);
+        renderTrending(localTrending);
+
         function loadTrending() {
             db.ref(ARTICLES_PATH).orderByChild('likesCount').limitToLast(5).on('value', snap => {
                 const items = [];
@@ -1065,20 +1097,9 @@
                     if (val.likesCount > 0) items.push(val);
                 });
                 items.reverse();
-                const list = document.getElementById('trendingList');
-                if (items.length === 0) {
-                    list.innerHTML = '<p style="color:var(--text-secondary);font-size:0.9rem;">Pas encore de tendances. Like des articles !</p>';
-                    return;
-                }
-                list.innerHTML = items.map((item, i) => {
-                    return '<div class="trending-item">' +
-                        '<span class="trending-rank">' + (i + 1) + '</span>' +
-                        '<div>' +
-                            '<div class="trending-text">' + escapeHtml(item.title || '') + '</div>' +
-                            '<div class="trending-meta">❤️ ' + (item.likesCount || 0) + ' likes</div>' +
-                        '</div>' +
-                    '</div>';
-                }).join('');
+                renderTrending(items.length > 0 ? items : localTrending);
+            }, err => {
+                console.warn('Firebase trending indisponible:', err.message);
             });
         }
 
