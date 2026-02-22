@@ -1,6 +1,11 @@
 {
   "rules": {
 
+    // ==================== REGLE PAR DEFAUT ====================
+    // Tout ce qui n'est pas explicitement autorise est interdit
+    ".read": false,
+    ".write": false,
+
     // ==================== UTILISATEURS ====================
     "users": {
       "$uid": {
@@ -23,47 +28,60 @@
     "counters": {
       "visits": {
         ".read": true,
-        ".write": true
+        ".write": true,
+        ".validate": "newData.isNumber()"
       },
       "subscribers": {
         ".read": true,
-        ".write": true
+        ".write": "auth != null",
+        ".validate": "newData.isNumber()"
       }
     },
 
     // ==================== CONTACT ====================
+    // Les messages de contact sont en ecriture publique (formulaire anonyme)
+    // mais en lecture uniquement pour l'admin
     "contactMessages": {
-      ".read": false,
+      ".read": "auth != null && auth.token.email === 'martialfabrice@tino-le-doc.com'",
       ".write": true,
-      ".indexOn": ["timestamp"]
+      ".indexOn": ["timestamp"],
+      "$msgId": {
+        ".validate": "newData.hasChildren(['name', 'email', 'message', 'timestamp'])"
+      }
     },
 
     // ==================== TCHAT PUBLIC ====================
     "chatMessages": {
       ".read": true,
-      ".write": true,
-      ".indexOn": ["timestamp"]
+      ".write": "auth != null",
+      ".indexOn": ["timestamp"],
+      "$msgId": {
+        ".validate": "newData.hasChildren(['text', 'pseudo', 'timestamp']) && newData.child('text').isString() && newData.child('text').val().length <= 1000"
+      }
     },
 
     "chatUsers": {
       ".read": true,
       "$userId": {
-        ".write": true
+        ".write": "auth != null && auth.uid == $userId"
       }
     },
 
     "chatTyping": {
       ".read": true,
       "$userId": {
-        ".write": true
+        ".write": "auth != null && auth.uid == $userId"
       }
     },
 
     // ==================== AVIS ====================
     "reviews": {
       ".read": true,
-      ".write": true,
-      ".indexOn": ["timestamp"]
+      ".write": "auth != null",
+      ".indexOn": ["timestamp"],
+      "$reviewId": {
+        ".validate": "newData.hasChildren(['text', 'rating', 'timestamp']) && newData.child('rating').isNumber() && newData.child('rating').val() >= 1 && newData.child('rating').val() <= 5 && newData.child('text').isString() && newData.child('text').val().length <= 2000"
+      }
     },
 
     // ==================== CONTACTS & AMIS ====================
@@ -81,7 +99,7 @@
       }
     },
 
-    // ==================== MESSAGERIE ====================
+    // ==================== MESSAGERIE PRIVEE ====================
     "userConversations": {
       "$userId": {
         ".read": "auth != null && auth.uid == $userId",
@@ -93,7 +111,10 @@
       "$convId": {
         ".read": "auth != null",
         ".write": "auth != null",
-        ".indexOn": ["timestamp"]
+        ".indexOn": ["timestamp"],
+        "$msgId": {
+          ".validate": "newData.hasChildren(['text', 'senderId', 'timestamp']) && newData.child('text').isString() && newData.child('text').val().length <= 5000"
+        }
       }
     },
 
@@ -122,22 +143,25 @@
     // ==================== QUIZ ====================
     "quizScores": {
       ".read": true,
-      ".write": true,
-      ".indexOn": ["accuracy", "timestamp"]
+      ".write": "auth != null",
+      ".indexOn": ["accuracy", "timestamp"],
+      "$scoreId": {
+        ".validate": "newData.hasChildren(['pseudo', 'accuracy', 'timestamp']) && newData.child('accuracy').isNumber()"
+      }
     },
 
     // ==================== SONDAGES ====================
     "polls": {
       ".read": true,
       "$pollId": {
-        ".write": true,
+        ".write": "auth != null",
         "votes": {
           "$optionId": {
-            ".write": true
+            ".write": "auth != null"
           }
         },
         "totalVotes": {
-          ".write": true
+          ".write": "auth != null"
         }
       }
     },
@@ -145,7 +169,7 @@
     "dailyVotes": {
       ".read": true,
       "$date": {
-        ".write": true
+        ".write": "auth != null"
       }
     },
 
@@ -153,12 +177,12 @@
     "debates": {
       ".read": true,
       "$date": {
-        ".write": true,
+        ".write": "auth != null",
         "pour": {
-          ".write": true
+          ".write": "auth != null"
         },
         "contre": {
-          ".write": true
+          ".write": "auth != null"
         }
       }
     },
@@ -166,18 +190,20 @@
     "debateArguments": {
       ".read": true,
       "$date": {
-        ".write": true,
+        ".write": "auth != null",
         ".indexOn": ["likes", "timestamp"],
         "$argId": {
-          ".write": true,
+          ".write": "auth != null",
           "likes": {
-            ".write": true
+            ".write": "auth != null"
           }
         }
       }
     },
 
     // ==================== VEILLE TECHNOLOGIQUE ====================
+    // Seul l'admin peut creer/modifier/supprimer des articles
+    // Les utilisateurs connectes peuvent liker
     "veilleArticles": {
       ".read": true,
       ".indexOn": ["timestamp", "likesCount", "category"],
