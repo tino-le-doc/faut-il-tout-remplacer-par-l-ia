@@ -20,6 +20,7 @@
     <meta property="og:url" content="https://tino-le-doc.com/compte.html">
     <meta property="og:locale" content="fr_FR">
     <title>Mon Compte 👤 Tino Le Doc</title>
+    <script src="https://www.google.com/recaptcha/enterprise.js?render=6Ld1ZXMsAAAAAA21gs6gWSD4jo0dJR_7cEGKaWNJ"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/common.css">
     <style>
@@ -549,6 +550,9 @@
         .password-strength-bar.strong { width: 100%; background: var(--green); }
         .password-hint { font-size: 0.75rem; color: var(--text-secondary); margin-top: 5px; }
 
+        /* Hide reCAPTCHA badge (notice in footer per Google ToS) */
+        .grecaptcha-badge { visibility: hidden; }
+
         /* Footer */
         footer {
             text-align: center;
@@ -749,6 +753,11 @@
                 <a href="messagerie.html">✉️ Messagerie</a>
                 <a href="confidentialite.html">🔒 Confidentialité</a>
             </div>
+            <p style="font-size: 0.7rem; margin-top: 12px; color: rgba(255,255,255,0.3);">
+                Ce site est protégé par reCAPTCHA Enterprise.
+                <a href="https://policies.google.com/privacy" style="color: rgba(0,245,255,0.4);">Confidentialité</a> -
+                <a href="https://policies.google.com/terms" style="color: rgba(0,245,255,0.4);">Conditions</a>
+            </p>
         </footer>
     </div>
 
@@ -902,6 +911,20 @@
         formSuccess.classList.remove('show');
     }
 
+    // ==================== RECAPTCHA ====================
+    const RECAPTCHA_SITE_KEY = '6Ld1ZXMsAAAAAA21gs6gWSD4jo0dJR_7cEGKaWNJ';
+
+    async function getRecaptchaToken(action) {
+        try {
+            await new Promise(resolve => grecaptcha.enterprise.ready(resolve));
+            const token = await grecaptcha.enterprise.execute(RECAPTCHA_SITE_KEY, { action });
+            return token;
+        } catch (error) {
+            console.error('Erreur reCAPTCHA:', error);
+            return null;
+        }
+    }
+
     // ==================== VALIDATION ====================
     function validatePseudo(pseudo) {
         if (pseudo.length < 3 || pseudo.length > 20) return false;
@@ -950,6 +973,17 @@
         }
 
         btn.disabled = true;
+        btn.textContent = '⏳ Vérification...';
+
+        // reCAPTCHA verification
+        const recaptchaToken = await getRecaptchaToken('REGISTER');
+        if (!recaptchaToken) {
+            showError('Vérification de sécurité échouée. Rechargez la page et réessayez.');
+            btn.disabled = false;
+            btn.textContent = 'Créer mon compte';
+            return;
+        }
+
         btn.textContent = '⏳ Création en cours...';
 
         try {
@@ -1040,6 +1074,17 @@
         }
 
         btn.disabled = true;
+        btn.textContent = '⏳ Vérification...';
+
+        // reCAPTCHA verification
+        const recaptchaToken = await getRecaptchaToken('LOGIN');
+        if (!recaptchaToken) {
+            showError('Vérification de sécurité échouée. Rechargez la page et réessayez.');
+            btn.disabled = false;
+            btn.textContent = 'Se connecter';
+            return;
+        }
+
         btn.textContent = '⏳ Connexion...';
 
         try {
@@ -1142,6 +1187,14 @@
         hideMessages();
         const btns = document.querySelectorAll('.google-btn');
         btns.forEach(b => { b.disabled = true; b.querySelector('svg').style.display = 'none'; });
+
+        // reCAPTCHA verification
+        const recaptchaToken = await getRecaptchaToken('GOOGLE_SIGNIN');
+        if (!recaptchaToken) {
+            showError('Vérification de sécurité échouée. Rechargez la page et réessayez.');
+            btns.forEach(b => { b.disabled = false; b.querySelector('svg').style.display = ''; });
+            return;
+        }
 
         try {
             const result = await auth.signInWithPopup(googleProvider);
