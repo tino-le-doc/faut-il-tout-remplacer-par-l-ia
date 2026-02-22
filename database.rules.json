@@ -180,8 +180,18 @@
     // ==================== VEILLE TECHNOLOGIQUE ====================
     "veilleArticles": {
       ".read": true,
-      ".write": "auth != null",
-      ".indexOn": ["timestamp", "likesCount", "category"]
+      ".indexOn": ["timestamp", "likesCount", "category"],
+      ".write": "auth != null && auth.token.email === 'martialfabrice@tino-le-doc.com'",
+      "$articleId": {
+        "likes": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid"
+          }
+        },
+        "likesCount": {
+          ".write": "auth != null"
+        }
+      }
     }
   }
 }
