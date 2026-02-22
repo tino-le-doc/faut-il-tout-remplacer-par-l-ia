@@ -348,6 +348,7 @@
     <script>
         const db = firebaseDb;
         const RECAPTCHA_SITE_KEY = '6Ld1ZXMsAAAAAA21gs6gWSD4jo0dJR_7cEGKaWNJ';
+        const OWNER_EMAIL = 'martialfabrice@tino-le-doc.com';
 
         // ==================== RECAPTCHA ====================
         async function getRecaptchaToken(action) {
@@ -454,6 +455,16 @@
                     timestamp: firebase.database.ServerValue.TIMESTAMP,
                     read: false
                 });
+
+                // Ouvrir le client mail du visiteur avec les infos pre-remplies
+                const mailSubject = encodeURIComponent('[Contact Tino] ' + subject);
+                const mailBody = encodeURIComponent(
+                    'Nom : ' + name + '\n' +
+                    'Email : ' + email + '\n' +
+                    'Sujet : ' + subject + '\n\n' +
+                    message
+                );
+                window.open('mailto:' + OWNER_EMAIL + '?subject=' + mailSubject + '&body=' + mailBody, '_blank');
 
                 localStorage.setItem('tino_contact_last', Date.now().toString());
 
