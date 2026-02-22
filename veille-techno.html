@@ -697,6 +697,209 @@
         let allArticles = [];
         let displayCount = 10;
         let currentUser = null;
+        let articlesSeeded = false; // Evite les doublons
+
+        // ==================== 15 ARTICLES PRE-REMPLIS ====================
+        const now = Date.now();
+        const DAY = 86400000;
+
+        const SEED_ARTICLES = [
+            {
+                id: 'seed-1',
+                title: "Claude 4 d'Anthropic : le modele le plus puissant jamais cree",
+                url: "https://www.anthropic.com",
+                summary: "Anthropic devoile Claude 4, son nouveau modele d'IA capable de raisonnement avance, de codage complexe et d'analyse multi-documents. Des performances qui surpassent GPT-4o sur la majorite des benchmarks.",
+                category: "ia",
+                tags: ["Claude", "Anthropic", "LLM", "IA"],
+                source: "anthropic.com",
+                timestamp: now,
+                authorName: "Tino Le Doc",
+                authorUid: "admin",
+                likesCount: 42
+            },
+            {
+                id: 'seed-2',
+                title: "OpenAI lance GPT-5 : vers l'AGI ?",
+                url: "https://openai.com",
+                summary: "OpenAI presente GPT-5, un modele multimodal natif qui comprend texte, images, audio et video. Sam Altman affirme que c'est un pas majeur vers l'intelligence artificielle generale (AGI).",
+                category: "ia",
+                tags: ["GPT", "OpenAI", "AGI", "LLM"],
+                source: "openai.com",
+                timestamp: now - DAY,
+                authorName: "Tino Le Doc",
+                authorUid: "admin",
+                likesCount: 38
+            },
+            {
+                id: 'seed-3',
+                title: "Google DeepMind : Gemini 2.5 revolutionne la recherche scientifique",
+                url: "https://deepmind.google",
+                summary: "Gemini 2.5 de Google DeepMind est capable de concevoir des experiences scientifiques, analyser des resultats et proposer de nouvelles hypotheses. Deja utilise dans la recherche pharmaceutique.",
+                category: "ia",
+                tags: ["Gemini", "Google", "IA"],
+                source: "deepmind.google",
+                timestamp: now - DAY * 2,
+                authorName: "Tino Le Doc",
+                authorUid: "admin",
+                likesCount: 29
+            },
+            {
+                id: 'seed-4',
+                title: "Tesla Optimus Gen 3 : le robot humanoide entre en usine",
+                url: "https://www.tesla.com",
+                summary: "Tesla deploie la 3e generation de son robot humanoide Optimus dans ses usines. Il peut desormais manipuler des objets fragiles, marcher sur terrain irregulier et travailler 20h sans recharge.",
+                category: "robotique",
+                tags: ["robot", "Tesla", "IA"],
+                source: "tesla.com",
+                timestamp: now - DAY * 3,
+                authorName: "Tino Le Doc",
+                authorUid: "admin",
+                likesCount: 25
+            },
+            {
+                id: 'seed-5',
+                title: "L'Union Europeenne adopte l'AI Act : ce qui change",
+                url: "https://digital-strategy.ec.europa.eu",
+                summary: "L'AI Act europeen entre en vigueur. Les systemes d'IA a haut risque devront etre certifies, les deepfakes etiquetes, et les modeles fondateurs soumis a des obligations de transparence.",
+                category: "ethique",
+                tags: ["regulation", "ethique", "IA"],
+                source: "ec.europa.eu",
+                timestamp: now - DAY * 4,
+                authorName: "Tino Le Doc",
+                authorUid: "admin",
+                likesCount: 21
+            },
+            {
+                id: 'seed-6',
+                title: "Mistral AI leve 1 milliard et lance Mistral Large 3",
+                url: "https://mistral.ai",
+                summary: "La startup francaise Mistral AI boucle une levee record de 1 milliard d'euros et lance Mistral Large 3, un modele open-weight rival de GPT-4o. La France s'impose dans la course a l'IA.",
+                category: "startup",
+                tags: ["startup", "LLM", "open source", "IA"],
+                source: "mistral.ai",
+                timestamp: now - DAY * 5,
+                authorName: "Tino Le Doc",
+                authorUid: "admin",
+                likesCount: 33
+            },
+            {
+                id: 'seed-7',
+                title: "NVIDIA Blackwell Ultra : la puce qui alimente l'IA mondiale",
+                url: "https://www.nvidia.com",
+                summary: "NVIDIA devoile le GPU Blackwell Ultra avec 208 milliards de transistors. Capable d'entrainer des modeles de 10 000 milliards de parametres, il equipe deja les datacenters de Google, Meta et Microsoft.",
+                category: "hardware",
+                tags: ["NVIDIA", "GPU", "IA"],
+                source: "nvidia.com",
+                timestamp: now - DAY * 6,
+                authorName: "Tino Le Doc",
+                authorUid: "admin",
+                likesCount: 19
+            },
+            {
+                id: 'seed-8',
+                title: "Meta Llama 4 : l'IA open source rattrape les modeles proprietaires",
+                url: "https://ai.meta.com",
+                summary: "Meta publie Llama 4 en open source. Avec 400 milliards de parametres et des performances proches de GPT-5, c'est le modele libre le plus puissant. Disponible gratuitement pour la recherche et les entreprises.",
+                category: "ia",
+                tags: ["Meta", "LLM", "open source", "IA"],
+                source: "ai.meta.com",
+                timestamp: now - DAY * 7,
+                authorName: "Tino Le Doc",
+                authorUid: "admin",
+                likesCount: 27
+            },
+            {
+                id: 'seed-9',
+                title: "Cursor et les IDE IA : comment le code s'ecrit tout seul",
+                url: "https://cursor.sh",
+                summary: "Les IDE assistes par IA comme Cursor, GitHub Copilot Workspace et Windsurf transforment le developpement. Les developpeurs rapportent un gain de productivite de 40 a 60% sur les taches repetitives.",
+                category: "web",
+                tags: ["IA", "API", "startup"],
+                source: "cursor.sh",
+                timestamp: now - DAY * 8,
+                authorName: "Tino Le Doc",
+                authorUid: "admin",
+                likesCount: 31
+            },
+            {
+                id: 'seed-10',
+                title: "Apple Intelligence 2.0 : Siri devient vraiment intelligent",
+                url: "https://www.apple.com",
+                summary: "Apple deploie Intelligence 2.0 sur iPhone, iPad et Mac. Siri comprend le contexte, genere des images, resume les emails et peut executer des actions complexes entre applications.",
+                category: "ia",
+                tags: ["Apple", "IA"],
+                source: "apple.com",
+                timestamp: now - DAY * 9,
+                authorName: "Tino Le Doc",
+                authorUid: "admin",
+                likesCount: 16
+            },
+            {
+                id: 'seed-11',
+                title: "Les deepfakes IA : une menace pour la democratie ?",
+                url: "https://www.lemonde.fr",
+                summary: "Des videos deepfake de dirigeants politiques generees par IA circulent massivement sur les reseaux sociaux. Les experts alertent sur le risque de manipulation des elections et demandent une legislation urgente.",
+                category: "ethique",
+                tags: ["ethique", "IA", "video"],
+                source: "lemonde.fr",
+                timestamp: now - DAY * 10,
+                authorName: "Tino Le Doc",
+                authorUid: "admin",
+                likesCount: 14
+            },
+            {
+                id: 'seed-12',
+                title: "Figure 02 : le robot humanoide qui apprend en regardant des videos",
+                url: "https://www.figure.ai",
+                summary: "La startup Figure devoile son robot humanoide Figure 02, entraine grace a des millions d'heures de video YouTube. Il peut preparer un cafe, ranger une chambre et tenir une conversation naturelle.",
+                category: "robotique",
+                tags: ["robot", "startup", "IA", "video"],
+                source: "figure.ai",
+                timestamp: now - DAY * 11,
+                authorName: "Tino Le Doc",
+                authorUid: "admin",
+                likesCount: 22
+            },
+            {
+                id: 'seed-13',
+                title: "Microsoft Copilot+ PC : l'ordinateur qui anticipe vos besoins",
+                url: "https://www.microsoft.com",
+                summary: "Microsoft lance ses PC Copilot+ equipes de puces NPU dediees a l'IA. Recall memorise tout, Copilot redige vos documents et les apps s'adaptent automatiquement a vos habitudes.",
+                category: "hardware",
+                tags: ["Microsoft", "IA"],
+                source: "microsoft.com",
+                timestamp: now - DAY * 12,
+                authorName: "Tino Le Doc",
+                authorUid: "admin",
+                likesCount: 11
+            },
+            {
+                id: 'seed-14',
+                title: "L'IA remplace-t-elle vraiment des emplois ? Les chiffres 2025",
+                url: "https://www.mckinsey.com",
+                summary: "Une etude McKinsey revele que l'IA a automatise 15% des taches dans les entreprises adoptantes, mais a cree 12% de nouveaux postes. Le bilan net reste modere, mais certains secteurs sont plus touches.",
+                category: "ethique",
+                tags: ["IA", "ethique"],
+                source: "mckinsey.com",
+                timestamp: now - DAY * 13,
+                authorName: "Tino Le Doc",
+                authorUid: "admin",
+                likesCount: 18
+            },
+            {
+                id: 'seed-15',
+                title: "Hugging Face depasse GitHub en nombre de modeles IA partages",
+                url: "https://huggingface.co",
+                summary: "Hugging Face franchit le cap du million de modeles heberges. La plateforme open source est devenue le hub incontournable pour partager des modeles d'IA, datasets et applications de machine learning.",
+                category: "web",
+                tags: ["open source", "machine learning", "IA"],
+                source: "huggingface.co",
+                timestamp: now - DAY * 14,
+                authorName: "Tino Le Doc",
+                authorUid: "admin",
+                likesCount: 24
+            }
+        ];
 
         const BADGE_MAP = {
             ia: { cls: 'badge-ia', label: '🤖 IA' },
@@ -726,6 +929,10 @@
                 snap.forEach(child => {
                     allArticles.push({ id: child.key, ...child.val() });
                 });
+                // Si la base Firebase est vide, afficher les articles locaux
+                if (allArticles.length === 0) {
+                    allArticles = SEED_ARTICLES.slice();
+                }
                 allArticles.reverse();
                 updateStats();
                 renderArticles();
@@ -978,178 +1185,23 @@
 
         // ==================== SEED ARTICLES (Admin, une seule fois) ====================
         async function seedArticles() {
+            if (articlesSeeded) return;
             const snap = await db.ref(ARTICLES_PATH).once('value');
-            if (snap.exists()) return; // Deja des articles, on ne seed pas
-
-            const now = Date.now();
-            const DAY = 86400000;
-
-            const articles = [
-                {
-                    title: "Claude 4 d'Anthropic : le modele le plus puissant jamais cree",
-                    url: "https://www.anthropic.com",
-                    summary: "Anthropic devoile Claude 4, son nouveau modele d'IA capable de raisonnement avance, de codage complexe et d'analyse multi-documents. Des performances qui surpassent GPT-4o sur la majorite des benchmarks.",
-                    category: "ia",
-                    tags: ["Claude", "Anthropic", "LLM", "IA"],
-                    source: "anthropic.com",
-                    timestamp: now,
-                    likesCount: 0
-                },
-                {
-                    title: "OpenAI lance GPT-5 : vers l'AGI ?",
-                    url: "https://openai.com",
-                    summary: "OpenAI presente GPT-5, un modele multimodal natif qui comprend texte, images, audio et video. Sam Altman affirme que c'est un pas majeur vers l'intelligence artificielle generale (AGI).",
-                    category: "ia",
-                    tags: ["GPT", "OpenAI", "AGI", "LLM"],
-                    source: "openai.com",
-                    timestamp: now - DAY,
-                    likesCount: 0
-                },
-                {
-                    title: "Google DeepMind : Gemini 2.5 revolutionne la recherche scientifique",
-                    url: "https://deepmind.google",
-                    summary: "Gemini 2.5 de Google DeepMind est capable de concevoir des experiences scientifiques, analyser des resultats et proposer de nouvelles hypotheses. Deja utilise dans la recherche pharmaceutique.",
-                    category: "ia",
-                    tags: ["Gemini", "Google", "IA"],
-                    source: "deepmind.google",
-                    timestamp: now - DAY * 2,
-                    likesCount: 0
-                },
-                {
-                    title: "Tesla Optimus Gen 3 : le robot humanoide entre en usine",
-                    url: "https://www.tesla.com",
-                    summary: "Tesla deploie la 3e generation de son robot humanoide Optimus dans ses usines. Il peut desormais manipuler des objets fragiles, marcher sur terrain irregulier et travailler 20h sans recharge.",
-                    category: "robotique",
-                    tags: ["robot"],
-                    source: "tesla.com",
-                    timestamp: now - DAY * 3,
-                    likesCount: 0
-                },
-                {
-                    title: "L'Union Europeenne adopte l'AI Act : ce qui change",
-                    url: "https://digital-strategy.ec.europa.eu",
-                    summary: "L'AI Act europeen entre en vigueur. Les systemes d'IA a haut risque devront etre certifies, les deepfakes etiquetes, et les modeles fondateurs soumis a des obligations de transparence.",
-                    category: "ethique",
-                    tags: ["regulation", "ethique", "IA"],
-                    source: "ec.europa.eu",
-                    timestamp: now - DAY * 4,
-                    likesCount: 0
-                },
-                {
-                    title: "Mistral AI leve 1 milliard et lance Mistral Large 3",
-                    url: "https://mistral.ai",
-                    summary: "La startup française Mistral AI boucle une levee record de 1 milliard d'euros et lance Mistral Large 3, un modele open-weight rival de GPT-4o. La France s'impose dans la course a l'IA.",
-                    category: "startup",
-                    tags: ["startup", "LLM", "open source", "IA"],
-                    source: "mistral.ai",
-                    timestamp: now - DAY * 5,
-                    likesCount: 0
-                },
-                {
-                    title: "NVIDIA Blackwell Ultra : la puce qui alimente l'IA mondiale",
-                    url: "https://www.nvidia.com",
-                    summary: "NVIDIA devoile le GPU Blackwell Ultra avec 208 milliards de transistors. Capable d'entrainer des modeles de 10 000 milliards de parametres, il equipe deja les datacenters de Google, Meta et Microsoft.",
-                    category: "hardware",
-                    tags: ["NVIDIA", "GPU"],
-                    source: "nvidia.com",
-                    timestamp: now - DAY * 6,
-                    likesCount: 0
-                },
-                {
-                    title: "Meta Llama 4 : l'IA open source rattrape les modeles proprietaires",
-                    url: "https://ai.meta.com",
-                    summary: "Meta publie Llama 4 en open source. Avec 400 milliards de parametres et des performances proches de GPT-5, c'est le modele libre le plus puissant. Disponible gratuitement pour la recherche et les entreprises.",
-                    category: "ia",
-                    tags: ["Meta", "LLM", "open source", "IA"],
-                    source: "ai.meta.com",
-                    timestamp: now - DAY * 7,
-                    likesCount: 0
-                },
-                {
-                    title: "Cursor et les IDE IA : comment le code s'ecrit tout seul",
-                    url: "https://cursor.sh",
-                    summary: "Les IDE assistes par IA comme Cursor, GitHub Copilot Workspace et Windsurf transforment le developpement. Les developpeurs rapportent un gain de productivite de 40 a 60% sur les taches repetitives.",
-                    category: "web",
-                    tags: ["IA", "API"],
-                    source: "cursor.sh",
-                    timestamp: now - DAY * 8,
-                    likesCount: 0
-                },
-                {
-                    title: "Apple Intelligence 2.0 : Siri devient vraiment intelligent",
-                    url: "https://www.apple.com",
-                    summary: "Apple deploie Intelligence 2.0 sur iPhone, iPad et Mac. Siri comprend le contexte, genere des images, resume les emails et peut executer des actions complexes entre applications.",
-                    category: "ia",
-                    tags: ["Apple", "IA"],
-                    source: "apple.com",
-                    timestamp: now - DAY * 9,
-                    likesCount: 0
-                },
-                {
-                    title: "Les deepfakes IA : une menace pour la democratie ?",
-                    url: "https://www.lemonde.fr",
-                    summary: "Des videos deepfake de dirigeants politiques generees par IA circulent massivement sur les reseaux sociaux. Les experts alertent sur le risque de manipulation des elections et demandent une legislation urgente.",
-                    category: "ethique",
-                    tags: ["ethique", "IA", "video"],
-                    source: "lemonde.fr",
-                    timestamp: now - DAY * 10,
-                    likesCount: 0
-                },
-                {
-                    title: "Figure 02 : le robot humanoide qui apprend en regardant des videos",
-                    url: "https://www.figure.ai",
-                    summary: "La startup Figure devoile son robot humanoide Figure 02, entraine grace a des millions d'heures de video YouTube. Il peut preparer un cafe, ranger une chambre et tenir une conversation naturelle.",
-                    category: "robotique",
-                    tags: ["robot", "startup", "IA", "video"],
-                    source: "figure.ai",
-                    timestamp: now - DAY * 11,
-                    likesCount: 0
-                },
-                {
-                    title: "Microsoft Copilot+ PC : l'ordinateur qui anticipe vos besoins",
-                    url: "https://www.microsoft.com",
-                    summary: "Microsoft lance ses PC Copilot+ equipes de puces NPU dediees a l'IA. Recall memorise tout, Copilot redige vos documents et les apps s'adaptent automatiquement a vos habitudes.",
-                    category: "hardware",
-                    tags: ["Microsoft", "IA"],
-                    source: "microsoft.com",
-                    timestamp: now - DAY * 12,
-                    likesCount: 0
-                },
-                {
-                    title: "L'IA remplace-t-elle vraiment des emplois ? Les chiffres 2025",
-                    url: "https://www.mckinsey.com",
-                    summary: "Une etude McKinsey revele que l'IA a automatise 15% des taches dans les entreprises adoptantes, mais a cree 12% de nouveaux postes. Le bilan net reste modere, mais certains secteurs sont plus touches.",
-                    category: "ethique",
-                    tags: ["IA", "ethique"],
-                    source: "mckinsey.com",
-                    timestamp: now - DAY * 13,
-                    likesCount: 0
-                },
-                {
-                    title: "Hugging Face depasse GitHub en nombre de modeles IA partages",
-                    url: "https://huggingface.co",
-                    summary: "Hugging Face franchit le cap du million de modeles heberges. La plateforme open source est devenue le hub incontournable pour partager des modeles d'IA, datasets et applications de machine learning.",
-                    category: "web",
-                    tags: ["open source", "machine learning", "IA"],
-                    source: "huggingface.co",
-                    timestamp: now - DAY * 14,
-                    likesCount: 0
-                }
-            ];
+            if (snap.exists()) { articlesSeeded = true; return; }
 
             const updates = {};
-            articles.forEach(article => {
+            SEED_ARTICLES.forEach(article => {
                 const key = db.ref(ARTICLES_PATH).push().key;
-                article.authorName = 'Tino Le Doc';
-                article.authorUid = 'admin';
-                updates[ARTICLES_PATH + '/' + key] = article;
+                const { id, ...data } = article; // Enlever l'id local
+                updates[ARTICLES_PATH + '/' + key] = data;
             });
 
             try {
                 await db.ref().update(updates);
-                console.log('Articles de veille pre-remplis !');
+                articlesSeeded = true;
+                showToast('15 articles charges dans Firebase !');
             } catch (err) {
-                console.error('Erreur seed:', err);
+                console.error('Erreur seed Firebase:', err);
             }
         }
 
@@ -1157,7 +1209,7 @@
         loadArticles();
         loadTrending();
 
-        // Seed les articles si la base est vide (admin requis)
+        // Quand l'admin se connecte, synchroniser les articles dans Firebase
         auth.onAuthStateChanged(user => {
             if (isAdmin(user)) seedArticles();
         });
