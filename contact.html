@@ -343,12 +343,10 @@
 
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script>
         const db = firebaseDb;
-        const auth = firebaseAuth;
         const RECAPTCHA_SITE_KEY = '6Ld1ZXMsAAAAAA21gs6gWSD4jo0dJR_7cEGKaWNJ';
 
         // ==================== RECAPTCHA ====================
@@ -445,11 +443,6 @@
             btn.textContent = '⏳ Envoi en cours...';
 
             try {
-                // Authentification anonyme si pas connecte (necessaire pour les regles Firebase)
-                if (!auth.currentUser) {
-                    await auth.signInAnonymously();
-                }
-
                 // Save to Firebase
                 const newRef = db.ref('contactMessages').push();
                 await newRef.set({

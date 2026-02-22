@@ -1,0 +1,180 @@
+{
+  "rules": {
+
+    // ==================== UTILISATEURS ====================
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        ".validate": "newData.hasChildren(['email', 'pseudo', 'createdAt'])"
+      }
+    },
+
+    // ==================== PSEUDOS (unicite) ====================
+    "pseudos": {
+      ".read": true,
+      "$pseudo": {
+        ".write": "auth != null && (!data.exists() || data.val() == auth.uid)",
+        ".validate": "newData.val() == auth.uid"
+      }
+    },
+
+    // ==================== COMPTEURS ====================
+    "counters": {
+      "visits": {
+        ".read": true,
+        ".write": true
+      },
+      "subscribers": {
+        ".read": true,
+        ".write": true
+      }
+    },
+
+    // ==================== CONTACT ====================
+    "contactMessages": {
+      ".read": false,
+      ".write": true,
+      ".indexOn": ["timestamp"]
+    },
+
+    // ==================== TCHAT PUBLIC ====================
+    "chatMessages": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": ["timestamp"]
+    },
+
+    "chatUsers": {
+      ".read": true,
+      "$userId": {
+        ".write": true
+      }
+    },
+
+    "chatTyping": {
+      ".read": true,
+      "$userId": {
+        ".write": true
+      }
+    },
+
+    // ==================== AVIS ====================
+    "reviews": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": ["timestamp"]
+    },
+
+    // ==================== CONTACTS & AMIS ====================
+    "contacts": {
+      "$userId": {
+        ".read": "auth != null && auth.uid == $userId",
+        ".write": "auth != null && auth.uid == $userId"
+      }
+    },
+
+    "friendRequests": {
+      "$userId": {
+        ".read": "auth != null && auth.uid == $userId",
+        ".write": "auth != null"
+      }
+    },
+
+    // ==================== MESSAGERIE ====================
+    "userConversations": {
+      "$userId": {
+        ".read": "auth != null && auth.uid == $userId",
+        ".write": "auth != null"
+      }
+    },
+
+    "dmMessages": {
+      "$convId": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+        ".indexOn": ["timestamp"]
+      }
+    },
+
+    "groups": {
+      "$groupId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+
+    "groupMessages": {
+      "$groupId": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+        ".indexOn": ["timestamp"]
+      }
+    },
+
+    "dmVideoRoom": {
+      "$convId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+
+    // ==================== QUIZ ====================
+    "quizScores": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": ["accuracy", "timestamp"]
+    },
+
+    // ==================== SONDAGES ====================
+    "polls": {
+      ".read": true,
+      "$pollId": {
+        ".write": true,
+        "votes": {
+          "$optionId": {
+            ".write": true
+          }
+        },
+        "totalVotes": {
+          ".write": true
+        }
+      }
+    },
+
+    "dailyVotes": {
+      ".read": true,
+      "$date": {
+        ".write": true
+      }
+    },
+
+    // ==================== DEBATS ====================
+    "debates": {
+      ".read": true,
+      "$date": {
+        ".write": true,
+        "pour": {
+          ".write": true
+        },
+        "contre": {
+          ".write": true
+        }
+      }
+    },
+
+    "debateArguments": {
+      ".read": true,
+      "$date": {
+        ".write": true,
+        ".indexOn": ["likes", "timestamp"],
+        "$argId": {
+          ".write": true,
+          "likes": {
+            ".write": true
+          }
+        }
+      }
+    }
+  }
+}
