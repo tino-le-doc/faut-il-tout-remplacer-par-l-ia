@@ -561,6 +561,34 @@
             flex-wrap: wrap;
         }
 
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--cyan), var(--magenta));
+            color: #fff;
+            border-radius: 25px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 700;
+            z-index: 9999;
+            animation: toastIn 0.3s ease-out, toastOut 0.3s ease-in 2.7s forwards;
+            pointer-events: none;
+        }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        @keyframes toastOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
         /* Responsive */
         @media (max-width: 600px) {
             .container { padding: 20px 12px; }
@@ -1042,16 +1070,35 @@
                 showToast('Connecte-toi pour liker !', 'warning');
                 return;
             }
+
+            // Mise a jour locale optimiste (UI reactive)
+            const article = allArticles.find(a => a.id === articleId);
+            if (!article) return;
+
+            if (!article.likes) article.likes = {};
+            const alreadyLiked = article.likes[currentUser.uid];
+
+            if (alreadyLiked) {
+                delete article.likes[currentUser.uid];
+                article.likesCount = Math.max((article.likesCount || 1) - 1, 0);
+            } else {
+                article.likes[currentUser.uid] = true;
+                article.likesCount = (article.likesCount || 0) + 1;
+            }
+
+            // Re-render immediatement
+            updateStats();
+            renderArticles();
+
+            // Synchroniser avec Firebase en arriere-plan
             const likePath = ARTICLES_PATH + '/' + articleId + '/likes/' + currentUser.uid;
-            db.ref(likePath).once('value').then(snap => {
-                if (snap.exists()) {
-                    db.ref(likePath).remove();
-                    db.ref(ARTICLES_PATH + '/' + articleId + '/likesCount').transaction(v => Math.max((v || 1) - 1, 0));
-                } else {
-                    db.ref(likePath).set(true);
-                    db.ref(ARTICLES_PATH + '/' + articleId + '/likesCount').transaction(v => (v || 0) + 1);
-                }
-            });
+            if (alreadyLiked) {
+                db.ref(likePath).remove().catch(err => console.warn('Like sync error:', err.message));
+                db.ref(ARTICLES_PATH + '/' + articleId + '/likesCount').transaction(v => Math.max((v || 1) - 1, 0));
+            } else {
+                db.ref(likePath).set(true).catch(err => console.warn('Like sync error:', err.message));
+                db.ref(ARTICLES_PATH + '/' + articleId + '/likesCount').transaction(v => (v || 0) + 1);
+            }
         }
 
         // ==================== SHARE ====================
