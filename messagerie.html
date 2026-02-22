@@ -73,6 +73,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            background: linear-gradient(180deg, rgba(0, 245, 255, 0.03), transparent);
         }
 
         .sidebar-header h1 {
@@ -174,18 +175,20 @@
 
         .search-input {
             width: 100%;
-            padding: 10px 15px;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
+            padding: 11px 16px;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--glass-border);
+            border-radius: 14px;
             color: var(--text);
             font-family: inherit;
             font-size: 0.9rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
         .search-input:focus {
             outline: none;
             border-color: var(--cyan);
+            box-shadow: 0 0 12px rgba(0, 245, 255, 0.1);
         }
 
         .search-input::placeholder {
@@ -213,23 +216,28 @@
             align-items: center;
             gap: 12px;
             padding: 12px;
-            border-radius: 12px;
+            border-radius: 14px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.25s ease;
             margin-bottom: 5px;
+            border: 1px solid transparent;
         }
 
         .conv-item:hover {
             background: var(--glass);
+            border-color: var(--glass-border);
+            transform: translateX(4px);
         }
 
         .conv-item.active {
-            background: linear-gradient(135deg, rgba(0,245,255,0.15), rgba(255,0,170,0.15));
-            border: 1px solid var(--cyan);
+            background: linear-gradient(135deg, rgba(0,245,255,0.12), rgba(255,0,170,0.12));
+            border: 1px solid rgba(0, 245, 255, 0.4);
+            box-shadow: 0 2px 12px rgba(0, 245, 255, 0.1);
         }
 
         .conv-item.unread {
-            background: rgba(255,0,170,0.1);
+            background: rgba(255,0,170,0.08);
+            border-color: rgba(255,0,170,0.2);
         }
 
         .conv-avatar {
@@ -349,12 +357,13 @@
 
         .chat-header {
             padding: 15px 20px;
-            background: var(--bg-secondary);
+            background: linear-gradient(180deg, var(--bg-secondary), rgba(18, 18, 26, 0.95));
             border-bottom: 1px solid var(--glass-border);
             display: flex;
             align-items: center;
             gap: 15px;
-            flex-shrink: 0; /* Ne pas réduire */
+            flex-shrink: 0;
+            backdrop-filter: blur(10px);
         }
 
         .chat-header-info {
@@ -389,7 +398,10 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            min-height: 0; /* Important pour le scroll dans flexbox */
+            min-height: 0;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(255, 0, 170, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 245, 255, 0.03) 0%, transparent 50%);
         }
 
         .messages-container::-webkit-scrollbar {
@@ -439,13 +451,17 @@
 
         .message-content {
             background: var(--bg-tertiary);
-            border-radius: 16px 16px 16px 4px;
+            border: 1px solid var(--glass-border);
+            border-radius: 18px 18px 18px 4px;
             padding: 12px 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         .message.own .message-content {
-            background: linear-gradient(135deg, rgba(255,0,170,0.2), rgba(0,245,255,0.2));
-            border-radius: 16px 16px 4px 16px;
+            background: linear-gradient(135deg, rgba(255,0,170,0.15), rgba(0,245,255,0.15));
+            border: 1px solid rgba(0, 245, 255, 0.2);
+            border-radius: 18px 18px 4px 18px;
+            box-shadow: 0 2px 8px rgba(0, 245, 255, 0.1);
         }
 
         .message-sender {
@@ -507,37 +523,56 @@
         .input-form {
             display: flex;
             gap: 10px;
+            align-items: center;
         }
 
         .input-form input {
             flex: 1;
-            padding: 12px 18px;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
+            padding: 14px 20px;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--glass-border);
             border-radius: 25px;
             color: var(--text);
             font-family: inherit;
             font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
         .input-form input:focus {
             outline: none;
             border-color: var(--cyan);
+            box-shadow: 0 0 15px rgba(0, 245, 255, 0.15);
+        }
+
+        .input-form input::placeholder {
+            color: var(--text-secondary);
         }
 
         .input-form button {
-            padding: 12px 20px;
+            width: 48px;
+            height: 48px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             background: linear-gradient(135deg, var(--magenta), var(--cyan));
             border: none;
-            border-radius: 25px;
+            border-radius: 50%;
             color: white;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(255, 0, 170, 0.3);
         }
 
         .input-form button:hover {
-            transform: scale(1.05);
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(255, 0, 170, 0.5);
+        }
+
+        .input-form button:active {
+            transform: scale(0.95);
         }
 
         /* No Chat Selected */
@@ -549,6 +584,8 @@
             justify-content: center;
             text-align: center;
             padding: 40px;
+            background-image:
+                radial-gradient(circle at 50% 50%, rgba(0, 245, 255, 0.05) 0%, transparent 60%);
         }
 
         /* Active Chat - IMPORTANT: doit prendre toute la hauteur */
@@ -829,11 +866,20 @@
             height: 100vh;
             text-align: center;
             padding: 40px;
+            background-image:
+                radial-gradient(circle at 30% 40%, rgba(255, 0, 170, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(0, 245, 255, 0.06) 0%, transparent 50%);
         }
 
         .login-required .icon {
             font-size: 5rem;
             margin-bottom: 20px;
+            animation: float1 3s ease-in-out infinite;
+        }
+
+        @keyframes loginFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
         .login-required h1 {
@@ -849,11 +895,17 @@
             color: var(--text-secondary);
             margin-bottom: 30px;
             max-width: 400px;
+            line-height: 1.6;
         }
 
         .login-required .btn {
             padding: 15px 40px;
             font-size: 1.1rem;
+            box-shadow: 0 6px 25px rgba(255, 0, 170, 0.3);
+        }
+
+        .login-required .btn:hover {
+            box-shadow: 0 8px 35px rgba(255, 0, 170, 0.5);
         }
 
         /* ===== RESPONSIVE MOBILE (Android / iOS) ===== */
@@ -1029,9 +1081,11 @@
             }
 
             .input-form button {
-                padding: 12px 16px;
-                font-size: 1.1rem;
-                border-radius: 22px;
+                width: 48px;
+                height: 48px;
+                padding: 0;
+                font-size: 1.2rem;
+                border-radius: 50%;
                 min-width: 48px;
                 min-height: 48px;
             }
@@ -2172,6 +2226,9 @@
 
             if (!text || !currentChat) return;
 
+            // Vider le champ immediatement pour une UX reactive
+            input.value = '';
+
             let path;
             if (currentChatType === 'dm') {
                 path = 'dmMessages/' + currentChat;
@@ -2187,44 +2244,46 @@
                 timestamp: Date.now()
             };
 
-            await db.ref(path).push(message);
+            try {
+                await db.ref(path).push(message);
 
-            // Update last message in conversation
-            if (currentChatType !== 'public') {
-                const update = {
-                    lastMessage: text.substring(0, 50),
-                    lastTime: Date.now()
-                };
+                // Update last message in conversation
+                if (currentChatType !== 'public') {
+                    const update = {
+                        lastMessage: text.substring(0, 50),
+                        lastTime: Date.now()
+                    };
 
-                if (currentChatType === 'dm') {
-                    const conv = conversations[currentChat];
-                    if (conv) {
-                        for (const oderId of conv.participants) {
-                            await db.ref('userConversations/' + oderId + '/' + currentChat).update(update);
+                    if (currentChatType === 'dm') {
+                        const conv = conversations[currentChat];
+                        if (conv) {
+                            for (const oderId of conv.participants) {
+                                await db.ref('userConversations/' + oderId + '/' + currentChat).update(update);
 
-                            // Increment unread + email notification for other user
-                            if (oderId !== currentUser.uid) {
-                                await db.ref('userConversations/' + oderId + '/' + currentChat + '/unread').transaction(n => (n || 0) + 1);
-                                EmailNotifier.notifyNewMessage(oderId, currentUserProfile.pseudo, text);
+                                // Increment unread + email notification for other user
+                                if (oderId !== currentUser.uid) {
+                                    await db.ref('userConversations/' + oderId + '/' + currentChat + '/unread').transaction(n => (n || 0) + 1);
+                                    EmailNotifier.notifyNewMessage(oderId, currentUserProfile.pseudo, text);
+                                }
                             }
                         }
-                    }
-                } else if (currentChatType === 'group') {
-                    const groupSnap = await db.ref('groups/' + currentChat + '/members').once('value');
-                    if (groupSnap.exists()) {
-                        for (const oderId of Object.keys(groupSnap.val())) {
-                            await db.ref('userConversations/' + oderId + '/' + currentChat).update(update);
+                    } else if (currentChatType === 'group') {
+                        const groupSnap = await db.ref('groups/' + currentChat + '/members').once('value');
+                        if (groupSnap.exists()) {
+                            for (const oderId of Object.keys(groupSnap.val())) {
+                                await db.ref('userConversations/' + oderId + '/' + currentChat).update(update);
 
-                            if (oderId !== currentUser.uid) {
-                                await db.ref('userConversations/' + oderId + '/' + currentChat + '/unread').transaction(n => (n || 0) + 1);
-                                EmailNotifier.notifyNewMessage(oderId, currentUserProfile.pseudo, text);
+                                if (oderId !== currentUser.uid) {
+                                    await db.ref('userConversations/' + oderId + '/' + currentChat + '/unread').transaction(n => (n || 0) + 1);
+                                    EmailNotifier.notifyNewMessage(oderId, currentUserProfile.pseudo, text);
+                                }
                             }
                         }
                     }
                 }
+            } catch (err) {
+                console.error('Erreur envoi message:', err);
             }
-
-            input.value = '';
         }
 
         // ==================== CHAT INFO ====================
