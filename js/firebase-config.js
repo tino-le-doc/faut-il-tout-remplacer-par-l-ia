@@ -33,6 +33,13 @@ try {
     console.error('Erreur Firebase init:', error);
 }
 
+/* UID Admin du site - seul compte autorise a gerer la veille techno */
+const ADMIN_EMAIL = 'martialfabrice@tino-le-doc.com';
+
+function isAdmin(user) {
+    return user && user.email === ADMIN_EMAIL;
+}
+
 /* Utilitaires partages */
 
 /**

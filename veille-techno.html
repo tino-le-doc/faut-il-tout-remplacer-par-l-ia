@@ -639,10 +639,10 @@
             <button class="load-more-btn" id="loadMoreBtn">Charger plus d'articles</button>
         </div>
 
-        <!-- Submit an article -->
-        <div class="submit-section">
-            <h2>📝 Proposer un article</h2>
-            <p>Tu as repere une actu IA interessante ? Partage-la avec la communaute !</p>
+        <!-- Submit an article (Admin only) -->
+        <div class="submit-section" id="adminSection" style="display:none;">
+            <h2>📝 Publier un article (Admin)</h2>
+            <p>Ajoute un nouvel article a la veille technologique.</p>
             <form class="submit-form" id="submitForm">
                 <input type="text" id="submitTitle" placeholder="Titre de l'article" maxlength="150" required>
                 <input type="url" id="submitUrl" placeholder="Lien (URL) de la source" required>
@@ -708,8 +708,15 @@
         };
 
         // ==================== AUTH ====================
+        let isAdminUser = false;
+
         auth.onAuthStateChanged(user => {
             currentUser = user;
+            isAdminUser = isAdmin(user);
+            // Afficher/cacher la section admin
+            document.getElementById('adminSection').style.display = isAdminUser ? 'block' : 'none';
+            // Re-render pour afficher les boutons admin
+            if (allArticles.length > 0) renderArticles();
         });
 
         // ==================== ARTICLES ====================
@@ -786,6 +793,7 @@
                             '</button>' +
                             (article.url ? '<a href="' + escapeHtml(article.url) + '" target="_blank" rel="noopener" class="action-btn">🔗 Lire</a>' : '') +
                             '<button class="action-btn" onclick="shareArticle(\'' + article.id + '\')">📤</button>' +
+                            (isAdminUser ? '<button class="action-btn" style="border-color:var(--red);color:var(--red);" onclick="deleteArticle(\'' + article.id + '\')">🗑️</button>' : '') +
                         '</div>' +
                     '</div>' +
                     (article.source ? '<div class="article-source" style="margin-top:10px;"><span class="source-dot"></span> ' + escapeHtml(article.source) + '</div>' : '') +
@@ -867,11 +875,20 @@
             });
         }
 
-        // ==================== SUBMIT ====================
+        // ==================== DELETE (Admin) ====================
+        function deleteArticle(articleId) {
+            if (!isAdminUser) return;
+            if (!confirm('Supprimer cet article ?')) return;
+            db.ref(ARTICLES_PATH + '/' + articleId).remove()
+                .then(() => showToast('Article supprime'))
+                .catch(err => showToast('Erreur : ' + err.message, 'error'));
+        }
+
+        // ==================== SUBMIT (Admin) ====================
         document.getElementById('submitForm').addEventListener('submit', async e => {
             e.preventDefault();
-            if (!currentUser) {
-                showToast('Connecte-toi pour proposer un article !', 'warning');
+            if (!isAdminUser) {
+                showToast('Acces reserve a l\'administrateur', 'error');
                 return;
             }
 
@@ -885,6 +902,13 @@
                 return;
             }
 
+            let source = '';
+            try { source = new URL(url).hostname.replace('www.', ''); } catch(e) { source = url; }
+
+            const submitBtn = document.querySelector('.submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Envoi...';
+
             try {
                 await db.ref(ARTICLES_PATH).push({
                     title: title,
@@ -892,18 +916,20 @@
                     summary: summary,
                     category: category,
                     tags: extractTags(title + ' ' + summary),
-                    source: new URL(url).hostname.replace('www.', ''),
+                    source: source,
                     timestamp: Date.now(),
                     authorUid: currentUser.uid,
                     authorName: currentUser.displayName || 'Anonyme',
-                    likesCount: 0,
-                    likes: {}
+                    likesCount: 0
                 });
                 document.getElementById('submitForm').reset();
                 showToast('Article soumis avec succes ! 🚀');
             } catch (err) {
-                console.error(err);
-                showToast('Erreur lors de la soumission', 'error');
+                console.error('Erreur soumission:', err);
+                showToast('Erreur : ' + (err.message || 'impossible de soumettre'), 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '🚀 Soumettre';
             }
         });
 
