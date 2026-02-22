@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <!--
+      Copyright (c) 2025 Tino Le Doc - Tous droits reserves
+      Toute copie, reproduction ou reutilisation non autorisee est interdite.
+      Licence proprietaire - voir fichier LICENSE
+    -->
+    <meta charset="UTF-8">
+    <meta http-equiv="content-language" content="fr">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8612974241235499"
+         crossorigin="anonymous"></script>
+    <meta name="author" content="Tino Le Doc">
+    <meta name="copyright" content="Copyright 2025 Tino Le Doc. Tous droits reserves.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contactez Tino Le Doc - Formulaire de contact pour questions, suggestions ou partenariats.">
+    <meta property="og:title" content="Contact - Tino Le Doc">
+    <meta property="og:description" content="Contactez Tino Le Doc pour vos questions, suggestions ou demandes de partenariat.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tino-le-doc.com/contact.html">
+    <meta property="og:locale" content="fr_FR">
+    <title>Contact - Tino Le Doc</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/common.css">
+    <script src="https://www.google.com/recaptcha/enterprise.js?render=6Ld1ZXMsAAAAAA21gs6gWSD4jo0dJR_7cEGKaWNJ"></script>
+    <style>
+        .grecaptcha-badge { visibility: hidden; }
+
+        .page-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            font-weight: 800;
+            text-align: center;
+            margin: 30px 0 10px;
+            background: linear-gradient(135deg, var(--text) 0%, var(--cyan) 50%, var(--magenta) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease-out 0.2s backwards;
+        }
+
+        .contact-card {
+            max-width: 650px;
+            margin: 0 auto 40px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            animation: fadeInUp 0.8s ease-out 0.4s backwards;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--cyan);
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.15);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .form-group select {
+            cursor: pointer;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2300f5ff' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+        }
+
+        .form-group select option {
+            background: #1a1a25;
+            color: var(--text);
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--cyan), var(--magenta));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 245, 255, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .form-message {
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .form-message.error {
+            background: rgba(255, 68, 68, 0.15);
+            border: 1px solid rgba(255, 68, 68, 0.4);
+            color: var(--red);
+            display: block;
+        }
+
+        .form-message.success {
+            background: rgba(0, 255, 136, 0.15);
+            border: 1px solid rgba(0, 255, 136, 0.4);
+            color: var(--green);
+            display: block;
+        }
+
+        .info-cards {
+            max-width: 650px;
+            margin: 0 auto 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            animation: fadeInUp 0.8s ease-out 0.6s backwards;
+        }
+
+        .info-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .info-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--cyan);
+        }
+
+        .info-card-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .info-card-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--cyan);
+            margin-bottom: 5px;
+        }
+
+        .info-card-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .info-card-text a {
+            color: var(--cyan);
+            text-decoration: none;
+        }
+
+        .info-card-text a:hover {
+            text-decoration: underline;
+        }
+
+        .recaptcha-notice {
+            font-size: 0.7rem;
+            margin-top: 15px;
+            color: rgba(255, 255, 255, 0.3);
+            text-align: center;
+        }
+
+        .recaptcha-notice a {
+            color: rgba(0, 245, 255, 0.4);
+        }
+
+        @media (max-width: 600px) {
+            .contact-card {
+                padding: 25px 20px;
+            }
+
+            .info-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Aller au contenu</a>
+    <div class="bg-grid"></div>
+    <div class="floating-orb orb-1"></div>
+    <div class="floating-orb orb-2"></div>
+
+    <div class="container">
+        <!-- Logo -->
+        <div class="logo">
+            <a href="index.html">
+                <img src="img/1000074494.png" alt="Tino Le Doc" class="logo-img">
+            </a>
+        </div>
+
+        <a href="index.html" class="back-link">← Retour à l'accueil</a>
+
+        <h1 class="page-title" id="main-content">Contactez-nous</h1>
+        <p class="page-subtitle">Une question, une suggestion ou une demande de partenariat ? Ecrivez-nous !</p>
+
+        <!-- Info cards -->
+        <div class="info-cards">
+            <div class="info-card">
+                <div class="info-card-icon">📧</div>
+                <div class="info-card-title">Email</div>
+                <div class="info-card-text">
+                    <a href="mailto:martialfabrice@tino-le-doc.com">martialfabrice@tino-le-doc.com</a>
+                </div>
+            </div>
+            <div class="info-card">
+                <div class="info-card-icon">⏱️</div>
+                <div class="info-card-title">Delai de reponse</div>
+                <div class="info-card-text">Nous repondons sous 48h en general</div>
+            </div>
+            <div class="info-card">
+                <div class="info-card-icon">💼</div>
+                <div class="info-card-title">Partenariats</div>
+                <div class="info-card-text">Pub, collabs, sponsoring... contactez-nous !</div>
+            </div>
+        </div>
+
+        <!-- Contact form -->
+        <div class="contact-card">
+            <div id="formMessage" class="form-message"></div>
+
+            <form id="contactForm">
+                <div class="form-group">
+                    <label for="contactName">Votre nom / pseudo</label>
+                    <input type="text" id="contactName" placeholder="Ex: Tino" required maxlength="50">
+                </div>
+
+                <div class="form-group">
+                    <label for="contactEmail">Votre email</label>
+                    <input type="email" id="contactEmail" placeholder="votre@email.com" required maxlength="100">
+                </div>
+
+                <div class="form-group">
+                    <label for="contactSubject">Sujet</label>
+                    <select id="contactSubject" required>
+                        <option value="">-- Choisissez un sujet --</option>
+                        <option value="question">Question generale</option>
+                        <option value="bug">Signaler un bug</option>
+                        <option value="suggestion">Suggestion / Idee</option>
+                        <option value="partenariat">Partenariat / Publicite</option>
+                        <option value="compte">Probleme de compte</option>
+                        <option value="autre">Autre</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="contactMessage">Votre message</label>
+                    <textarea id="contactMessage" placeholder="Decrivez votre demande en detail..." required maxlength="2000"></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">📨 Envoyer le message</button>
+
+                <p class="recaptcha-notice">
+                    Ce site est protege par reCAPTCHA Enterprise.
+                    <a href="https://policies.google.com/privacy">Confidentialite</a> -
+                    <a href="https://policies.google.com/terms">Conditions</a>
+                </p>
+            </form>
+        </div>
+
+        <footer role="contentinfo">
+            Cree avec ❤️ par <strong>Tino Le Doc</strong> | Propulse par <a href="https://claude.ai" target="_blank">Claude AI</a>
+            <nav aria-label="Navigation principale">
+            <div class="footer-links">
+                <a href="quiz.html">🧠 Quiz</a>
+                <a href="sondages.html">📊 Sondages</a>
+                <a href="debat.html">⚔️ Debat</a>
+                <a href="tchat.html">💬 Tchat</a>
+                <a href="messagerie.html">✉️ Messagerie</a>
+                <a href="avis.html">⭐ Avis</a>
+                <a href="compte.html">👤 Compte</a>
+                <a href="premium.html">👑 Premium</a>
+                <a href="boutique.html">🛒 Boutique</a>
+                <a href="contact.html">📧 Contact</a>
+                <a href="confidentialite.html">🔒 Confidentialite</a>
+            </div>
+            </nav>
+        </footer>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script>
+        const db = firebaseDb;
+        const RECAPTCHA_SITE_KEY = '6Ld1ZXMsAAAAAA21gs6gWSD4jo0dJR_7cEGKaWNJ';
+
+        // ==================== RECAPTCHA ====================
+        async function getRecaptchaToken(action) {
+            try {
+                await new Promise(resolve => grecaptcha.enterprise.ready(resolve));
+                const token = await grecaptcha.enterprise.execute(RECAPTCHA_SITE_KEY, { action });
+                return token;
+            } catch (error) {
+                console.error('Erreur reCAPTCHA:', error);
+                return null;
+            }
+        }
+
+        // ==================== FORM ====================
+        const formMessage = document.getElementById('formMessage');
+
+        function showError(msg) {
+            formMessage.textContent = msg;
+            formMessage.className = 'form-message error';
+        }
+
+        function showSuccess(msg) {
+            formMessage.textContent = msg;
+            formMessage.className = 'form-message success';
+        }
+
+        function hideMessage() {
+            formMessage.className = 'form-message';
+        }
+
+        // Rate limiting (1 message per 60s)
+        function canSendMessage() {
+            const lastSent = localStorage.getItem('tino_contact_last');
+            if (!lastSent) return true;
+            return (Date.now() - parseInt(lastSent)) > 60000;
+        }
+
+        // Sanitize input
+        function sanitize(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            hideMessage();
+
+            const name = document.getElementById('contactName').value.trim();
+            const email = document.getElementById('contactEmail').value.trim();
+            const subject = document.getElementById('contactSubject').value;
+            const message = document.getElementById('contactMessage').value.trim();
+            const btn = document.getElementById('submitBtn');
+
+            // Validations
+            if (!name || name.length < 2) {
+                showError('Veuillez entrer un nom valide (minimum 2 caracteres).');
+                return;
+            }
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showError('Adresse email invalide.');
+                return;
+            }
+
+            if (!subject) {
+                showError('Veuillez choisir un sujet.');
+                return;
+            }
+
+            if (!message || message.length < 10) {
+                showError('Votre message est trop court (minimum 10 caracteres).');
+                return;
+            }
+
+            if (!canSendMessage()) {
+                showError('Veuillez patienter 1 minute entre chaque message.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = '⏳ Verification...';
+
+            // reCAPTCHA
+            const recaptchaToken = await getRecaptchaToken('CONTACT');
+            if (!recaptchaToken) {
+                showError('Verification de securite echouee. Rechargez la page et reessayez.');
+                btn.disabled = false;
+                btn.textContent = '📨 Envoyer le message';
+                return;
+            }
+
+            btn.textContent = '⏳ Envoi en cours...';
+
+            try {
+                // Save to Firebase
+                const newRef = db.ref('contactMessages').push();
+                await newRef.set({
+                    name: sanitize(name),
+                    email: sanitize(email),
+                    subject: subject,
+                    message: sanitize(message),
+                    recaptchaToken: recaptchaToken,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP,
+                    read: false
+                });
+
+                localStorage.setItem('tino_contact_last', Date.now().toString());
+
+                showSuccess('Message envoye avec succes ! Nous vous repondrons sous 48h.');
+                document.getElementById('contactForm').reset();
+
+            } catch (error) {
+                console.error('Erreur envoi:', error);
+                showError('Erreur lors de l\'envoi. Veuillez reessayer.');
+            }
+
+            btn.disabled = false;
+            btn.textContent = '📨 Envoyer le message';
+        });
+
+        console.log('📧 Page contact initialisee');
+    </script>
+</body>
+</html>
