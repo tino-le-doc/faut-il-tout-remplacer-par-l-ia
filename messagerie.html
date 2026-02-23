@@ -1708,15 +1708,17 @@
                     const snapshot = await db.ref('users/' + user.uid).once('value');
                     currentUserProfile = snapshot.val();
                     
-                    if (currentUserProfile) {
+                    if (currentUserProfile && currentUserProfile.pseudo) {
                         document.getElementById('loginRequired').style.display = 'none';
                         document.getElementById('main-content').style.display = 'flex';
                         initApp();
                     } else {
+                        // Profil incomplet ou inexistant, rediriger vers la page compte
                         window.location.href = 'compte.html';
                     }
                 } catch (e) {
                     console.error('Erreur profil:', e);
+                    window.location.href = 'compte.html';
                 }
             } else {
                 document.getElementById('loginRequired').style.display = 'flex';
@@ -1995,15 +1997,26 @@
                     return;
                 }
 
-                let html = '';
-                let count = 0;
+                const users = [];
                 snapshot.forEach(child => {
-                    if (count >= 10) return;
-                    const pseudo = child.key;    // clé = pseudo en minuscules
-                    const uid = child.val();     // valeur = uid de l'utilisateur
-
+                    if (users.length >= 10) return;
+                    const uid = child.val();
                     if (uid !== currentUser.uid) {
-                        const displayPseudo = pseudo.charAt(0).toUpperCase() + pseudo.slice(1);
+                        users.push(uid);
+                    }
+                });
+
+                if (users.length === 0) {
+                    resultsDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Aucun résultat</p>';
+                    return;
+                }
+
+                // Récupérer les vrais pseudos depuis les profils
+                let html = '';
+                for (const uid of users) {
+                    try {
+                        const userSnap = await db.ref('users/' + uid + '/pseudo').once('value');
+                        const displayPseudo = userSnap.val() || 'Utilisateur';
                         html += `
                             <div class="user-item">
                                 <div class="user-item-avatar">${displayPseudo.charAt(0).toUpperCase()}</div>
@@ -2015,9 +2028,8 @@
                                 </div>
                             </div>
                         `;
-                        count++;
-                    }
-                });
+                    } catch (e) {}
+                }
 
                 resultsDiv.innerHTML = html || '<p style="color: var(--text-secondary); text-align: center;">Aucun résultat</p>';
             } catch (err) {
@@ -2376,6 +2388,9 @@
 
             try {
                 await db.ref(path).push(message);
+
+                // Incrémenter le compteur de messages du profil
+                db.ref('users/' + currentUser.uid + '/messagesCount').transaction(n => (n || 0) + 1);
 
                 // Update last message in conversation
                 if (currentChatType !== 'public') {
