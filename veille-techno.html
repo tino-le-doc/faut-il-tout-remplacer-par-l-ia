@@ -1349,6 +1349,7 @@
 
             debugLog('=== DEBUG SEED START ===');
             debugLog('currentUser: ' + (currentUser ? currentUser.email : 'NON CONNECTE'));
+            debugLog('UID: ' + (currentUser ? currentUser.uid : 'N/A'));
             debugLog('isAdmin: ' + isAdmin(currentUser));
             debugLog('ARTICLES_PATH: ' + ARTICLES_PATH);
             debugLog('articlesSeeded: ' + articlesSeeded);
@@ -1361,13 +1362,38 @@
                 return;
             }
 
+            // Verifier le token ID pour voir les claims exactes
             try {
-                debugLog('Lecture Firebase ' + ARTICLES_PATH + '...');
+                const token = await currentUser.getIdTokenResult();
+                debugLog('Token email: ' + token.claims.email);
+                debugLog('Token email_verified: ' + token.claims.email_verified);
+            } catch (e) {
+                debugLog('Erreur token: ' + e.message);
+            }
+
+            // Test 1: ecriture minimale pour tester les permissions
+            try {
+                debugLog('--- Test ecriture minimale sur veilleArticles/_test ---');
+                await db.ref(ARTICLES_PATH + '/_test').set({ test: true, ts: Date.now() });
+                debugLog('Test ecriture OK !');
+                await db.ref(ARTICLES_PATH + '/_test').remove();
+                debugLog('Nettoyage _test OK');
+            } catch (err) {
+                debugLog('Test ecriture ECHOUE: ' + err.code);
+                debugLog('=> Il faut deployer les rules Firebase !');
+                debugLog('=> Commande: firebase deploy --only database');
+                debugLog('=== FIN (bloque par les permissions) ===');
+                return;
+            }
+
+            // Test 2: seed complet
+            try {
+                debugLog('--- Lecture Firebase ' + ARTICLES_PATH + ' ---');
                 const snap = await db.ref(ARTICLES_PATH).once('value');
                 debugLog('snap.exists() = ' + snap.exists() + ', enfants = ' + snap.numChildren());
 
-                if (snap.exists()) {
-                    debugLog('Les articles existent deja dans Firebase ! (' + snap.numChildren() + ' articles)');
+                if (snap.exists() && snap.numChildren() > 1) {
+                    debugLog('Les articles existent deja ! (' + snap.numChildren() + ' articles)');
                     return;
                 }
 
@@ -1383,10 +1409,6 @@
                 articlesSeeded = true;
             } catch (err) {
                 debugLog('ERREUR: ' + err.code + ' - ' + err.message);
-                if (err.code === 'PERMISSION_DENIED') {
-                    debugLog('=> Les database rules ne sont pas deployees !');
-                    debugLog('=> Lancez: firebase deploy --only database');
-                }
             }
         }
 
@@ -1400,7 +1422,7 @@
             const info = document.getElementById('debugInfo');
             if (info) {
                 info.textContent = user
-                    ? 'Connecte: ' + user.email + ' | Admin: ' + isAdmin(user)
+                    ? 'Connecte: ' + user.email + ' | UID: ' + user.uid + ' | Admin: ' + isAdmin(user)
                     : 'Non connecte - connectez-vous d\'abord';
             }
             if (isAdmin(user)) seedArticles();
