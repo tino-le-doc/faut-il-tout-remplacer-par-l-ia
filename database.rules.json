@@ -35,6 +35,11 @@
         ".read": true,
         ".write": "auth != null",
         ".validate": "newData.isNumber()"
+      },
+      "iotQuestions": {
+        ".read": true,
+        ".write": "auth != null",
+        ".validate": "newData.isNumber()"
       }
     },
 
