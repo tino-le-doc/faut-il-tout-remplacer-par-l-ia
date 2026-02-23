@@ -1660,8 +1660,8 @@
                 <!-- Ecran de jointure -->
                 <div id="vcJoinScreen" style="padding:40px 20px;text-align:center;">
                     <div style="font-size:4rem;margin-bottom:20px;">📹</div>
-                    <h3 style="font-family:'Syne',sans-serif;font-size:1.3rem;margin-bottom:10px;">Appel vidéo privé</h3>
-                    <p style="color:rgba(255,255,255,0.6);margin-bottom:20px;">Démarrez un appel vidéo en direct avec votre contact</p>
+                    <h3 style="font-family:'Syne',sans-serif;font-size:1.3rem;margin-bottom:10px;">Appel vidéo</h3>
+                    <p style="color:rgba(255,255,255,0.6);margin-bottom:20px;">Démarrez un appel vidéo en direct</p>
                     <button id="vcJoinBtn" onclick="DMVideoChat.joinCall()" style="padding:15px 35px;border:none;border-radius:15px;font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#00ff88,#00cc6a);color:#0a0a0f;transition:all 0.3s;">📹 Rejoindre l'appel</button>
                 </div>
                 <!-- Grille vidéo -->
@@ -2277,7 +2277,7 @@
                     statusEl.className = 'chat-header-status';
                 }
                 document.getElementById('leaveGroupBtn').style.display = 'block';
-                document.getElementById('videoCallBtn').style.display = 'none';
+                document.getElementById('videoCallBtn').style.display = 'flex';
 
                 loadMessages('groupMessages/' + id);
             }
@@ -2570,13 +2570,21 @@
 
         // ==================== VIDEO CALL PRIVE (DM) ====================
         function startVideoCall() {
-            if (!currentChat || currentChatType !== 'dm') return;
+            if (!currentChat || (currentChatType !== 'dm' && currentChatType !== 'group')) return;
             const conv = conversations[currentChat];
             if (!conv) return;
-            const otherUserId = conv.participants ? conv.participants.find(p => p !== currentUser.uid) : null;
-            const otherPseudo = conv.otherPseudo || (otherUserId && contacts[otherUserId] && contacts[otherUserId].pseudo) || 'Utilisateur';
-            document.getElementById('vcCallName').textContent = otherPseudo;
-            DMVideoChat.currentConvId = currentChat;
+
+            if (currentChatType === 'dm') {
+                const otherUserId = conv.participants ? conv.participants.find(p => p !== currentUser.uid) : null;
+                const otherPseudo = conv.otherPseudo || (otherUserId && contacts[otherUserId] && contacts[otherUserId].pseudo) || 'Utilisateur';
+                document.getElementById('vcCallName').textContent = otherPseudo;
+                DMVideoChat.currentConvId = currentChat;
+                DMVideoChat.currentCallType = 'dm';
+            } else if (currentChatType === 'group') {
+                document.getElementById('vcCallName').textContent = conv.name || 'Groupe';
+                DMVideoChat.currentConvId = currentChat;
+                DMVideoChat.currentCallType = 'group';
+            }
             openModal('videoCall');
         }
 
@@ -2588,6 +2596,7 @@
             remoteStreams: {},
             myVideoId: null,
             currentConvId: null,
+            currentCallType: 'dm', // 'dm' or 'group'
             roomRef: null,
             participantsRef: null,
             signalsRef: null,
@@ -2656,11 +2665,13 @@
                     return;
                 }
 
-                // Limite 2 participants pour DM
+                // Limite participants : 2 pour DM, 6 pour groupe
+                const maxParticipants = this.currentCallType === 'group' ? 6 : 2;
+                const roomPath = this.currentCallType === 'group' ? 'groupVideoRoom/' : 'dmVideoRoom/';
                 try {
-                    const snap = await db.ref('dmVideoRoom/' + this.currentConvId + '/participants').once('value');
-                    if (snap.exists() && Object.keys(snap.val()).length >= 2) {
-                        alert('L\'appel est déjà en cours avec 2 participants.');
+                    const snap = await db.ref(roomPath + this.currentConvId + '/participants').once('value');
+                    if (snap.exists() && Object.keys(snap.val()).length >= maxParticipants) {
+                        alert(maxParticipants === 2 ? 'L\'appel est déjà en cours avec 2 participants.' : 'L\'appel est complet (' + maxParticipants + ' participants max).');
                         joinBtn.disabled = false;
                         joinBtn.textContent = '📹 Rejoindre l\'appel';
                         return;
@@ -2724,7 +2735,8 @@
                 this.startQualityMonitor();
 
                 // Firebase signaling par conversation
-                this.roomRef = db.ref('dmVideoRoom/' + this.currentConvId);
+                const roomPath = this.currentCallType === 'group' ? 'groupVideoRoom/' : 'dmVideoRoom/';
+                this.roomRef = db.ref(roomPath + this.currentConvId);
                 this.participantsRef = this.roomRef.child('participants');
                 this.signalsRef = this.roomRef.child('signals');
 
