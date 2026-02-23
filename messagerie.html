@@ -1559,6 +1559,191 @@
             }
         }
 
+        /* Voice Messages */
+        .voice-btn {
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--glass-border);
+            border-radius: 50%;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .voice-btn:hover {
+            border-color: var(--magenta);
+            background: rgba(255, 0, 170, 0.1);
+        }
+
+        .voice-btn.recording {
+            background: rgba(255, 68, 68, 0.2);
+            border-color: var(--red);
+            animation: voiceRecPulse 1s infinite;
+        }
+
+        @keyframes voiceRecPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(255, 68, 68, 0); }
+        }
+
+        .voice-recorder-bar {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            background: rgba(255, 68, 68, 0.08);
+            border: 1px solid rgba(255, 68, 68, 0.2);
+            border-radius: 16px;
+            margin-top: 8px;
+        }
+
+        .voice-recorder-bar.active {
+            display: flex;
+        }
+
+        .voice-rec-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--red);
+            animation: voiceRecPulse 1s infinite;
+            flex-shrink: 0;
+        }
+
+        .voice-rec-timer {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--red);
+            min-width: 40px;
+        }
+
+        .voice-rec-wave {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            height: 24px;
+            overflow: hidden;
+        }
+
+        .voice-rec-wave span {
+            display: inline-block;
+            width: 3px;
+            background: var(--red);
+            border-radius: 2px;
+            opacity: 0.6;
+            transition: height 0.1s;
+        }
+
+        .voice-rec-cancel,
+        .voice-rec-send {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .voice-rec-cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+        }
+
+        .voice-rec-cancel:hover {
+            background: var(--red);
+            color: white;
+        }
+
+        .voice-rec-send {
+            background: linear-gradient(135deg, var(--magenta), var(--cyan));
+            color: white;
+        }
+
+        .voice-rec-send:hover {
+            transform: scale(1.1);
+        }
+
+        /* Voice message player in bubble */
+        .voice-msg-player {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 200px;
+            padding: 4px 0;
+        }
+
+        .voice-msg-play {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, var(--magenta), var(--cyan));
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+        }
+
+        .voice-msg-play:hover {
+            transform: scale(1.1);
+        }
+
+        .voice-msg-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .voice-msg-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 2px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .voice-msg-progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--magenta), var(--cyan));
+            border-radius: 2px;
+            transition: width 0.1s linear;
+        }
+
+        .voice-msg-duration {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            font-family: 'Space Grotesk', monospace;
+        }
+
+        .message.own .voice-msg-play {
+            background: linear-gradient(135deg, var(--cyan), var(--magenta));
+        }
+
+        @media (max-width: 768px) {
+            .voice-msg-player { min-width: 160px; }
+            .voice-msg-play { width: 32px; height: 32px; font-size: 0.9rem; }
+        }
+
         /* Video Call */
         .vc-rec{display:inline-block;width:12px;height:12px;background:var(--red);border-radius:50%;animation:vcPulse 1s infinite}
         @keyframes vcPulse{0%,100%{opacity:1}50%{opacity:0.3}}
@@ -1707,8 +1892,16 @@
                     <form class="input-form" id="messageForm">
                         <button type="button" class="emoji-btn" id="emojiToggle" title="Emojis">😊</button>
                         <input type="text" id="messageInput" placeholder="Écrire un message..." maxlength="500" autocomplete="off">
+                        <button type="button" class="voice-btn" id="voiceRecordBtn" onclick="VoiceRecorder.toggle()" title="Message vocal">🎙️</button>
                         <button type="submit">📤</button>
                     </form>
+                    <div class="voice-recorder-bar" id="voiceRecorderBar">
+                        <div class="voice-rec-indicator"></div>
+                        <span class="voice-rec-timer" id="voiceRecTimer">0:00</span>
+                        <div class="voice-rec-wave" id="voiceRecWave"></div>
+                        <button type="button" class="voice-rec-cancel" onclick="VoiceRecorder.cancel()" title="Annuler">✕</button>
+                        <button type="button" class="voice-rec-send" onclick="VoiceRecorder.stopAndSend()" title="Envoyer">📤</button>
+                    </div>
                 </div>
             </div>
         </main>
@@ -2508,7 +2701,89 @@
             if (msg.type === 'gif' && msg.url) {
                 return `<img src="${escapeHtml(msg.url)}" alt="GIF" onerror="this.style.display='none'">`;
             }
+            if (msg.type === 'voice' && msg.audioData) {
+                const dur = msg.duration || 0;
+                const min = Math.floor(dur / 60);
+                const sec = dur % 60;
+                const durStr = min + ':' + (sec < 10 ? '0' : '') + sec;
+                const playerId = 'vp_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+                return `<div class="voice-msg-player" id="${playerId}">
+                    <button class="voice-msg-play" onclick="playVoiceMsg('${playerId}')" title="Écouter">▶</button>
+                    <div class="voice-msg-info">
+                        <div class="voice-msg-bar" onclick="seekVoiceMsg(event, '${playerId}')">
+                            <div class="voice-msg-progress"></div>
+                        </div>
+                        <span class="voice-msg-duration">${durStr}</span>
+                    </div>
+                    <audio preload="none" src="${msg.audioData}"></audio>
+                </div>`;
+            }
             return escapeHtml(msg.text || '');
+        }
+
+        // Lecture des messages vocaux
+        function playVoiceMsg(playerId) {
+            const player = document.getElementById(playerId);
+            if (!player) return;
+            const audio = player.querySelector('audio');
+            const btn = player.querySelector('.voice-msg-play');
+            const progress = player.querySelector('.voice-msg-progress');
+            const durLabel = player.querySelector('.voice-msg-duration');
+
+            if (!audio) return;
+
+            // Arreter tous les autres lecteurs
+            document.querySelectorAll('.voice-msg-player audio').forEach(a => {
+                if (a !== audio && !a.paused) {
+                    a.pause();
+                    a.currentTime = 0;
+                    const otherBtn = a.closest('.voice-msg-player')?.querySelector('.voice-msg-play');
+                    if (otherBtn) otherBtn.textContent = '▶';
+                    const otherProg = a.closest('.voice-msg-player')?.querySelector('.voice-msg-progress');
+                    if (otherProg) otherProg.style.width = '0%';
+                }
+            });
+
+            if (audio.paused) {
+                audio.play();
+                btn.textContent = '⏸';
+
+                audio.ontimeupdate = () => {
+                    if (audio.duration) {
+                        const pct = (audio.currentTime / audio.duration) * 100;
+                        progress.style.width = pct + '%';
+                        const rem = Math.floor(audio.duration - audio.currentTime);
+                        const min = Math.floor(rem / 60);
+                        const sec = rem % 60;
+                        durLabel.textContent = min + ':' + (sec < 10 ? '0' : '') + sec;
+                    }
+                };
+
+                audio.onended = () => {
+                    btn.textContent = '▶';
+                    progress.style.width = '0%';
+                    const dur = Math.floor(audio.duration || 0);
+                    const min = Math.floor(dur / 60);
+                    const sec = dur % 60;
+                    durLabel.textContent = min + ':' + (sec < 10 ? '0' : '') + sec;
+                };
+            } else {
+                audio.pause();
+                btn.textContent = '▶';
+            }
+        }
+
+        function seekVoiceMsg(event, playerId) {
+            const player = document.getElementById(playerId);
+            if (!player) return;
+            const audio = player.querySelector('audio');
+            const bar = player.querySelector('.voice-msg-bar');
+            if (!audio || !bar || !audio.duration) return;
+
+            const rect = bar.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const pct = Math.max(0, Math.min(1, x / rect.width));
+            audio.currentTime = pct * audio.duration;
         }
 
         // ==================== SEND MESSAGE ====================
@@ -2736,6 +3011,265 @@
                 timeout = setTimeout(() => func.apply(this, args), wait);
             };
         }
+
+        // ==================== VOICE RECORDER ====================
+        const VoiceRecorder = {
+            mediaRecorder: null,
+            audioChunks: [],
+            stream: null,
+            isRecording: false,
+            startTime: 0,
+            timerInterval: null,
+            analyser: null,
+            animFrame: null,
+            MAX_DURATION: 60, // secondes max
+
+            toggle() {
+                if (this.isRecording) {
+                    this.stopAndSend();
+                } else {
+                    this.start();
+                }
+            },
+
+            async start() {
+                if (!currentChat) return;
+
+                try {
+                    this.stream = await navigator.mediaDevices.getUserMedia({
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            sampleRate: 44100
+                        }
+                    });
+                } catch (err) {
+                    if (err.name === 'NotAllowedError') {
+                        alert('Autorisez l\'accès au micro dans les paramètres de votre navigateur.');
+                    } else if (err.name === 'NotFoundError') {
+                        alert('Aucun microphone détecté.');
+                    } else {
+                        alert('Impossible d\'accéder au micro : ' + (err.message || err.name));
+                    }
+                    return;
+                }
+
+                // Choisir le format le plus compact supporte
+                const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus'
+                    : MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm'
+                    : MediaRecorder.isTypeSupported('audio/ogg;codecs=opus') ? 'audio/ogg;codecs=opus'
+                    : 'audio/mp4';
+
+                this.audioChunks = [];
+                this.mediaRecorder = new MediaRecorder(this.stream, { mimeType });
+
+                this.mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) this.audioChunks.push(e.data);
+                };
+
+                this.mediaRecorder.onstop = () => {
+                    // Gere dans stopAndSend
+                };
+
+                this.mediaRecorder.start(100); // chunks toutes les 100ms
+                this.isRecording = true;
+                this.startTime = Date.now();
+
+                // UI
+                document.getElementById('voiceRecordBtn').classList.add('recording');
+                document.getElementById('voiceRecorderBar').classList.add('active');
+                document.getElementById('messageForm').style.display = 'none';
+
+                // Timer
+                this.timerInterval = setInterval(() => {
+                    const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+                    const min = Math.floor(elapsed / 60);
+                    const sec = elapsed % 60;
+                    document.getElementById('voiceRecTimer').textContent = min + ':' + (sec < 10 ? '0' : '') + sec;
+
+                    // Limite de duree
+                    if (elapsed >= this.MAX_DURATION) {
+                        this.stopAndSend();
+                    }
+                }, 500);
+
+                // Visualisation des ondes
+                this.startWaveViz();
+            },
+
+            startWaveViz() {
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const source = ctx.createMediaStreamSource(this.stream);
+                    this.analyser = ctx.createAnalyser();
+                    this.analyser.fftSize = 64;
+                    source.connect(this.analyser);
+
+                    const wave = document.getElementById('voiceRecWave');
+                    const bars = 20;
+                    wave.innerHTML = '';
+                    for (let i = 0; i < bars; i++) {
+                        const span = document.createElement('span');
+                        span.style.height = '4px';
+                        wave.appendChild(span);
+                    }
+
+                    const dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+
+                    const draw = () => {
+                        if (!this.isRecording) return;
+                        this.animFrame = requestAnimationFrame(draw);
+                        this.analyser.getByteFrequencyData(dataArray);
+
+                        const barEls = wave.querySelectorAll('span');
+                        for (let i = 0; i < barEls.length; i++) {
+                            const val = dataArray[i] || 0;
+                            const h = Math.max(4, (val / 255) * 24);
+                            barEls[i].style.height = h + 'px';
+                        }
+                    };
+                    draw();
+                    this._vizCtx = ctx;
+                } catch (e) { /* Visualisation non critique */ }
+            },
+
+            cancel() {
+                if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+                    this.mediaRecorder.stop();
+                }
+                this.cleanup();
+            },
+
+            async stopAndSend() {
+                if (!this.mediaRecorder || this.mediaRecorder.state === 'inactive') {
+                    this.cleanup();
+                    return;
+                }
+
+                const duration = Math.floor((Date.now() - this.startTime) / 1000);
+
+                // Trop court (moins de 1s)
+                if (duration < 1) {
+                    this.cancel();
+                    return;
+                }
+
+                return new Promise(resolve => {
+                    this.mediaRecorder.onstop = async () => {
+                        const blob = new Blob(this.audioChunks, { type: this.mediaRecorder.mimeType });
+
+                        // Verifier la taille (max ~500KB pour Firebase Realtime DB)
+                        if (blob.size > 500000) {
+                            alert('Message vocal trop long. Essayez un enregistrement plus court.');
+                            this.cleanup();
+                            resolve();
+                            return;
+                        }
+
+                        // Convertir en base64
+                        const reader = new FileReader();
+                        reader.onloadend = async () => {
+                            const audioData = reader.result; // data:audio/webm;base64,...
+                            await this.sendVoiceMessage(audioData, duration);
+                            this.cleanup();
+                            resolve();
+                        };
+                        reader.readAsDataURL(blob);
+                    };
+                    this.mediaRecorder.stop();
+                });
+            },
+
+            async sendVoiceMessage(audioData, duration) {
+                if (!currentChat) return;
+
+                let path;
+                if (currentChatType === 'dm') {
+                    path = 'dmMessages/' + currentChat;
+                } else if (currentChatType === 'group') {
+                    path = 'groupMessages/' + currentChat;
+                } else return;
+
+                const message = {
+                    type: 'voice',
+                    user: currentUserProfile.pseudo,
+                    oderId: currentUser.uid,
+                    senderId: currentUser.uid,
+                    audioData: audioData,
+                    duration: duration,
+                    text: '🎙️ Message vocal',
+                    timestamp: Date.now()
+                };
+
+                try {
+                    await db.ref(path).push(message);
+                    db.ref('users/' + currentUser.uid + '/messagesCount').transaction(n => (n || 0) + 1);
+
+                    const update = {
+                        lastMessage: '🎙️ Message vocal',
+                        lastTime: Date.now()
+                    };
+
+                    if (currentChatType === 'dm') {
+                        const conv = conversations[currentChat];
+                        if (conv) {
+                            for (const uid of conv.participants) {
+                                await db.ref('userConversations/' + uid + '/' + currentChat).update(update);
+                                if (uid !== currentUser.uid) {
+                                    await db.ref('userConversations/' + uid + '/' + currentChat + '/unread').transaction(n => (n || 0) + 1);
+                                    EmailNotifier.notifyNewMessage(uid, currentUserProfile.pseudo, '🎙️ Message vocal');
+                                }
+                            }
+                        }
+                    } else if (currentChatType === 'group') {
+                        const groupSnap = await db.ref('groups/' + currentChat + '/members').once('value');
+                        if (groupSnap.exists()) {
+                            for (const uid of Object.keys(groupSnap.val())) {
+                                await db.ref('userConversations/' + uid + '/' + currentChat).update(update);
+                                if (uid !== currentUser.uid) {
+                                    await db.ref('userConversations/' + uid + '/' + currentChat + '/unread').transaction(n => (n || 0) + 1);
+                                    EmailNotifier.notifyNewMessage(uid, currentUserProfile.pseudo, '🎙️ Message vocal');
+                                }
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.error('Erreur envoi message vocal:', err);
+                }
+            },
+
+            cleanup() {
+                this.isRecording = false;
+
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                    this.timerInterval = null;
+                }
+                if (this.animFrame) {
+                    cancelAnimationFrame(this.animFrame);
+                    this.animFrame = null;
+                }
+                if (this._vizCtx && this._vizCtx.state !== 'closed') {
+                    this._vizCtx.close().catch(() => {});
+                    this._vizCtx = null;
+                }
+                if (this.stream) {
+                    this.stream.getTracks().forEach(t => t.stop());
+                    this.stream = null;
+                }
+
+                this.mediaRecorder = null;
+                this.audioChunks = [];
+                this.analyser = null;
+
+                // Reset UI
+                document.getElementById('voiceRecordBtn').classList.remove('recording');
+                document.getElementById('voiceRecorderBar').classList.remove('active');
+                document.getElementById('messageForm').style.display = 'flex';
+                document.getElementById('voiceRecTimer').textContent = '0:00';
+                document.getElementById('voiceRecWave').innerHTML = '';
+            }
+        };
 
         // ==================== VIDEO CALL PRIVE (DM) ====================
         function startVideoCall() {
