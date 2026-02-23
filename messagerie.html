@@ -1427,6 +1427,138 @@
             }
         }
 
+        /* Incoming Call Overlay */
+        .incoming-call-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .incoming-call-overlay.active {
+            display: flex;
+        }
+
+        .incoming-call-card {
+            text-align: center;
+            padding: 40px 50px;
+            position: relative;
+        }
+
+        .incoming-call-pulse {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -60%);
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            background: rgba(0, 245, 255, 0.15);
+            animation: incomingPulse 2s ease-out infinite;
+        }
+
+        @keyframes incomingPulse {
+            0% { transform: translate(-50%, -60%) scale(0.8); opacity: 1; }
+            100% { transform: translate(-50%, -60%) scale(2.5); opacity: 0; }
+        }
+
+        .incoming-call-avatar {
+            width: 90px; height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--cyan), var(--magenta));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.2rem; font-weight: 700; color: white;
+            margin: 0 auto 20px;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 0 30px rgba(0, 245, 255, 0.3);
+        }
+
+        .incoming-call-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .incoming-call-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 35px;
+            animation: incomingLabelBlink 1.5s ease-in-out infinite;
+        }
+
+        @keyframes incomingLabelBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .incoming-call-actions {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+        }
+
+        .incoming-call-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 28px;
+            border: none;
+            border-radius: 20px;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .incoming-call-btn span {
+            font-size: 1.8rem;
+        }
+
+        .incoming-call-btn.decline {
+            background: rgba(255, 68, 68, 0.2);
+            color: var(--red);
+            border: 1px solid rgba(255, 68, 68, 0.3);
+        }
+
+        .incoming-call-btn.decline:hover {
+            background: var(--red);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .incoming-call-btn.accept {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            animation: acceptGlow 1.5s ease-in-out infinite;
+        }
+
+        .incoming-call-btn.accept:hover {
+            background: #00ff88;
+            color: #0a0a0f;
+            transform: scale(1.05);
+        }
+
+        @keyframes acceptGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(0, 255, 136, 0.2); }
+            50% { box-shadow: 0 0 25px rgba(0, 255, 136, 0.4); }
+        }
+
+        @media (max-width: 768px) {
+            .incoming-call-card {
+                padding: 30px 25px;
+            }
+            .incoming-call-btn {
+                padding: 14px 22px;
+            }
+        }
+
         /* Video Call */
         .vc-rec{display:inline-block;width:12px;height:12px;background:var(--red);border-radius:50%;animation:vcPulse 1s infinite}
         @keyframes vcPulse{0%,100%{opacity:1}50%{opacity:0.3}}
@@ -1675,6 +1807,26 @@
                     <button class="icon-btn" id="vcCamBtn" onclick="DMVideoChat.toggleCam()" title="Caméra">📹</button>
                     <button class="icon-btn danger" id="vcLeaveBtn" onclick="DMVideoChat.leaveCall()" title="Raccrocher" style="background:var(--red);color:white;">📞</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay: Appel entrant -->
+    <div class="incoming-call-overlay" id="incomingCallOverlay">
+        <div class="incoming-call-card">
+            <div class="incoming-call-pulse"></div>
+            <div class="incoming-call-avatar" id="incomingCallAvatar">?</div>
+            <div class="incoming-call-name" id="incomingCallName">Appel entrant...</div>
+            <div class="incoming-call-label">Appel vidéo entrant</div>
+            <div class="incoming-call-actions">
+                <button class="incoming-call-btn decline" id="incomingDeclineBtn" onclick="IncomingCallSystem.decline()">
+                    <span>📞</span>
+                    Refuser
+                </button>
+                <button class="incoming-call-btn accept" id="incomingAcceptBtn" onclick="IncomingCallSystem.accept()">
+                    <span>📹</span>
+                    Accepter
+                </button>
             </div>
         </div>
     </div>
@@ -2767,6 +2919,9 @@
                 myRef.onDisconnect().remove();
                 this.signalsRef.child(this.myVideoId).onDisconnect().remove();
 
+                // Signaler l'appel entrant aux autres participants
+                this.notifyIncomingCall();
+
                 // Ecouter les participants
                 this.participantsRef.on('child_added', snap => {
                     const peerId = snap.key;
@@ -3060,6 +3215,47 @@
                 }
             },
 
+            // Signaler l'appel aux autres participants de la conversation
+            async notifyIncomingCall() {
+                if (!this.currentConvId || !currentUser) return;
+                const callData = {
+                    callerUid: currentUser.uid,
+                    callerName: currentUserProfile.pseudo,
+                    convId: this.currentConvId,
+                    chatType: this.currentCallType,
+                    timestamp: Date.now()
+                };
+
+                try {
+                    if (this.currentCallType === 'dm') {
+                        const conv = conversations[this.currentConvId];
+                        if (conv && conv.participants) {
+                            for (const uid of conv.participants) {
+                                if (uid !== currentUser.uid) {
+                                    const callRef = db.ref('incomingCalls/' + uid).push(callData);
+                                    callRef.onDisconnect().remove();
+                                    // Auto-suppression apres 35s
+                                    setTimeout(() => callRef.remove(), 35000);
+                                }
+                            }
+                        }
+                    } else if (this.currentCallType === 'group') {
+                        const groupSnap = await db.ref('groups/' + this.currentConvId + '/members').once('value');
+                        if (groupSnap.exists()) {
+                            for (const uid of Object.keys(groupSnap.val())) {
+                                if (uid !== currentUser.uid) {
+                                    const callRef = db.ref('incomingCalls/' + uid).push(callData);
+                                    callRef.onDisconnect().remove();
+                                    setTimeout(() => callRef.remove(), 35000);
+                                }
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error('Erreur signal appel entrant:', e);
+                }
+            },
+
             leaveCall() {
                 this.joined = false;
                 this.stopQualityMonitor();
@@ -3100,9 +3296,10 @@
             }
         };
 
-        // Cleanup video a la fermeture
+        // Cleanup video et appels a la fermeture
         window.addEventListener('beforeunload', () => {
             if (DMVideoChat.joined) DMVideoChat.leaveCall();
+            IncomingCallSystem.stopListening();
         });
 
         // ==================== NOTIFICATION SYSTEM ====================
@@ -3380,6 +3577,191 @@
             }
         };
 
+        // ==================== INCOMING CALL SYSTEM ====================
+        const IncomingCallSystem = {
+            _ringtoneCtx: null,
+            _ringtoneInterval: null,
+            _ringtoneTimeout: null,
+            _currentCallData: null,
+            _callListenerRef: null,
+
+            // Sonnerie generee via Web Audio API (motif telephone)
+            startRingtone() {
+                this.stopRingtone();
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    this._ringtoneCtx = ctx;
+
+                    const playRingBurst = () => {
+                        if (!this._ringtoneCtx || this._ringtoneCtx.state === 'closed') return;
+                        // Deux tonalites alternees pour un son de sonnerie realiste
+                        const t = ctx.currentTime;
+                        for (let i = 0; i < 2; i++) {
+                            const osc1 = ctx.createOscillator();
+                            const osc2 = ctx.createOscillator();
+                            const gain = ctx.createGain();
+
+                            osc1.connect(gain);
+                            osc2.connect(gain);
+                            gain.connect(ctx.destination);
+
+                            // Frequences de sonnerie telephone (440 Hz + 480 Hz)
+                            osc1.frequency.value = 440;
+                            osc1.type = 'sine';
+                            osc2.frequency.value = 480;
+                            osc2.type = 'sine';
+
+                            gain.gain.value = 0;
+                            const start = t + i * 0.5;
+                            gain.gain.setValueAtTime(0.12, start);
+                            gain.gain.setValueAtTime(0.12, start + 0.4);
+                            gain.gain.linearRampToValueAtTime(0, start + 0.42);
+
+                            osc1.start(start);
+                            osc1.stop(start + 0.45);
+                            osc2.start(start);
+                            osc2.stop(start + 0.45);
+                        }
+                    };
+
+                    // Jouer immediatement puis repeter toutes les 3s
+                    playRingBurst();
+                    this._ringtoneInterval = setInterval(playRingBurst, 3000);
+
+                    // Arreter automatiquement apres 30s
+                    this._ringtoneTimeout = setTimeout(() => {
+                        this.decline();
+                    }, 30000);
+
+                } catch (e) { console.error('Ringtone error:', e); }
+            },
+
+            stopRingtone() {
+                if (this._ringtoneInterval) {
+                    clearInterval(this._ringtoneInterval);
+                    this._ringtoneInterval = null;
+                }
+                if (this._ringtoneTimeout) {
+                    clearTimeout(this._ringtoneTimeout);
+                    this._ringtoneTimeout = null;
+                }
+                if (this._ringtoneCtx && this._ringtoneCtx.state !== 'closed') {
+                    this._ringtoneCtx.close().catch(() => {});
+                    this._ringtoneCtx = null;
+                }
+            },
+
+            // Afficher l'overlay d'appel entrant
+            show(callerName, convId, chatType, callerUid) {
+                // Ne pas afficher si deja en appel
+                if (DMVideoChat.joined) return;
+
+                this._currentCallData = { callerName, convId, chatType, callerUid };
+
+                document.getElementById('incomingCallAvatar').textContent = callerName.charAt(0).toUpperCase();
+                document.getElementById('incomingCallName').textContent = callerName;
+                document.getElementById('incomingCallOverlay').classList.add('active');
+
+                this.startRingtone();
+
+                // Notification navigateur si onglet inactif
+                if (document.hidden) {
+                    NotifSystem.showBrowserNotif(
+                        '📹 Appel vidéo entrant',
+                        callerName + ' vous appelle',
+                        () => window.focus()
+                    );
+                    NotifSystem.startTitleBlink('📹 Appel entrant !');
+                }
+            },
+
+            // Masquer l'overlay
+            hide() {
+                this.stopRingtone();
+                document.getElementById('incomingCallOverlay').classList.remove('active');
+                this._currentCallData = null;
+                NotifSystem.stopTitleBlink();
+            },
+
+            // Accepter l'appel
+            accept() {
+                if (!this._currentCallData) return;
+                const { convId, chatType } = this._currentCallData;
+
+                this.hide();
+
+                // Ouvrir la conversation et demarrer l'appel video
+                DMVideoChat.currentConvId = convId;
+                DMVideoChat.currentCallType = chatType;
+
+                // Afficher le nom dans la modale video
+                if (chatType === 'dm') {
+                    const conv = conversations[convId];
+                    if (conv) {
+                        const otherUserId = conv.participants ? conv.participants.find(p => p !== currentUser.uid) : null;
+                        const otherPseudo = conv.otherPseudo || (otherUserId && contacts[otherUserId] && contacts[otherUserId].pseudo) || 'Utilisateur';
+                        document.getElementById('vcCallName').textContent = otherPseudo;
+                    }
+                } else {
+                    const conv = conversations[convId];
+                    document.getElementById('vcCallName').textContent = (conv && conv.name) || 'Groupe';
+                }
+
+                openModal('videoCall');
+            },
+
+            // Refuser l'appel
+            decline() {
+                if (!this._currentCallData) return;
+                this.hide();
+            },
+
+            // Ecouter les appels entrants via Firebase
+            listenForCalls() {
+                if (!currentUser) return;
+
+                this._callListenerRef = db.ref('incomingCalls/' + currentUser.uid);
+
+                this._callListenerRef.on('child_added', snap => {
+                    const data = snap.val();
+                    if (!data) return;
+
+                    // Ignorer les appels vieux de plus de 35s
+                    if (Date.now() - data.timestamp > 35000) {
+                        snap.ref.remove();
+                        return;
+                    }
+
+                    // Ignorer si c'est nous qui avons lance l'appel
+                    if (data.callerUid === currentUser.uid) {
+                        snap.ref.remove();
+                        return;
+                    }
+
+                    this.show(data.callerName, data.convId, data.chatType, data.callerUid);
+
+                    // Auto-nettoyage apres 35s
+                    setTimeout(() => snap.ref.remove(), 35000);
+                });
+
+                // Si l'appelant annule (supprime le signal), fermer l'overlay
+                this._callListenerRef.on('child_removed', snap => {
+                    if (this._currentCallData && this._currentCallData.convId === snap.val()?.convId) {
+                        this.hide();
+                    }
+                });
+            },
+
+            // Arreter l'ecoute
+            stopListening() {
+                if (this._callListenerRef) {
+                    this._callListenerRef.off();
+                    this._callListenerRef = null;
+                }
+                this.hide();
+            }
+        };
+
         // ==================== EMAIL NOTIFICATIONS (EmailJS) ====================
         const EmailNotifier = {
             // ⚠️ À CONFIGURER : crée un compte sur https://www.emailjs.com (gratuit)
@@ -3563,6 +3945,7 @@
             _origInitApp();
             NotifSystem.init();
             EmailNotifier.init();
+            IncomingCallSystem.listenForCalls();
         };
     </script>
 </body>

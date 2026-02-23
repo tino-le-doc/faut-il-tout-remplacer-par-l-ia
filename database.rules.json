@@ -145,6 +145,21 @@
       }
     },
 
+    "groupVideoRoom": {
+      "$groupId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+
+    // ==================== APPELS ENTRANTS ====================
+    "incomingCalls": {
+      "$userId": {
+        ".read": "auth != null && auth.uid == $userId",
+        ".write": "auth != null"
+      }
+    },
+
     // ==================== QUIZ ====================
     "quizScores": {
       ".read": true,
