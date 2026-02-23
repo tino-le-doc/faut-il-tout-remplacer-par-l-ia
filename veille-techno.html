@@ -687,6 +687,7 @@
 
         <!-- Submit an article (Admin only) -->
         <div class="submit-section" id="adminSection" style="display:none;">
+            <button onclick="seedArticles()" style="margin-bottom:12px;padding:8px 18px;background:#e74c3c;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">🔄 Forcer le seed Firebase</button>
             <h2>📝 Publier un article (Admin)</h2>
             <p>Ajoute un nouvel article a la veille technologique.</p>
             <form class="submit-form" id="submitForm">
@@ -1303,23 +1304,28 @@
 
         // ==================== SEED ARTICLES (Admin, une seule fois) ====================
         async function seedArticles() {
-            if (articlesSeeded) return;
+            console.log('[SEED] seedArticles() appelee, articlesSeeded =', articlesSeeded);
+            if (articlesSeeded) { console.log('[SEED] Deja seede, on arrete'); return; }
             try {
+                console.log('[SEED] Lecture de', ARTICLES_PATH, '...');
                 const snap = await db.ref(ARTICLES_PATH).once('value');
-                if (snap.exists()) { articlesSeeded = true; return; }
+                console.log('[SEED] snap.exists() =', snap.exists(), ', nb enfants =', snap.numChildren());
+                if (snap.exists()) { articlesSeeded = true; console.log('[SEED] Articles existent deja'); return; }
 
                 const updates = {};
                 SEED_ARTICLES.forEach(article => {
                     const { id, ...data } = article;
                     updates[id] = data;
                 });
+                console.log('[SEED] Ecriture de', Object.keys(updates).length, 'articles dans', ARTICLES_PATH, '...');
 
                 await db.ref(ARTICLES_PATH).update(updates);
                 articlesSeeded = true;
+                console.log('[SEED] Succes !');
                 showToast('15 articles charges dans Firebase !');
             } catch (err) {
-                console.error('Erreur seed Firebase:', err);
-                alert('Erreur seed Firebase: ' + err.message);
+                console.error('[SEED] ERREUR:', err.code, err.message);
+                alert('Erreur seed Firebase: ' + err.code + ' - ' + err.message);
             }
         }
 
@@ -1329,6 +1335,7 @@
 
         // Quand l'admin se connecte, synchroniser les articles dans Firebase
         auth.onAuthStateChanged(user => {
+            console.log('[AUTH-SEED] User:', user ? user.email : 'null', '| isAdmin:', isAdmin(user));
             if (isAdmin(user)) seedArticles();
         });
     </script>
