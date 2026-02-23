@@ -685,9 +685,16 @@
             <button class="load-more-btn" id="loadMoreBtn">Charger plus d'articles</button>
         </div>
 
+        <!-- DEBUG SEED - a retirer apres resolution -->
+        <div id="debugSeed" style="background:#1a1a2e;border:2px solid #e74c3c;border-radius:8px;padding:16px;margin:20px 0;color:#fff;">
+            <p style="margin:0 0 8px;font-weight:bold;color:#e74c3c;">DEBUG SEED</p>
+            <p id="debugInfo" style="margin:0 0 10px;font-size:14px;color:#ccc;">Chargement...</p>
+            <button onclick="runDebugSeed()" style="padding:10px 20px;background:#e74c3c;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:bold;font-size:16px;">Forcer le seed Firebase</button>
+            <pre id="debugLog" style="margin:10px 0 0;padding:10px;background:#000;border-radius:4px;font-size:12px;color:#0f0;max-height:200px;overflow:auto;white-space:pre-wrap;"></pre>
+        </div>
+
         <!-- Submit an article (Admin only) -->
         <div class="submit-section" id="adminSection" style="display:none;">
-            <button onclick="seedArticles()" style="margin-bottom:12px;padding:8px 18px;background:#e74c3c;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">🔄 Forcer le seed Firebase</button>
             <h2>📝 Publier un article (Admin)</h2>
             <p>Ajoute un nouvel article a la veille technologique.</p>
             <form class="submit-form" id="submitForm">
@@ -1329,13 +1336,73 @@
             }
         }
 
+        // ==================== DEBUG SEED FUNCTION ====================
+        function debugLog(msg) {
+            const el = document.getElementById('debugLog');
+            if (el) el.textContent += msg + '\n';
+            console.log(msg);
+        }
+
+        async function runDebugSeed() {
+            const log = document.getElementById('debugLog');
+            if (log) log.textContent = '';
+
+            debugLog('=== DEBUG SEED START ===');
+            debugLog('currentUser: ' + (currentUser ? currentUser.email : 'NON CONNECTE'));
+            debugLog('isAdmin: ' + isAdmin(currentUser));
+            debugLog('ARTICLES_PATH: ' + ARTICLES_PATH);
+            debugLog('articlesSeeded: ' + articlesSeeded);
+
+            // Reset le flag pour forcer le re-seed
+            articlesSeeded = false;
+
+            if (!currentUser) {
+                debugLog('ERREUR: Vous devez etre connecte !');
+                return;
+            }
+
+            try {
+                debugLog('Lecture Firebase ' + ARTICLES_PATH + '...');
+                const snap = await db.ref(ARTICLES_PATH).once('value');
+                debugLog('snap.exists() = ' + snap.exists() + ', enfants = ' + snap.numChildren());
+
+                if (snap.exists()) {
+                    debugLog('Les articles existent deja dans Firebase ! (' + snap.numChildren() + ' articles)');
+                    return;
+                }
+
+                const updates = {};
+                SEED_ARTICLES.forEach(article => {
+                    const { id, ...data } = article;
+                    updates[id] = data;
+                });
+                debugLog('Ecriture de ' + Object.keys(updates).length + ' articles...');
+
+                await db.ref(ARTICLES_PATH).update(updates);
+                debugLog('SUCCES ! Articles ecrits dans Firebase !');
+                articlesSeeded = true;
+            } catch (err) {
+                debugLog('ERREUR: ' + err.code + ' - ' + err.message);
+                if (err.code === 'PERMISSION_DENIED') {
+                    debugLog('=> Les database rules ne sont pas deployees !');
+                    debugLog('=> Lancez: firebase deploy --only database');
+                }
+            }
+        }
+
         // ==================== INIT ====================
         loadArticles();
         loadTrending();
 
-        // Quand l'admin se connecte, synchroniser les articles dans Firebase
+        // Afficher le debug info auth
         auth.onAuthStateChanged(user => {
             console.log('[AUTH-SEED] User:', user ? user.email : 'null', '| isAdmin:', isAdmin(user));
+            const info = document.getElementById('debugInfo');
+            if (info) {
+                info.textContent = user
+                    ? 'Connecte: ' + user.email + ' | Admin: ' + isAdmin(user)
+                    : 'Non connecte - connectez-vous d\'abord';
+            }
             if (isAdmin(user)) seedArticles();
         });
     </script>
