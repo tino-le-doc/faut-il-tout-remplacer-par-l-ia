@@ -1304,21 +1304,22 @@
         // ==================== SEED ARTICLES (Admin, une seule fois) ====================
         async function seedArticles() {
             if (articlesSeeded) return;
-            const snap = await db.ref(ARTICLES_PATH).once('value');
-            if (snap.exists()) { articlesSeeded = true; return; }
-
-            const updates = {};
-            SEED_ARTICLES.forEach(article => {
-                const { id, ...data } = article;
-                updates[ARTICLES_PATH + '/' + id] = data;
-            });
-
             try {
-                await db.ref().update(updates);
+                const snap = await db.ref(ARTICLES_PATH).once('value');
+                if (snap.exists()) { articlesSeeded = true; return; }
+
+                const updates = {};
+                SEED_ARTICLES.forEach(article => {
+                    const { id, ...data } = article;
+                    updates[id] = data;
+                });
+
+                await db.ref(ARTICLES_PATH).update(updates);
                 articlesSeeded = true;
                 showToast('15 articles charges dans Firebase !');
             } catch (err) {
                 console.error('Erreur seed Firebase:', err);
+                alert('Erreur seed Firebase: ' + err.message);
             }
         }
 
