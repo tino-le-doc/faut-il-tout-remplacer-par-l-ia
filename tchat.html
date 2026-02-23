@@ -526,8 +526,10 @@ document.getElementById('gifG').addEventListener('click', e => {
         
         msgsRef.push({
             type: 'gif',
+            pseudo: user,
             user: user,
             oderId: oderId,
+            text: '[GIF]',
             url: gifUrl,
             timestamp: Date.now()
         });
@@ -551,38 +553,51 @@ document.querySelectorAll('.qr').forEach(b => {
 document.getElementById('joinBtn').addEventListener('click', joinChat);
 document.getElementById('pseudo').addEventListener('keypress', e => { if (e.key === 'Enter') joinChat(); });
 
-function joinChat() {
+async function joinChat() {
     const pseudoInput = document.getElementById('pseudo');
+    const joinBtn = document.getElementById('joinBtn');
     const p = pseudoInput.value.trim();
-    
+
     // Validation
     if (!Validator.isValidPseudo(p)) {
         alert('Pseudo invalide (2-20 caractères, sans caractères spéciaux)');
         return;
     }
-    
+
     if (!isClean(p)) {
         alert('🛡️ Pseudo non autorisé');
         return;
     }
-    
+
+    // Authentification requise pour écrire dans Firebase
+    joinBtn.disabled = true;
+    try {
+        if (!auth || !auth.currentUser) {
+            await auth.signInAnonymously();
+        }
+    } catch (e) {
+        console.error('Erreur auth:', e);
+        joinBtn.disabled = false;
+        alert('Connexion impossible. Veuillez réessayer ou vous connecter via la page Compte.');
+        return;
+    }
+
     user = p;
-    // ID unique sécurisé
-    oderId = 'u_' + crypto.getRandomValues(new Uint32Array(1))[0].toString(36) + '_' + Date.now();
-    
+    oderId = auth.currentUser.uid;
+
     if (usersRef) {
         const uref = usersRef.child(oderId);
         uref.set({name: user, joinedAt: Date.now()});
         uref.onDisconnect().remove();
     }
-    
+
     document.getElementById('login').style.display = 'none';
     document.getElementById('chat').classList.add('active');
-    
+
     if (msgsRef) {
-        msgsRef.push({type: 'system', action: 'join', user, timestamp: Date.now()});
+        msgsRef.push({type: 'system', action: 'join', user, pseudo: user, text: user + ' a rejoint le tchat', timestamp: Date.now()});
     }
-    
+
     loadMessages();
     document.getElementById('msg').focus();
 }
@@ -694,6 +709,7 @@ function sendMsg() {
     
     msgsRef.push({
         type: 'message',
+        pseudo: user,
         user: user,
         oderId: oderId,
         text: t,
@@ -774,7 +790,7 @@ setInterval(() => {
 // ==================== CLEANUP ====================
 window.addEventListener('beforeunload', () => {
     if (oderId && usersRef) usersRef.child(oderId).remove();
-    if (user && msgsRef) msgsRef.push({type: 'system', action: 'leave', user, timestamp: Date.now()});
+    if (user && msgsRef) msgsRef.push({type: 'system', action: 'leave', user, pseudo: user, text: user + ' a quitté le tchat', timestamp: Date.now()});
 });
 
 // ==================== MOBILE KEYBOARD ====================
