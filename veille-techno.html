@@ -685,14 +685,6 @@
             <button class="load-more-btn" id="loadMoreBtn">Charger plus d'articles</button>
         </div>
 
-        <!-- DEBUG SEED - a retirer apres resolution -->
-        <div id="debugSeed" style="background:#1a1a2e;border:2px solid #e74c3c;border-radius:8px;padding:16px;margin:20px 0;color:#fff;">
-            <p style="margin:0 0 8px;font-weight:bold;color:#e74c3c;">DEBUG SEED</p>
-            <p id="debugInfo" style="margin:0 0 10px;font-size:14px;color:#ccc;">Chargement...</p>
-            <button onclick="runDebugSeed()" style="padding:10px 20px;background:#e74c3c;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:bold;font-size:16px;">Forcer le seed Firebase</button>
-            <pre id="debugLog" style="margin:10px 0 0;padding:10px;background:#000;border-radius:4px;font-size:12px;color:#0f0;max-height:200px;overflow:auto;white-space:pre-wrap;"></pre>
-        </div>
-
         <!-- Submit an article (Admin only) -->
         <div class="submit-section" id="adminSection" style="display:none;">
             <h2>📝 Publier un article (Admin)</h2>
@@ -1006,6 +998,11 @@
         // ==================== ARTICLES ====================
         // Afficher les articles locaux immediatement (avant Firebase)
         allArticles = SEED_ARTICLES.slice();
+        // Charger aussi les articles sauvegardes localement (soumis quand Firebase etait indisponible)
+        const localSaved = JSON.parse(localStorage.getItem('localVeilleArticles') || '[]');
+        if (localSaved.length > 0) {
+            allArticles = localSaved.concat(allArticles);
+        }
         loadLikesFromStorage(allArticles);
         updateStats();
         renderArticles();
@@ -1242,28 +1239,45 @@
             submitBtn.disabled = true;
             submitBtn.textContent = '⏳ Envoi...';
 
+            const newArticle = {
+                title: title,
+                url: url,
+                summary: summary,
+                category: category,
+                tags: extractTags(title + ' ' + summary),
+                source: source,
+                timestamp: Date.now(),
+                authorUid: currentUser.uid,
+                authorName: currentUser.displayName || 'Admin',
+                likesCount: 0
+            };
+
+            let savedToFirebase = false;
             try {
-                await db.ref(ARTICLES_PATH).push({
-                    title: title,
-                    url: url,
-                    summary: summary,
-                    category: category,
-                    tags: extractTags(title + ' ' + summary),
-                    source: source,
-                    timestamp: Date.now(),
-                    authorUid: currentUser.uid,
-                    authorName: currentUser.displayName || 'Anonyme',
-                    likesCount: 0
-                });
-                document.getElementById('submitForm').reset();
-                showToast('Article soumis avec succes ! 🚀');
+                const ref = await db.ref(ARTICLES_PATH).push(newArticle);
+                newArticle.id = ref.key;
+                savedToFirebase = true;
             } catch (err) {
-                console.error('Erreur soumission:', err);
-                showToast('Erreur : ' + (err.message || 'impossible de soumettre'), 'error');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = '🚀 Soumettre';
+                console.warn('Firebase write echoue, sauvegarde locale:', err.code);
             }
+
+            // Fallback local si Firebase echoue
+            if (!savedToFirebase) {
+                newArticle.id = 'local_' + Date.now();
+                // Sauvegarder dans localStorage
+                const localArticles = JSON.parse(localStorage.getItem('localVeilleArticles') || '[]');
+                localArticles.push(newArticle);
+                localStorage.setItem('localVeilleArticles', JSON.stringify(localArticles));
+            }
+
+            // Ajouter a la liste affichee
+            allArticles.unshift(newArticle);
+            updateStats();
+            renderArticles();
+            document.getElementById('submitForm').reset();
+            showToast(savedToFirebase ? 'Article publie dans Firebase !' : 'Article sauvegarde localement (Firebase indisponible)');
+            submitBtn.disabled = false;
+            submitBtn.textContent = '🚀 Soumettre';
         });
 
         function extractTags(text) {
@@ -1331,84 +1345,7 @@
                 console.log('[SEED] Succes !');
                 showToast('15 articles charges dans Firebase !');
             } catch (err) {
-                console.error('[SEED] ERREUR:', err.code, err.message);
-                alert('Erreur seed Firebase: ' + err.code + ' - ' + err.message);
-            }
-        }
-
-        // ==================== DEBUG SEED FUNCTION ====================
-        function debugLog(msg) {
-            const el = document.getElementById('debugLog');
-            if (el) el.textContent += msg + '\n';
-            console.log(msg);
-        }
-
-        async function runDebugSeed() {
-            const log = document.getElementById('debugLog');
-            if (log) log.textContent = '';
-
-            debugLog('=== DEBUG SEED START ===');
-            debugLog('currentUser: ' + (currentUser ? currentUser.email : 'NON CONNECTE'));
-            debugLog('UID: ' + (currentUser ? currentUser.uid : 'N/A'));
-            debugLog('isAdmin: ' + isAdmin(currentUser));
-            debugLog('ARTICLES_PATH: ' + ARTICLES_PATH);
-            debugLog('articlesSeeded: ' + articlesSeeded);
-
-            // Reset le flag pour forcer le re-seed
-            articlesSeeded = false;
-
-            if (!currentUser) {
-                debugLog('ERREUR: Vous devez etre connecte !');
-                return;
-            }
-
-            // Verifier le token ID pour voir les claims exactes
-            try {
-                const token = await currentUser.getIdTokenResult();
-                debugLog('Token email: ' + token.claims.email);
-                debugLog('Token email_verified: ' + token.claims.email_verified);
-            } catch (e) {
-                debugLog('Erreur token: ' + e.message);
-            }
-
-            // Test 1: ecriture minimale pour tester les permissions
-            try {
-                debugLog('--- Test ecriture minimale sur veilleArticles/_test ---');
-                await db.ref(ARTICLES_PATH + '/_test').set({ test: true, ts: Date.now() });
-                debugLog('Test ecriture OK !');
-                await db.ref(ARTICLES_PATH + '/_test').remove();
-                debugLog('Nettoyage _test OK');
-            } catch (err) {
-                debugLog('Test ecriture ECHOUE: ' + err.code);
-                debugLog('=> Il faut deployer les rules Firebase !');
-                debugLog('=> Commande: firebase deploy --only database');
-                debugLog('=== FIN (bloque par les permissions) ===');
-                return;
-            }
-
-            // Test 2: seed complet
-            try {
-                debugLog('--- Lecture Firebase ' + ARTICLES_PATH + ' ---');
-                const snap = await db.ref(ARTICLES_PATH).once('value');
-                debugLog('snap.exists() = ' + snap.exists() + ', enfants = ' + snap.numChildren());
-
-                if (snap.exists() && snap.numChildren() > 1) {
-                    debugLog('Les articles existent deja ! (' + snap.numChildren() + ' articles)');
-                    return;
-                }
-
-                const updates = {};
-                SEED_ARTICLES.forEach(article => {
-                    const { id, ...data } = article;
-                    updates[id] = data;
-                });
-                debugLog('Ecriture de ' + Object.keys(updates).length + ' articles...');
-
-                await db.ref(ARTICLES_PATH).update(updates);
-                debugLog('SUCCES ! Articles ecrits dans Firebase !');
-                articlesSeeded = true;
-            } catch (err) {
-                debugLog('ERREUR: ' + err.code + ' - ' + err.message);
+                console.warn('[SEED] Firebase write echoue (rules non deployees ?):', err.code);
             }
         }
 
@@ -1416,15 +1353,8 @@
         loadArticles();
         loadTrending();
 
-        // Afficher le debug info auth
+        // Quand l'admin se connecte, tenter de synchroniser les articles dans Firebase
         auth.onAuthStateChanged(user => {
-            console.log('[AUTH-SEED] User:', user ? user.email : 'null', '| isAdmin:', isAdmin(user));
-            const info = document.getElementById('debugInfo');
-            if (info) {
-                info.textContent = user
-                    ? 'Connecte: ' + user.email + ' | UID: ' + user.uid + ' | Admin: ' + isAdmin(user)
-                    : 'Non connecte - connectez-vous d\'abord';
-            }
             if (isAdmin(user)) seedArticles();
         });
     </script>
