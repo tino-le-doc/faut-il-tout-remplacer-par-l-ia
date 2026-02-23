@@ -2001,8 +2001,9 @@
                 snapshot.forEach(child => {
                     if (users.length >= 10) return;
                     const uid = child.val();
+                    const pseudoKey = child.key;
                     if (uid !== currentUser.uid) {
-                        users.push(uid);
+                        users.push({ uid, pseudo: pseudoKey });
                     }
                 });
 
@@ -2011,24 +2012,21 @@
                     return;
                 }
 
-                // Récupérer les vrais pseudos depuis les profils
+                // Afficher les résultats depuis les clés du noeud pseudos
                 let html = '';
-                for (const uid of users) {
-                    try {
-                        const userSnap = await db.ref('users/' + uid + '/pseudo').once('value');
-                        const displayPseudo = userSnap.val() || 'Utilisateur';
-                        html += `
-                            <div class="user-item">
-                                <div class="user-item-avatar">${displayPseudo.charAt(0).toUpperCase()}</div>
-                                <div class="user-item-info">
-                                    <div class="user-item-name">${escapeHtml(displayPseudo)}</div>
-                                </div>
-                                <div class="user-item-actions">
-                                    <button class="add" onclick="sendFriendRequest('${uid}')">➕ Ajouter</button>
-                                </div>
+                for (const { uid, pseudo } of users) {
+                    const displayPseudo = pseudo || 'Utilisateur';
+                    html += `
+                        <div class="user-item">
+                            <div class="user-item-avatar">${displayPseudo.charAt(0).toUpperCase()}</div>
+                            <div class="user-item-info">
+                                <div class="user-item-name">${escapeHtml(displayPseudo)}</div>
                             </div>
-                        `;
-                    } catch (e) {}
+                            <div class="user-item-actions">
+                                <button class="add" onclick="sendFriendRequest('${uid}')">➕ Ajouter</button>
+                            </div>
+                        </div>
+                    `;
                 }
 
                 resultsDiv.innerHTML = html || '<p style="color: var(--text-secondary); text-align: center;">Aucun résultat</p>';
@@ -2382,6 +2380,7 @@
                 type: 'message',
                 user: currentUserProfile.pseudo,
                 oderId: currentUser.uid,
+                senderId: currentUser.uid,
                 text: text,
                 timestamp: Date.now()
             };
