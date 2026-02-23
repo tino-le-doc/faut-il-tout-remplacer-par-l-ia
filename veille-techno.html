@@ -1309,9 +1309,8 @@
 
             const updates = {};
             SEED_ARTICLES.forEach(article => {
-                const key = db.ref(ARTICLES_PATH).push().key;
-                const { id, ...data } = article; // Enlever l'id local
-                updates[ARTICLES_PATH + '/' + key] = data;
+                const { id, ...data } = article;
+                updates[ARTICLES_PATH + '/' + id] = data;
             });
 
             try {
