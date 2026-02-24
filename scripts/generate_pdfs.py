@@ -134,7 +134,7 @@ def make_header_footer(canvas, doc, module_num):
     # Header
     canvas.setFont("Helvetica-Bold", 9)
     canvas.setFillColor(LIGHT_GRAY)
-    canvas.drawString(15 * mm, A4[1] - 12 * mm, "Formation IA au Quotidien | Par Tino Le Doc")
+    canvas.drawString(15 * mm, A4[1] - 12 * mm, "Formation IA au Quotidien | Par TLD")
     canvas.setStrokeColor(CYAN)
     canvas.setLineWidth(0.5)
     canvas.line(15 * mm, A4[1] - 14 * mm, A4[0] - 15 * mm, A4[1] - 14 * mm)
@@ -264,7 +264,7 @@ def generate_module_pdf(module):
     ]))
     story.append(line_table)
     story.append(Spacer(1, 10 * mm))
-    story.append(Paragraph("Par Tino Le Doc", styles["Author"]))
+    story.append(Paragraph("Par TLD", styles["Author"]))
 
     story.append(PageBreak())
 
@@ -305,7 +305,7 @@ def generate_module_pdf(module):
     story.append(PageBreak())
     story.append(Spacer(1, 60 * mm))
     story.append(Paragraph("Formation IA au Quotidien", styles["FooterText"]))
-    story.append(Paragraph("Par Tino Le Doc", styles["FooterText"]))
+    story.append(Paragraph("Par TLD", styles["FooterText"]))
     story.append(Paragraph("\u00a9 Tous droits r\u00e9serv\u00e9s", styles["FooterText"]))
 
     # Build with header/footer

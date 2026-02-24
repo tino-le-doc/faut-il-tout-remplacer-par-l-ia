@@ -1,6 +1,6 @@
 # 🎓 Formation Vidéo : IA au Quotidien
 ## Scripts & Prompts des 15 Modules
-### Par Tino Le Doc | Durée totale : 3h00
+### Par TLD | Durée totale : 3h00
 
 ---
 
@@ -11,7 +11,7 @@
 Comprendre ce qu'est l'IA, démystifier les idées reçues, et voir pourquoi c'est accessible à tout le monde.
 
 ## Script vidéo
-> Salut, c'est Tino Le Doc ! Bienvenue dans cette formation. Aujourd'hui, on va voir ensemble comment l'IA peut transformer ton quotidien — pas dans 10 ans, maintenant.
+> Salut, c'est TLD ! Bienvenue dans cette formation. Aujourd'hui, on va voir ensemble comment l'IA peut transformer ton quotidien — pas dans 10 ans, maintenant.
 >
 > L'IA, c'est pas un truc de geek. C'est un outil, comme ton téléphone. Et comme tout outil, il faut apprendre à s'en servir.
 >
@@ -690,4 +690,4 @@ dans ma vie quotidienne et professionnelle de manière progressive et efficace."
 
 ---
 
-*© Tino Le Doc — Formation IA au Quotidien — Tous droits réservés*
+*© TLD — Formation IA au Quotidien — Tous droits réservés*

@@ -129,7 +129,7 @@ de manière progressive et efficace.
 >
 > Alors fonce !
 >
-> C'était Tino Le Doc.
+> C'était TLD.
 > À très vite !
 
 - **Texte final animé** :
@@ -142,4 +142,4 @@ de manière progressive et efficace.
 
 *FIN DE LA FORMATION — Bravo !*
 
-*© Tino Le Doc — Formation IA au Quotidien — Tous droits réservés*
+*© TLD — Formation IA au Quotidien — Tous droits réservés*

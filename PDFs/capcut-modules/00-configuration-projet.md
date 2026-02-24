@@ -1,5 +1,5 @@
 # CONFIGURATION PROJET CAPCUT
-## Formation IA au Quotidien — Par Tino Le Doc
+## Formation IA au Quotidien — Par TLD
 
 ---
 
@@ -135,4 +135,4 @@ Pour chaque module, vérifie :
 
 ---
 
-*© Tino Le Doc — Formation IA au Quotidien*
+*© TLD — Formation IA au Quotidien*

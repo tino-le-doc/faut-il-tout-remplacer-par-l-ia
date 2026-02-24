@@ -1,5 +1,5 @@
 /* ============================================
-   Tino Le Doc - Configuration Firebase partagee
+   TLD - Configuration Firebase partagee
    ============================================ */
 
 const firebaseConfig = {
