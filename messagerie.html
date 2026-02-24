@@ -2707,7 +2707,8 @@
                 const sec = dur % 60;
                 const durStr = min + ':' + (sec < 10 ? '0' : '') + sec;
                 const playerId = 'vp_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
-                return `<div class="voice-msg-player" id="${playerId}">
+                // Stocker les data audio dans un attribut data pour chargement differe
+                return `<div class="voice-msg-player" id="${playerId}" data-audio-src="${msg.audioData}">
                     <button class="voice-msg-play" onclick="playVoiceMsg('${playerId}')" title="Écouter">▶</button>
                     <div class="voice-msg-info">
                         <div class="voice-msg-bar" onclick="seekVoiceMsg(event, '${playerId}')">
@@ -2715,7 +2716,6 @@
                         </div>
                         <span class="voice-msg-duration">${durStr}</span>
                     </div>
-                    <audio preload="none" src="${msg.audioData}"></audio>
                 </div>`;
             }
             return escapeHtml(msg.text || '');
@@ -2725,12 +2725,29 @@
         function playVoiceMsg(playerId) {
             const player = document.getElementById(playerId);
             if (!player) return;
-            const audio = player.querySelector('audio');
             const btn = player.querySelector('.voice-msg-play');
             const progress = player.querySelector('.voice-msg-progress');
             const durLabel = player.querySelector('.voice-msg-duration');
 
-            if (!audio) return;
+            // Creer l'element audio a la demande (evite les problemes de preload)
+            let audio = player.querySelector('audio');
+            if (!audio) {
+                const src = player.getAttribute('data-audio-src');
+                if (!src) {
+                    console.error('Pas de source audio pour', playerId);
+                    return;
+                }
+                audio = document.createElement('audio');
+                audio.preload = 'auto';
+                audio.src = src;
+                player.appendChild(audio);
+
+                audio.addEventListener('error', (e) => {
+                    console.error('Erreur chargement audio:', audio.error);
+                    btn.textContent = '⚠';
+                    btn.title = 'Impossible de lire ce message vocal';
+                });
+            }
 
             // Arreter tous les autres lecteurs
             document.querySelectorAll('.voice-msg-player audio').forEach(a => {
@@ -2745,14 +2762,28 @@
             });
 
             if (audio.paused) {
-                audio.play();
-                btn.textContent = '⏸';
+                btn.textContent = '...';
+
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        btn.textContent = '⏸';
+                    }).catch(err => {
+                        console.error('Erreur lecture audio:', err);
+                        btn.textContent = '▶';
+                        if (err.name === 'NotAllowedError') {
+                            alert('Appuyez à nouveau pour écouter le message vocal.');
+                        }
+                    });
+                } else {
+                    btn.textContent = '⏸';
+                }
 
                 audio.ontimeupdate = () => {
-                    if (audio.duration) {
+                    if (audio.duration && isFinite(audio.duration)) {
                         const pct = (audio.currentTime / audio.duration) * 100;
                         progress.style.width = pct + '%';
-                        const rem = Math.floor(audio.duration - audio.currentTime);
+                        const rem = Math.max(0, Math.floor(audio.duration - audio.currentTime));
                         const min = Math.floor(rem / 60);
                         const sec = rem % 60;
                         durLabel.textContent = min + ':' + (sec < 10 ? '0' : '') + sec;
@@ -2763,9 +2794,11 @@
                     btn.textContent = '▶';
                     progress.style.width = '0%';
                     const dur = Math.floor(audio.duration || 0);
-                    const min = Math.floor(dur / 60);
-                    const sec = dur % 60;
-                    durLabel.textContent = min + ':' + (sec < 10 ? '0' : '') + sec;
+                    if (isFinite(dur)) {
+                        const min = Math.floor(dur / 60);
+                        const sec = dur % 60;
+                        durLabel.textContent = min + ':' + (sec < 10 ? '0' : '') + sec;
+                    }
                 };
             } else {
                 audio.pause();
@@ -2778,7 +2811,7 @@
             if (!player) return;
             const audio = player.querySelector('audio');
             const bar = player.querySelector('.voice-msg-bar');
-            if (!audio || !bar || !audio.duration) return;
+            if (!audio || !bar || !audio.duration || !isFinite(audio.duration)) return;
 
             const rect = bar.getBoundingClientRect();
             const x = event.clientX - rect.left;
@@ -3035,43 +3068,82 @@
             async start() {
                 if (!currentChat) return;
 
+                // Verifier que MediaRecorder est supporte
+                if (typeof MediaRecorder === 'undefined') {
+                    alert('Votre navigateur ne supporte pas l\'enregistrement audio. Essayez Chrome, Firefox ou Edge.');
+                    return;
+                }
+
                 try {
                     this.stream = await navigator.mediaDevices.getUserMedia({
                         audio: {
                             echoCancellation: true,
                             noiseSuppression: true,
-                            sampleRate: 44100
+                            autoGainControl: true
                         }
                     });
                 } catch (err) {
-                    if (err.name === 'NotAllowedError') {
+                    console.error('getUserMedia error:', err.name, err.message);
+                    if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
                         alert('Autorisez l\'accès au micro dans les paramètres de votre navigateur.');
-                    } else if (err.name === 'NotFoundError') {
+                    } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
                         alert('Aucun microphone détecté.');
+                    } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+                        alert('Le micro est utilisé par une autre application. Fermez-la et réessayez.');
                     } else {
                         alert('Impossible d\'accéder au micro : ' + (err.message || err.name));
                     }
                     return;
                 }
 
-                // Choisir le format le plus compact supporte
-                const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus'
-                    : MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm'
-                    : MediaRecorder.isTypeSupported('audio/ogg;codecs=opus') ? 'audio/ogg;codecs=opus'
-                    : 'audio/mp4';
+                // Choisir le format supporte - tester plusieurs options
+                const mimeTypes = [
+                    'audio/webm;codecs=opus',
+                    'audio/webm',
+                    'audio/ogg;codecs=opus',
+                    'audio/ogg',
+                    'audio/mp4',
+                    'audio/mpeg',
+                    '' // Laisser le navigateur choisir
+                ];
+                let selectedMime = '';
+                for (const mime of mimeTypes) {
+                    if (!mime || MediaRecorder.isTypeSupported(mime)) {
+                        selectedMime = mime;
+                        break;
+                    }
+                }
 
                 this.audioChunks = [];
-                this.mediaRecorder = new MediaRecorder(this.stream, { mimeType });
+                try {
+                    const options = selectedMime ? { mimeType: selectedMime } : {};
+                    this.mediaRecorder = new MediaRecorder(this.stream, options);
+                } catch (err) {
+                    console.error('MediaRecorder creation error:', err);
+                    // Deuxieme tentative sans options
+                    try {
+                        this.mediaRecorder = new MediaRecorder(this.stream);
+                    } catch (err2) {
+                        console.error('MediaRecorder fallback error:', err2);
+                        alert('Impossible de démarrer l\'enregistrement audio.');
+                        this.stream.getTracks().forEach(t => t.stop());
+                        this.stream = null;
+                        return;
+                    }
+                }
+
+                console.log('🎙️ MediaRecorder démarré, mimeType:', this.mediaRecorder.mimeType);
 
                 this.mediaRecorder.ondataavailable = (e) => {
-                    if (e.data.size > 0) this.audioChunks.push(e.data);
+                    if (e.data && e.data.size > 0) this.audioChunks.push(e.data);
                 };
 
-                this.mediaRecorder.onstop = () => {
-                    // Gere dans stopAndSend
+                this.mediaRecorder.onerror = (e) => {
+                    console.error('MediaRecorder error:', e.error);
+                    this.cancel();
                 };
 
-                this.mediaRecorder.start(100); // chunks toutes les 100ms
+                this.mediaRecorder.start(250); // chunks toutes les 250ms
                 this.isRecording = true;
                 this.startTime = Date.now();
 
@@ -3130,11 +3202,14 @@
                     };
                     draw();
                     this._vizCtx = ctx;
-                } catch (e) { /* Visualisation non critique */ }
+                } catch (e) {
+                    console.warn('Visualisation audio non disponible:', e);
+                }
             },
 
             cancel() {
                 if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+                    this.mediaRecorder.onstop = () => {}; // Ignorer le stop
                     this.mediaRecorder.stop();
                 }
                 this.cleanup();
@@ -3154,9 +3229,21 @@
                     return;
                 }
 
+                // Sauvegarder le mimeType avant le stop
+                const mimeType = this.mediaRecorder.mimeType;
+
                 return new Promise(resolve => {
                     this.mediaRecorder.onstop = async () => {
-                        const blob = new Blob(this.audioChunks, { type: this.mediaRecorder.mimeType });
+                        if (this.audioChunks.length === 0) {
+                            console.error('Aucune donnée audio enregistrée');
+                            alert('L\'enregistrement n\'a capturé aucun son. Vérifiez votre micro.');
+                            this.cleanup();
+                            resolve();
+                            return;
+                        }
+
+                        const blob = new Blob(this.audioChunks, { type: mimeType || 'audio/webm' });
+                        console.log('🎙️ Audio blob:', blob.size, 'octets, type:', blob.type);
 
                         // Verifier la taille (max ~500KB pour Firebase Realtime DB)
                         if (blob.size > 500000) {
@@ -3166,10 +3253,24 @@
                             return;
                         }
 
+                        if (blob.size < 100) {
+                            alert('L\'enregistrement semble vide. Vérifiez que votre micro fonctionne.');
+                            this.cleanup();
+                            resolve();
+                            return;
+                        }
+
                         // Convertir en base64
                         const reader = new FileReader();
+                        reader.onerror = () => {
+                            console.error('FileReader error');
+                            alert('Erreur lors de la conversion audio.');
+                            this.cleanup();
+                            resolve();
+                        };
                         reader.onloadend = async () => {
                             const audioData = reader.result; // data:audio/webm;base64,...
+                            console.log('🎙️ Audio base64 prêt, taille:', audioData.length);
                             await this.sendVoiceMessage(audioData, duration);
                             this.cleanup();
                             resolve();
