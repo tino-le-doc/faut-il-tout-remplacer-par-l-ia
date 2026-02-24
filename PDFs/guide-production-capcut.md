@@ -1,5 +1,5 @@
 # GUIDE DE PRODUCTION CAPCUT — Formation IA au Quotidien
-## Par Tino Le Doc | Avatar TLD | 15 Modules
+## Par TLD | Avatar TLD | 15 Modules
 ### Format optimisé pour CapCut Mac
 
 ---
@@ -75,7 +75,7 @@ Piste 7 (audio)  → Effets sonores (transitions)
 ### [0:15 - 2:30] BLOC VOIX OFF — Présentation
 > **[TELEPROMPTER]**
 >
-> Salut, c'est Tino Le Doc !
+> Salut, c'est TLD !
 >
 > Bienvenue dans cette formation.
 >
@@ -1400,7 +1400,7 @@ de manière progressive et efficace.
 >
 > Alors fonce !
 >
-> C'était Tino Le Doc.
+> C'était TLD.
 > À très vite !
 
 - **Texte final animé** :
@@ -1467,4 +1467,4 @@ Pour chaque module, vérifie :
 
 ---
 
-*© Tino Le Doc — Guide de Production CapCut — Formation IA au Quotidien*
+*© TLD — Guide de Production CapCut — Formation IA au Quotidien*

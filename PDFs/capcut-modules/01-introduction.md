@@ -22,7 +22,7 @@
 
 > **[TELEPROMPTER]**
 >
-> Salut, c'est Tino Le Doc !
+> Salut, c'est TLD !
 >
 > Bienvenue dans cette formation.
 >

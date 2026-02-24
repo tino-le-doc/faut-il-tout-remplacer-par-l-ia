@@ -1,6 +1,6 @@
 # Faut-il tout remplacer par l'IA ?
 
-Plateforme web communautaire francophone explorant le debat sur l'intelligence artificielle et son role dans la societe. Creee par **Tino Le Doc**.
+Plateforme web communautaire francophone explorant le debat sur l'intelligence artificielle et son role dans la societe. Creee par **TLD**.
 
 ## Fonctionnalites
 
@@ -86,7 +86,7 @@ Pour activer les paiements Stripe, configurez vos cles via l'interface admin de 
 
 ## Licence
 
-Tous droits reserves - Tino Le Doc
+Tous droits reserves - TLD
 
 ## Credits
 
