@@ -75,6 +75,55 @@ body::before {
     pointer-events: none;
 }
 
+/* Image flottante tournoyante */
+body::after {
+    content: '';
+    position: fixed;
+    width: 180px;
+    height: 180px;
+    top: 30%;
+    left: 40%;
+    background-image: url('../img/1000074494.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.18;
+    z-index: 0;
+    pointer-events: none;
+    border-radius: 50%;
+    -webkit-filter: drop-shadow(0 0 20px rgba(0, 245, 255, 0.3));
+    filter: drop-shadow(0 0 20px rgba(0, 245, 255, 0.3));
+    -webkit-animation: floatDrift 50s ease-in-out infinite;
+    animation: floatDrift 50s ease-in-out infinite;
+}
+
+@-webkit-keyframes floatDrift {
+    0%   { -webkit-transform: translate(0, 0) rotate(0deg); transform: translate(0, 0) rotate(0deg); }
+    10%  { -webkit-transform: translate(15vw, -12vh) rotate(36deg); transform: translate(15vw, -12vh) rotate(36deg); }
+    20%  { -webkit-transform: translate(-12vw, 18vh) rotate(72deg); transform: translate(-12vw, 18vh) rotate(72deg); }
+    30%  { -webkit-transform: translate(20vw, 8vh) rotate(108deg); transform: translate(20vw, 8vh) rotate(108deg); }
+    40%  { -webkit-transform: translate(-8vw, -18vh) rotate(144deg); transform: translate(-8vw, -18vh) rotate(144deg); }
+    50%  { -webkit-transform: translate(18vw, 22vh) rotate(180deg); transform: translate(18vw, 22vh) rotate(180deg); }
+    60%  { -webkit-transform: translate(-18vw, -6vh) rotate(216deg); transform: translate(-18vw, -6vh) rotate(216deg); }
+    70%  { -webkit-transform: translate(10vw, -20vh) rotate(252deg); transform: translate(10vw, -20vh) rotate(252deg); }
+    80%  { -webkit-transform: translate(-20vw, 14vh) rotate(288deg); transform: translate(-20vw, 14vh) rotate(288deg); }
+    90%  { -webkit-transform: translate(8vw, -8vh) rotate(324deg); transform: translate(8vw, -8vh) rotate(324deg); }
+    100% { -webkit-transform: translate(0, 0) rotate(360deg); transform: translate(0, 0) rotate(360deg); }
+}
+@keyframes floatDrift {
+    0%   { -webkit-transform: translate(0, 0) rotate(0deg); transform: translate(0, 0) rotate(0deg); }
+    10%  { -webkit-transform: translate(15vw, -12vh) rotate(36deg); transform: translate(15vw, -12vh) rotate(36deg); }
+    20%  { -webkit-transform: translate(-12vw, 18vh) rotate(72deg); transform: translate(-12vw, 18vh) rotate(72deg); }
+    30%  { -webkit-transform: translate(20vw, 8vh) rotate(108deg); transform: translate(20vw, 8vh) rotate(108deg); }
+    40%  { -webkit-transform: translate(-8vw, -18vh) rotate(144deg); transform: translate(-8vw, -18vh) rotate(144deg); }
+    50%  { -webkit-transform: translate(18vw, 22vh) rotate(180deg); transform: translate(18vw, 22vh) rotate(180deg); }
+    60%  { -webkit-transform: translate(-18vw, -6vh) rotate(216deg); transform: translate(-18vw, -6vh) rotate(216deg); }
+    70%  { -webkit-transform: translate(10vw, -20vh) rotate(252deg); transform: translate(10vw, -20vh) rotate(252deg); }
+    80%  { -webkit-transform: translate(-20vw, 14vh) rotate(288deg); transform: translate(-20vw, 14vh) rotate(288deg); }
+    90%  { -webkit-transform: translate(8vw, -8vh) rotate(324deg); transform: translate(8vw, -8vh) rotate(324deg); }
+    100% { -webkit-transform: translate(0, 0) rotate(360deg); transform: translate(0, 0) rotate(360deg); }
+}
+
 /* Touch-friendly: boutons et liens */
 button, a, input[type="submit"], select, [onclick] {
     touch-action: manipulation;
@@ -371,6 +420,12 @@ footer a:hover {
 
     .floating-orb {
         display: none;
+    }
+
+    body::after {
+        width: 120px;
+        height: 120px;
+        opacity: 0.12;
     }
 }
 
