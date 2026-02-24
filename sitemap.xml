@@ -49,6 +49,36 @@
         <priority>0.7</priority>
     </url>
     <url>
+        <loc>https://tino-le-doc.com/contact.html</loc>
+        <lastmod>2026-02-24</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://tino-le-doc.com/compte.html</loc>
+        <lastmod>2026-02-24</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://tino-le-doc.com/messagerie.html</loc>
+        <lastmod>2026-02-24</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://tino-le-doc.com/veille-techno.html</loc>
+        <lastmod>2026-02-24</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://tino-le-doc.com/appareils-connectes.html</loc>
+        <lastmod>2026-02-24</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
         <loc>https://tino-le-doc.com/confidentialite.html</loc>
         <lastmod>2026-02-22</lastmod>
         <changefreq>yearly</changefreq>
