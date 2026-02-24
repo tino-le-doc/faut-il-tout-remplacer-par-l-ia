@@ -13,6 +13,11 @@
     <meta name="author" content="Tino Le Doc">
     <meta name="copyright" content="Copyright 2025 Tino Le Doc. Tous droits reserves.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
+    <meta name="theme-color" content="#0a0a0f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="img/1000074494.png">
+    <link rel="manifest" href="manifest.json">
     <meta name="description" content="Tchat en direct avec la communaute Tino Le Doc. Discutez de l'IA, partagez vos idees et connectez-vous en temps reel.">
     <meta property="og:title" content="Tchat Live - Tino Le Doc">
     <meta property="og:description" content="Discutez de l'IA en direct avec la communaute Tino Le Doc.">
@@ -25,8 +30,8 @@
     <style>
         :root{--bg:#0a0a0f;--cyan:#00f5ff;--magenta:#ff00aa;--yellow:#f5ff00;--orange:#ff9500;--green:#00ff88;--red:#ff4444;--text:#e8e8e8;--glass:rgba(255,255,255,0.05)}
         *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-        .container{max-width:1200px;margin:0 auto;padding:15px;min-height:100vh}
+        body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh}
+        .container{max-width:1200px;margin:0 auto;padding:15px;min-height:100vh;min-height:100dvh}
         .logo{text-align:center;padding:10px 0}
         .logo img{max-width:150px;filter:drop-shadow(0 5px 20px rgba(255,165,0,0.4))}
         .back{color:var(--cyan);text-decoration:none;font-size:0.85rem}
@@ -83,7 +88,7 @@
         .typing{display:none;padding:8px 15px;font-size:0.8rem;color:rgba(255,255,255,0.5);font-style:italic}
         .typing.active{display:block}
 
-        .input-area{padding:12px 15px;background:rgba(255,255,255,0.03);border-top:1px solid rgba(255,255,255,0.08);flex-shrink:0}
+        .input-area{padding:12px 15px;padding-bottom:calc(12px + env(safe-area-inset-bottom, 0px));background:rgba(255,255,255,0.03);border-top:1px solid rgba(255,255,255,0.08);flex-shrink:0}
         .warn{display:none;padding:8px 12px;background:rgba(255,68,68,0.15);border:1px solid var(--red);border-radius:10px;margin-bottom:10px;color:var(--red);font-size:0.8rem}
         .rate-limit{display:none;padding:8px 12px;background:rgba(255,149,0,0.15);border:1px solid var(--orange);border-radius:10px;margin-bottom:10px;color:var(--orange);font-size:0.8rem}
 

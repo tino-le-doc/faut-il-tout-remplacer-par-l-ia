@@ -1,0 +1,21 @@
+{
+  "name": "Faut-il tout remplacer par l'IA ? - Tino Le Doc",
+  "short_name": "Tino Le Doc",
+  "description": "Communauté francophone de débat sur l'intelligence artificielle",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#0a0a0f",
+  "background_color": "#0a0a0f",
+  "lang": "fr",
+  "categories": ["social", "education", "entertainment"],
+  "icons": [
+    {
+      "src": "img/1000074494.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
