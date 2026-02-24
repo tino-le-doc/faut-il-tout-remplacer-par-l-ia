@@ -75,26 +75,51 @@ body::before {
     pointer-events: none;
 }
 
-/* Image flottante tournoyante */
+/* Image flottante tournoyante + scintillante */
 body::after {
     content: '';
     position: fixed;
-    width: 180px;
-    height: 180px;
-    top: 30%;
-    left: 40%;
+    width: 320px;
+    height: 320px;
+    top: 25%;
+    left: 35%;
     background-image: url('../img/tldia.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    opacity: 0.18;
+    opacity: 0.22;
     z-index: 0;
     pointer-events: none;
     border-radius: 50%;
-    -webkit-filter: drop-shadow(0 0 20px rgba(0, 245, 255, 0.3));
-    filter: drop-shadow(0 0 20px rgba(0, 245, 255, 0.3));
-    -webkit-animation: floatDrift 50s ease-in-out infinite;
-    animation: floatDrift 50s ease-in-out infinite;
+    -webkit-filter: drop-shadow(0 0 30px rgba(0, 245, 255, 0.4)) drop-shadow(0 0 60px rgba(255, 0, 170, 0.2));
+    filter: drop-shadow(0 0 30px rgba(0, 245, 255, 0.4)) drop-shadow(0 0 60px rgba(255, 0, 170, 0.2));
+    -webkit-animation: floatDrift 50s ease-in-out infinite, sparkle 3s ease-in-out infinite;
+    animation: floatDrift 50s ease-in-out infinite, sparkle 3s ease-in-out infinite;
+}
+
+@-webkit-keyframes sparkle {
+    0%, 100% {
+        -webkit-filter: drop-shadow(0 0 30px rgba(0, 245, 255, 0.4)) drop-shadow(0 0 60px rgba(255, 0, 170, 0.2));
+        filter: drop-shadow(0 0 30px rgba(0, 245, 255, 0.4)) drop-shadow(0 0 60px rgba(255, 0, 170, 0.2));
+        opacity: 0.22;
+    }
+    50% {
+        -webkit-filter: drop-shadow(0 0 50px rgba(0, 245, 255, 0.7)) drop-shadow(0 0 90px rgba(255, 0, 170, 0.4)) drop-shadow(0 0 120px rgba(245, 255, 0, 0.2));
+        filter: drop-shadow(0 0 50px rgba(0, 245, 255, 0.7)) drop-shadow(0 0 90px rgba(255, 0, 170, 0.4)) drop-shadow(0 0 120px rgba(245, 255, 0, 0.2));
+        opacity: 0.32;
+    }
+}
+@keyframes sparkle {
+    0%, 100% {
+        -webkit-filter: drop-shadow(0 0 30px rgba(0, 245, 255, 0.4)) drop-shadow(0 0 60px rgba(255, 0, 170, 0.2));
+        filter: drop-shadow(0 0 30px rgba(0, 245, 255, 0.4)) drop-shadow(0 0 60px rgba(255, 0, 170, 0.2));
+        opacity: 0.22;
+    }
+    50% {
+        -webkit-filter: drop-shadow(0 0 50px rgba(0, 245, 255, 0.7)) drop-shadow(0 0 90px rgba(255, 0, 170, 0.4)) drop-shadow(0 0 120px rgba(245, 255, 0, 0.2));
+        filter: drop-shadow(0 0 50px rgba(0, 245, 255, 0.7)) drop-shadow(0 0 90px rgba(255, 0, 170, 0.4)) drop-shadow(0 0 120px rgba(245, 255, 0, 0.2));
+        opacity: 0.32;
+    }
 }
 
 @-webkit-keyframes floatDrift {
@@ -423,9 +448,9 @@ footer a:hover {
     }
 
     body::after {
-        width: 120px;
-        height: 120px;
-        opacity: 0.12;
+        width: 200px;
+        height: 200px;
+        opacity: 0.15;
     }
 }
 
