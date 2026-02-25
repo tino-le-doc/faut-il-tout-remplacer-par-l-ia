@@ -221,6 +221,44 @@
       }
     },
 
+    // ==================== FORUM ====================
+    // Groupes de discussion publics/prives
+    "forumGroups": {
+      ".read": "auth != null",
+      ".indexOn": ["category", "createdAt", "memberCount", "isPublic"],
+      "$groupId": {
+        ".write": "auth != null"
+      }
+    },
+
+    // Membres des groupes forum
+    "forumMembers": {
+      "$groupId": {
+        ".read": "auth != null",
+        "$userId": {
+          ".write": "auth != null"
+        }
+      }
+    },
+
+    // Messages des groupes forum
+    "forumMessages": {
+      "$groupId": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+        ".indexOn": ["timestamp", "isPinned"]
+      }
+    },
+
+    // Invitations forum (groupes prives)
+    "forumInvites": {
+      "$userId": {
+        ".read": "auth != null && auth.uid == $userId",
+        ".write": "auth != null",
+        ".indexOn": ["timestamp"]
+      }
+    },
+
     // ==================== VEILLE TECHNOLOGIQUE ====================
     // Seul l'admin peut creer/modifier/supprimer des articles
     // Les utilisateurs connectes peuvent liker
