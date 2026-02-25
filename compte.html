@@ -1265,6 +1265,46 @@
     const googleProvider = new firebase.auth.GoogleAuthProvider();
     let pendingGoogleUser = null;
 
+    // Detecter si mobile pour utiliser redirect au lieu de popup
+    function isMobile() {
+        return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)
+            || (window.innerWidth <= 768);
+    }
+
+    // Gerer le retour de signInWithRedirect (au chargement de la page)
+    auth.getRedirectResult().then(async (result) => {
+        if (result && result.user) {
+            const user = result.user;
+            console.log('Google redirect sign-in:', user.uid);
+            await handleGoogleUser(user);
+        }
+    }).catch((error) => {
+        console.error('Erreur redirect Google:', error.code, error.message);
+        if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
+            showError('Erreur de connexion Google : ' + (error.message || 'Erreur inconnue'));
+        }
+    });
+
+    // Traitement commun apres connexion Google (popup ou redirect)
+    async function handleGoogleUser(user) {
+        try {
+            const snapshot = await db.ref('users/' + user.uid).once('value');
+            if (snapshot.exists()) {
+                console.log('Utilisateur Google existant');
+                showSuccess('Connexion réussie !');
+            } else {
+                pendingGoogleUser = user;
+                const suggested = (user.displayName || user.email.split('@')[0])
+                    .replace(/[^a-zA-Z0-9_]/g, '_').substring(0, 20);
+                document.getElementById('googlePseudo').value = suggested;
+                document.getElementById('pseudoModal').classList.add('active');
+            }
+        } catch (error) {
+            console.error('Erreur vérification profil Google:', error);
+            showError('Erreur lors de la vérification du profil. Réessayez.');
+        }
+    }
+
     async function signInWithGoogle() {
         hideMessages();
         const btns = document.querySelectorAll('.google-btn');
@@ -1278,33 +1318,41 @@
             return;
         }
 
+        // Sur mobile, utiliser redirect (les popups sont souvent bloquees)
+        if (isMobile()) {
+            try {
+                await auth.signInWithRedirect(googleProvider);
+                // La page va se recharger, le retour est gere par getRedirectResult ci-dessus
+                return;
+            } catch (error) {
+                console.error('Erreur redirect Google:', error.code, error.message);
+                showError('Erreur de connexion Google : ' + (error.message || 'Erreur inconnue'));
+                btns.forEach(b => { b.disabled = false; b.querySelector('svg').style.display = ''; });
+                return;
+            }
+        }
+
+        // Sur desktop, utiliser popup avec fallback redirect
         try {
             const result = await auth.signInWithPopup(googleProvider);
-            const user = result.user;
-            console.log('Google sign-in:', user.uid);
-
-            // Verifier si le profil existe deja
-            const snapshot = await db.ref('users/' + user.uid).once('value');
-            if (snapshot.exists()) {
-                // Utilisateur existant - connexion directe
-                console.log('Utilisateur Google existant');
-                showSuccess('Connexion reussie !');
-            } else {
-                // Nouvel utilisateur - demander un pseudo
-                pendingGoogleUser = user;
-                const suggested = (user.displayName || user.email.split('@')[0])
-                    .replace(/[^a-zA-Z0-9_]/g, '_').substring(0, 20);
-                document.getElementById('googlePseudo').value = suggested;
-                document.getElementById('pseudoModal').classList.add('active');
-            }
+            await handleGoogleUser(result.user);
         } catch (error) {
             console.error('Erreur Google:', error.code, error.message);
-            if (error.code === 'auth/popup-closed-by-user') {
+            if (error.code === 'auth/popup-blocked') {
+                // Fallback vers redirect si la popup est bloquee
+                console.log('Popup bloquée, tentative avec redirect...');
+                try {
+                    await auth.signInWithRedirect(googleProvider);
+                    return;
+                } catch (redirectError) {
+                    showError('Erreur de connexion Google. Autorisez les popups ou réessayez.');
+                }
+            } else if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
                 // L'utilisateur a ferme la popup, pas d'erreur a afficher
-            } else if (error.code === 'auth/popup-blocked') {
-                showError('Popup bloquee par le navigateur. Autorisez les popups pour ce site.');
-            } else if (error.code === 'auth/cancelled-popup-request') {
-                // Ignore
+            } else if (error.code === 'auth/unauthorized-domain') {
+                showError('Ce domaine n\'est pas autorisé pour la connexion Google. Contactez l\'administrateur.');
+            } else if (error.code === 'auth/network-request-failed') {
+                showError('Erreur réseau. Vérifiez votre connexion internet.');
             } else {
                 showError('Erreur de connexion Google : ' + (error.message || 'Erreur inconnue'));
             }
