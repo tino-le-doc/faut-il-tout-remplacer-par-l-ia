@@ -1179,11 +1179,16 @@
     });
 
     // ==================== PASSWORD RESET ====================
+    let resetInProgress = false;
+
     async function resetPassword() {
+        if (resetInProgress) return;
+
         const email = document.getElementById('loginEmail').value.trim();
+        const forgotLink = document.querySelector('.forgot-link');
 
         if (!email) {
-            showError('Entrez d\'abord votre adresse email');
+            showError('Entrez d\'abord votre adresse email dans le champ ci-dessus');
             return;
         }
 
@@ -1192,9 +1197,27 @@
             return;
         }
 
+        resetInProgress = true;
+        if (forgotLink) {
+            forgotLink.textContent = '⏳ Envoi en cours...';
+            forgotLink.style.pointerEvents = 'none';
+        }
+
+        // reCAPTCHA verification
+        const recaptchaToken = await getRecaptchaToken('PASSWORD_RESET');
+        if (!recaptchaToken) {
+            showError('Vérification de sécurité échouée. Rechargez la page et réessayez.');
+            resetInProgress = false;
+            if (forgotLink) {
+                forgotLink.textContent = 'Mot de passe oublié ?';
+                forgotLink.style.pointerEvents = '';
+            }
+            return;
+        }
+
         try {
             await auth.sendPasswordResetEmail(email);
-            showSuccess('📧 Email de réinitialisation envoyé ! Vérifiez votre boîte mail.');
+            showSuccess('📧 Email de réinitialisation envoyé ! Vérifiez votre boîte mail (et vos spams).');
         } catch (error) {
             console.error('❌ Erreur reset:', error.code, error.message);
 
@@ -1204,15 +1227,25 @@
                     msg = 'Aucun compte trouvé avec cette adresse email';
                     break;
                 case 'auth/invalid-email':
+                case 'auth/missing-email':
                     msg = 'Adresse email invalide';
                     break;
                 case 'auth/too-many-requests':
                     msg = 'Trop de demandes. Réessayez plus tard.';
                     break;
+                case 'auth/network-request-failed':
+                    msg = 'Erreur réseau. Vérifiez votre connexion internet.';
+                    break;
                 default:
                     msg = error.message || 'Erreur inconnue';
             }
             showError(msg);
+        }
+
+        resetInProgress = false;
+        if (forgotLink) {
+            forgotLink.textContent = 'Mot de passe oublié ?';
+            forgotLink.style.pointerEvents = '';
         }
     }
 
