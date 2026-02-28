@@ -19,14 +19,14 @@
     <link rel="apple-touch-icon" href="img/1000074494.png">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="img/1000074494.png">
-    <meta name="description" content="Faut-il tout remplacer par l'IA ? Explorez le debat avec TLD : quiz, sondages, debats et tchat en direct sur l'intelligence artificielle.">
-    <meta property="og:title" content="Faut-il tout remplacer par l'IA ?">
-    <meta property="og:description" content="Explorez le debat sur l'intelligence artificielle avec TLD. Quiz, sondages, debats et tchat en direct.">
+    <meta name="description" data-i18n="index.desc" content="Faut-il tout remplacer par l'IA ? Explorez le debat avec TLD : quiz, sondages, debats et tchat en direct sur l'intelligence artificielle.">
+    <meta property="og:title" data-i18n="index.title" content="Faut-il tout remplacer par l'IA ?">
+    <meta property="og:description" data-i18n="index.desc" content="Explorez le debat sur l'intelligence artificielle avec TLD. Quiz, sondages, debats et tchat en direct.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://tino-le-doc.com/">
     <meta property="og:locale" content="fr_FR">
     <meta property="og:image" content="https://tino-le-doc.com/img/1000074494.png">
-    <title>Faut-il tout remplacer par l'IA ? 🤖</title>
+    <title data-i18n="index.title">Faut-il tout remplacer par l'IA ? 🤖</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/common.css">
     <style>
@@ -892,30 +892,30 @@
     <a href="appareils-connectes.html" class="tino-iot-banner" aria-label="Tino Assistant IoT">
         <span class="tino-iot-banner-icon">📡</span>
         <span class="tino-iot-banner-text">
-            <span class="tino-iot-banner-title">Tino Assistant IoT</span>
-            <span class="tino-iot-banner-sub">Appareils connectes &amp; IA</span>
+            <span class="tino-iot-banner-title" data-i18n="banner.iot.title">Tino Assistant IoT</span>
+            <span class="tino-iot-banner-sub" data-i18n="banner.iot.sub">Appareils connectes &amp; IA</span>
         </span>
         <span class="tino-iot-banner-dot"></span>
     </a>
-    <a href="#main-content" class="skip-link">Aller au contenu</a>
-    <nav class="nav-dropdown" aria-label="Navigation rapide">
-        <select onchange="if(this.value) window.location.href=this.value" aria-label="Naviguer vers une page">
-            <option value="">&#9776; Menu</option>
-            <option value="index.html" selected>&#127968; Accueil</option>
-            <option value="veille-techno.html">&#128225; Veille Techno</option>
-            <option value="quiz.html">&#129504; Quiz</option>
-            <option value="sondages.html">&#128202; Sondages</option>
-            <option value="debat.html">&#9876;&#65039; D&eacute;bat</option>
-            <option value="tchat.html">&#128172; Tchat</option>
-            <option value="messagerie.html">&#9993;&#65039; Messagerie</option>
-            <option value="forum.html">&#127963;&#65039; Forum</option>
-            <option value="avis.html">&#11088; Avis</option>
-            <option value="compte.html">&#128100; Compte</option>
-            <option value="premium.html">&#128081; Premium</option>
-            <option value="boutique.html">&#128722; Boutique</option>
-            <option value="appareils-connectes.html">&#128225; Appareils IA</option>
-            <option value="contact.html">&#128231; Contact</option>
-            <option value="confidentialite.html">&#128274; Confidentialit&eacute;</option>
+    <a href="#main-content" class="skip-link" data-i18n="skip.link">Aller au contenu</a>
+    <nav class="nav-dropdown" data-i18n-aria="nav.aria" aria-label="Navigation rapide">
+        <select onchange="if(this.value) window.location.href=this.value" data-i18n-aria="nav.aria.select" aria-label="Naviguer vers une page">
+            <option value="" data-i18n="nav.menu">&#9776; Menu</option>
+            <option value="index.html" selected data-i18n="nav.accueil">&#127968; Accueil</option>
+            <option value="veille-techno.html" data-i18n="nav.veille">&#128225; Veille Techno</option>
+            <option value="quiz.html" data-i18n="nav.quiz">&#129504; Quiz</option>
+            <option value="sondages.html" data-i18n="nav.sondages">&#128202; Sondages</option>
+            <option value="debat.html" data-i18n="nav.debat">&#9876;&#65039; D&eacute;bat</option>
+            <option value="tchat.html" data-i18n="nav.tchat">&#128172; Tchat</option>
+            <option value="messagerie.html" data-i18n="nav.messagerie">&#9993;&#65039; Messagerie</option>
+            <option value="forum.html" data-i18n="nav.forum">&#127963;&#65039; Forum</option>
+            <option value="avis.html" data-i18n="nav.avis">&#11088; Avis</option>
+            <option value="compte.html" data-i18n="nav.compte">&#128100; Compte</option>
+            <option value="premium.html" data-i18n="nav.premium">&#128081; Premium</option>
+            <option value="boutique.html" data-i18n="nav.boutique">&#128722; Boutique</option>
+            <option value="appareils-connectes.html" data-i18n="nav.appareils">&#128225; Appareils IA</option>
+            <option value="contact.html" data-i18n="nav.contact">&#128231; Contact</option>
+            <option value="confidentialite.html" data-i18n="nav.confidentialite">&#128274; Confidentialit&eacute;</option>
         </select>
     </nav>
     <div class="bg-grid"></div>
@@ -928,17 +928,17 @@
             <div class="stat-item visits">
                 <span>👁️</span>
                 <span class="stat-value" id="visitCount">--</span>
-                <span class="stat-label">visites</span>
+                <span class="stat-label" data-i18n="stats.visites">visites</span>
             </div>
             <div class="stat-item members">
                 <span>👥</span>
                 <span class="stat-value" id="memberCount">--</span>
-                <span class="stat-label">membres</span>
+                <span class="stat-label" data-i18n="stats.membres">membres</span>
             </div>
             <div class="stat-item online">
                 <span>🟢</span>
                 <span class="stat-value" id="onlineCount">--</span>
-                <span class="stat-label">en ligne</span>
+                <span class="stat-label" data-i18n="stats.enligne">en ligne</span>
             </div>
         </div>
 
@@ -946,7 +946,7 @@
         <div class="user-bar">
             <a href="compte.html" class="user-btn" id="userBtn">
                 <span>👤</span>
-                <span>Connexion / Inscription</span>
+                <span data-i18n="user.login">Connexion / Inscription</span>
             </a>
         </div>
 
@@ -957,9 +957,9 @@
 
         <!-- Hero -->
         <section class="hero" role="banner">
-            <div class="hero-badge">🤖 Débat IA vs Humains</div>
-            <h1>Faut-il TOUT remplacer par l'IA ?</h1>
-            <p class="subtitle">J'ai posé la question directement à une intelligence artificielle. Voici sa réponse.</p>
+            <div class="hero-badge" data-i18n="index.badge">🤖 Débat IA vs Humains</div>
+            <h1 data-i18n="index.h1">Faut-il TOUT remplacer par l'IA ?</h1>
+            <p class="subtitle" data-i18n="index.subtitle">J'ai posé la question directement à une intelligence artificielle. Voici sa réponse.</p>
             <div class="hero-video-wrapper">
                 <video controls preload="metadata" playsinline poster="img/tldia.png">
                     <source src="img/tld.ia.mp4" type="video/mp4">
@@ -971,9 +971,9 @@
         <!-- Question -->
         <div class="question-card">
             <div class="question-label">
-                <span></span> Question posée à l'IA
+                <span></span> <span data-i18n="index.question.label">Question posée à l'IA</span>
             </div>
-            <p class="question-text">"Est-ce bien de tout remplacer par l'IA et les robots ? Donne-moi ton avis."</p>
+            <p class="question-text" data-i18n="index.question.text">"Est-ce bien de tout remplacer par l'IA et les robots ? Donne-moi ton avis."</p>
         </div>
 
         <!-- Answer -->
@@ -981,41 +981,41 @@
             <div class="answer-header">
                 <div class="ai-avatar">🧠</div>
                 <div class="answer-meta">
-                    <h3>Réponse de Claude (IA)</h3>
-                    <p>Intelligence Artificielle par Anthropic</p>
+                    <h3 data-i18n="index.answer.title">Réponse de Claude (IA)</h3>
+                    <p data-i18n="index.answer.subtitle">Intelligence Artificielle par Anthropic</p>
                 </div>
             </div>
 
             <div class="main-answer">
-                <div class="answer-verdict">NON. ❌</div>
-                <p class="answer-explanation">
+                <div class="answer-verdict" data-i18n="index.answer.verdict">NON. ❌</div>
+                <p class="answer-explanation" data-i18n="index.answer.explanation">
                     Tout remplacer par l'IA et les robots ne serait pas souhaitable. L'automatisation est utile pour certaines tâches, mais un remplacement total poserait des problèmes majeurs.
                 </p>
             </div>
 
-            <h3 class="reasons-title">⚡ Les 3 raisons principales</h3>
+            <h3 class="reasons-title" data-i18n="index.reasons.title">⚡ Les 3 raisons principales</h3>
 
             <div class="reasons-grid">
                 <div class="reason-card">
                     <div class="reason-number">1</div>
-                    <h4 class="reason-title">🎯 Le sens de la vie</h4>
-                    <p class="reason-text">
+                    <h4 class="reason-title" data-i18n="index.reason1.title">🎯 Le sens de la vie</h4>
+                    <p class="reason-text" data-i18n="index.reason1.text">
                         Le travail donne de la dignité, des liens sociaux, un but dans la vie. Une société où personne ne travaille risque de créer un vide existentiel massif.
                     </p>
                 </div>
 
                 <div class="reason-card">
                     <div class="reason-number">2</div>
-                    <h4 class="reason-title">🧠 Les limites de l'IA</h4>
-                    <p class="reason-text">
+                    <h4 class="reason-title" data-i18n="index.reason2.title">🧠 Les limites de l'IA</h4>
+                    <p class="reason-text" data-i18n="index.reason2.text">
                         L'IA fait des erreurs, parfois graves. Pas de jugement moral, pas de créativité véritable, pas d'empathie réelle. Pour soigner, éduquer, juger — l'humain reste irremplaçable.
                     </p>
                 </div>
 
                 <div class="reason-card">
                     <div class="reason-number">3</div>
-                    <h4 class="reason-title">💰 Le paradoxe économique</h4>
-                    <p class="reason-text">
+                    <h4 class="reason-title" data-i18n="index.reason3.title">💰 Le paradoxe économique</h4>
+                    <p class="reason-text" data-i18n="index.reason3.text">
                         Si les robots produisent tout mais que personne n'a de revenu... qui achète ? Ça suppose une refonte totale de notre modèle économique.
                     </p>
                 </div>
@@ -1024,7 +1024,7 @@
             <!-- Conclusion -->
             <div class="conclusion">
                 <div class="conclusion-icon">💡</div>
-                <h3>La vraie solution</h3>
+                <h3 data-i18n="index.conclusion.title">La vraie solution</h3>
                 <p>
                     L'idéal serait une <span class="highlight">complémentarité</span> — l'IA comme outil qui <span class="highlight">augmente nos capacités</span>, pas qui nous remplace. Libérer du temps pour ce qui compte vraiment, pas créer une humanité spectatrice.
                 </p>
@@ -1033,11 +1033,11 @@
 
         <!-- ===== Zone Pub Payante ===== -->
         <section class="ad-zone" id="adZone">
-            <div class="ad-badge">📢 Sponsorisé</div>
+            <div class="ad-badge" data-i18n="ad.badge">📢 Sponsorisé</div>
             <div class="ad-content">
-                <h3 class="ad-title">Votre publicité ici</h3>
+                <h3 class="ad-title" data-i18n="ad.title">Votre publicité ici</h3>
                 <div class="ad-image" id="adImage">
-                    <span>468 × 120 — Espace publicitaire</span>
+                    <span data-i18n="ad.size">468 × 120 — Espace publicitaire</span>
                 </div>
                 <p class="ad-description">
                     Touchez une audience passionnée par l'IA et les nouvelles technologies. Boostez votre visibilité auprès de milliers de visiteurs engagés.
@@ -1053,62 +1053,62 @@
 
         <!-- CTA -->
         <section class="cta-section">
-            <h2 class="cta-question">Et toi, tu en penses quoi ? 🤔</h2>
+            <h2 class="cta-question" data-i18n="cta.question">Et toi, tu en penses quoi ? 🤔</h2>
             <div class="share-buttons">
                 <a href="quiz.html" class="share-btn primary" style="background: linear-gradient(135deg, var(--accent-orange), var(--accent-yellow)); color: var(--bg-dark);">
-                    🧠 Quiz IA ou Humain ?
+                    <span data-i18n="cta.quiz">🧠 Quiz IA ou Humain ?</span>
                 </a>
                 <a href="sondages.html" class="share-btn primary" style="background: linear-gradient(135deg, #aa00ff, var(--accent-cyan));">
-                    📊 Sondages en direct
+                    <span data-i18n="cta.sondages">📊 Sondages en direct</span>
                 </a>
                 <a href="debat.html" class="share-btn primary" style="background: linear-gradient(135deg, #00ff88, #ff4444); color: white;">
-                    ⚔️ Débat du jour
+                    <span data-i18n="cta.debat">⚔️ Débat du jour</span>
                 </a>
             </div>
             <div class="share-buttons" style="margin-top: 15px;">
                 <a href="tchat.html" class="share-btn live">
                     <span class="live-indicator"></span>
-                    <span>💬 Tchat public</span>
+                    <span data-i18n="cta.tchat">💬 Tchat public</span>
                 </a>
                 <a href="messagerie.html" class="share-btn secondary" style="border-color: var(--accent-magenta); color: var(--accent-magenta);">
-                    ✉️ Messagerie privée
+                    <span data-i18n="cta.messagerie">✉️ Messagerie privée</span>
                 </a>
                 <a href="forum.html" class="share-btn secondary" style="border-color: var(--accent-cyan); color: var(--accent-cyan);">
-                    🏛️ Forum
+                    <span data-i18n="cta.forum">🏛️ Forum</span>
                 </a>
                 <a href="avis.html" class="share-btn secondary">
-                    ⭐ Donner mon avis
+                    <span data-i18n="cta.avis">⭐ Donner mon avis</span>
                 </a>
                 <a href="compte.html" class="share-btn account">
-                    👤 Mon compte
+                    <span data-i18n="cta.compte">👤 Mon compte</span>
                 </a>
             </div>
             <!-- NOUVEAUX BOUTONS MONETISATION -->
             <div class="share-buttons" style="margin-top: 15px;">
                 <a href="premium.html" class="share-btn primary" style="background: linear-gradient(135deg, #ffd700, #ff9500); color: #0a0a0f;">
-                    👑 Devenir Premium
+                    <span data-i18n="cta.premium">👑 Devenir Premium</span>
                 </a>
                 <a href="boutique.html" class="share-btn primary" style="background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));">
-                    🛒 Boutique IA
+                    <span data-i18n="cta.boutique">🛒 Boutique IA</span>
                 </a>
                 <a href="veille-techno.html" class="share-btn primary" style="background: linear-gradient(135deg, #00f5ff, #aa00ff);">
-                    📡 Veille Techno
+                    <span data-i18n="cta.veille">📡 Veille Techno</span>
                 </a>
             </div>
             <!-- BOUTON VEDETTE : Appareils IA -->
             <div class="share-buttons" style="margin-top: 20px;">
                 <a href="appareils-connectes.html" class="share-btn btn-featured">
-                    <span class="btn-featured-badge">NOUVEAU</span>
+                    <span class="btn-featured-badge" data-i18n="cta.nouveau">NOUVEAU</span>
                     <span class="btn-featured-glow"></span>
                     📡 Appareils IA — Explorez l'univers connecte
                 </a>
             </div>
             <div class="share-buttons" style="margin-top: 15px;">
                 <button class="share-btn secondary" onclick="shareContent()">
-                    📤 Partager ce débat
+                    <span data-i18n="btn.share">📤 Partager ce débat</span>
                 </button>
                 <button class="share-btn secondary" onclick="copyLink()">
-                    🔗 Copier le lien
+                    <span data-i18n="btn.copy">🔗 Copier le lien</span>
                 </button>
             </div>
         </section>
@@ -1119,7 +1119,7 @@
         </div>
 
         <footer role="contentinfo">
-            Créé avec ❤️ par <strong>TLD</strong> | Propulsé par <a href="https://claude.ai" target="_blank">Claude AI</a>
+            <span data-i18n="footer.created">Créé avec ❤️ par</span> <strong>TLD</strong> | <span data-i18n="footer.powered">Propulsé par</span> <a href="https://claude.ai" target="_blank">Claude AI</a>
             <nav aria-label="Navigation principale">
             <div class="footer-links">
                 <a href="quiz.html">🧠 Quiz</a>
@@ -1146,6 +1146,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="js/firebase-config.js"></script>
+    <script src="js/i18n.js"></script>
     <script>
         // Config Firebase chargee depuis js/firebase-config.js
         const db = firebaseDb;
