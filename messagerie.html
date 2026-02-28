@@ -2172,7 +2172,13 @@
                 const isContactsTab = document.getElementById('contactsTab').style.display !== 'none';
 
                 if (isContactsTab) {
+                    // Filtrer les contacts
                     document.querySelectorAll('#contactsList .user-item').forEach(item => {
+                        const name = item.querySelector('.user-item-name')?.textContent.toLowerCase() || '';
+                        item.style.display = name.includes(query) ? 'flex' : 'none';
+                    });
+                    // Filtrer aussi les demandes d'amis
+                    document.querySelectorAll('#friendRequests .user-item').forEach(item => {
                         const name = item.querySelector('.user-item-name')?.textContent.toLowerCase() || '';
                         item.style.display = name.includes(query) ? 'flex' : 'none';
                     });
@@ -2226,7 +2232,7 @@
                     `;
 
                     groupHTML += `
-                        <div class="user-item" onclick="toggleGroupMember('${oderId}', '${escapeHtml(pseudo)}')" style="cursor:pointer;">
+                        <div class="user-item" data-uid="${oderId}" data-pseudo="${escapeHtml(pseudo)}" onclick="toggleGroupMember(this.dataset.uid, this.dataset.pseudo)" style="cursor:pointer;">
                             <div class="user-item-avatar">${pseudo.charAt(0).toUpperCase()}</div>
                             <div class="user-item-info">
                                 <div class="user-item-name">${escapeHtml(pseudo)}</div>
@@ -2272,14 +2278,14 @@
                     manualCount++;
                     const pseudo = data.pseudo || 'Utilisateur';
                     html += `
-                        <div class="user-item">
+                        <div class="user-item" data-uid="${oderId}" data-pseudo="${escapeHtml(pseudo)}">
                             <div class="user-item-avatar">${pseudo.charAt(0).toUpperCase()}</div>
                             <div class="user-item-info">
                                 <div class="user-item-name">${escapeHtml(pseudo)}</div>
                                 <div class="user-item-status">Veut vous ajouter</div>
                             </div>
                             <div class="user-item-actions">
-                                <button class="accept" onclick="acceptFriendRequest('${oderId}', '${escapeHtml(pseudo)}')">✓</button>
+                                <button class="accept" onclick="acceptFriendRequest(this.closest('.user-item').dataset.uid, this.closest('.user-item').dataset.pseudo)">✓</button>
                                 <button class="reject" onclick="rejectFriendRequest('${oderId}')">✕</button>
                             </div>
                         </div>
@@ -2401,14 +2407,19 @@
                 let html = '';
                 for (const { uid, pseudo } of users) {
                     const displayPseudo = pseudo || 'Utilisateur';
+                    const isAlreadyContact = contacts && contacts[uid];
                     html += `
                         <div class="user-item">
                             <div class="user-item-avatar">${displayPseudo.charAt(0).toUpperCase()}</div>
                             <div class="user-item-info">
                                 <div class="user-item-name">${escapeHtml(displayPseudo)}</div>
+                                ${isAlreadyContact ? '<div class="user-item-status">Déjà en contact</div>' : ''}
                             </div>
                             <div class="user-item-actions">
-                                <button class="add" onclick="sendFriendRequest('${uid}')">➕ Ajouter</button>
+                                ${isAlreadyContact
+                                    ? '<button class="message" onclick="startDM(\'' + uid + '\')">💬</button>'
+                                    : '<button class="add" onclick="sendFriendRequest(\'' + uid + '\')">➕ Ajouter</button>'
+                                }
                             </div>
                         </div>
                     `;
