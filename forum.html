@@ -774,27 +774,35 @@ document.getElementById('invitesBtn').addEventListener('click', async () => {
             container.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:20px">Aucune invitation</p>';
             return;
         }
-        let html = '';
+        container.innerHTML = '';
         snap.forEach(child => {
             const inv = child.val();
-            html += `
-                <div class="member-item" style="justify-content:space-between">
-                    <div style="display:flex;align-items:center;gap:10px">
-                        <span>📩</span>
-                        <div>
-                            <div style="font-size:0.9rem">${escapeHtml(inv.groupName || 'Groupe')}</div>
-                            <div style="font-size:0.75rem;color:var(--text-secondary)">Invite par ${escapeHtml(inv.invitedBy || '?')}</div>
-                        </div>
+            const invKey = child.key;
+            const groupId = inv.groupId || '';
+
+            const row = document.createElement('div');
+            row.className = 'member-item';
+            row.style.justifyContent = 'space-between';
+            row.innerHTML = `
+                <div style="display:flex;align-items:center;gap:10px">
+                    <span>📩</span>
+                    <div>
+                        <div style="font-size:0.9rem">${escapeHtml(inv.groupName || 'Groupe')}</div>
+                        <div style="font-size:0.75rem;color:var(--text-secondary)">Invite par ${escapeHtml(inv.invitedBy || '?')}</div>
                     </div>
-                    <div style="display:flex;gap:6px">
-                        <button onclick="acceptInvite('${escapeHtml(child.key)}','${escapeHtml(inv.groupId)}')" style="padding:6px 12px;background:var(--green);color:var(--bg);border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:0.8rem">Accepter</button>
-                        <button onclick="declineInvite('${escapeHtml(child.key)}')" style="padding:6px 12px;background:rgba(255,255,255,0.1);color:var(--text);border:none;border-radius:8px;cursor:pointer;font-size:0.8rem">Refuser</button>
-                    </div>
+                </div>
+                <div style="display:flex;gap:6px">
+                    <button class="invite-accept-btn" style="padding:6px 12px;background:var(--green);color:var(--bg);border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:0.8rem">Accepter</button>
+                    <button class="invite-decline-btn" style="padding:6px 12px;background:rgba(255,255,255,0.1);color:var(--text);border:none;border-radius:8px;cursor:pointer;font-size:0.8rem">Refuser</button>
                 </div>`;
+
+            row.querySelector('.invite-accept-btn').addEventListener('click', () => acceptInvite(invKey, groupId));
+            row.querySelector('.invite-decline-btn').addEventListener('click', () => declineInvite(invKey));
+            container.appendChild(row);
         });
-        container.innerHTML = html;
     } catch(e) {
-        container.innerHTML = '<p style="color:var(--red)">Erreur</p>';
+        console.error('Erreur invitations:', e);
+        container.innerHTML = '<p style="color:var(--red)">Erreur de chargement</p>';
     }
 });
 
@@ -831,15 +839,6 @@ async function declineInvite(inviteKey) {
     } catch(e) {
         showToast('Erreur', true);
     }
-}
-
-// ==================== TOAST ====================
-function showToast(msg, isError = false) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = 'toast' + (isError ? ' error' : '');
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 4000);
 }
 
 console.log('✅ Forum pret');
