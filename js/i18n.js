@@ -606,8 +606,8 @@ const I18N = {
         style.textContent = `
             .lang-switcher {
                 position: fixed;
-                top: 12px;
-                left: 12px;
+                top: 68px;
+                left: 16px;
                 z-index: 10001;
             }
             .lang-select {
@@ -638,8 +638,8 @@ const I18N = {
             }
             @media (max-width: 600px) {
                 .lang-switcher {
-                    top: 8px;
-                    left: 8px;
+                    top: 56px;
+                    left: 10px;
                 }
                 .lang-select {
                     font-size: 0.75rem;
