@@ -266,6 +266,24 @@
             margin: 0 auto;
         }
 
+        /* Hero video */
+        .hero-video-wrapper {
+            margin-top: 30px;
+            max-width: 720px;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 245, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0, 245, 255, 0.15), 0 0 60px rgba(255, 0, 170, 0.1);
+        }
+
+        .hero-video-wrapper video {
+            width: 100%;
+            display: block;
+            border-radius: 16px;
+        }
+
         /* Question card */
         .question-card {
             background: var(--glass);
@@ -942,6 +960,12 @@
             <div class="hero-badge">🤖 Débat IA vs Humains</div>
             <h1>Faut-il TOUT remplacer par l'IA ?</h1>
             <p class="subtitle">J'ai posé la question directement à une intelligence artificielle. Voici sa réponse.</p>
+            <div class="hero-video-wrapper">
+                <video controls preload="metadata" playsinline poster="img/tldia.png">
+                    <source src="img/tld.ia.mp4" type="video/mp4">
+                    Votre navigateur ne supporte pas la lecture vidéo.
+                </video>
+            </div>
         </section>
 
         <!-- Question -->
