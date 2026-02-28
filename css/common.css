@@ -661,6 +661,136 @@ footer a:hover {
     }
 }
 
+/* ===== Bouton Partager Flottant ===== */
+.share-fab {
+    position: fixed;
+    bottom: 24px;
+    bottom: calc(24px + var(--safe-bottom));
+    right: 24px;
+    right: calc(24px + var(--safe-right));
+    z-index: 9998;
+}
+
+.share-fab-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(0, 245, 255, 0.3);
+    background: linear-gradient(135deg, rgba(18, 18, 26, 0.95), rgba(26, 26, 37, 0.95));
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    color: var(--cyan);
+    font-size: 1.4rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(0, 245, 255, 0.1);
+    -webkit-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+.share-fab-btn:hover {
+    border-color: rgba(0, 245, 255, 0.6);
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.5), 0 0 25px rgba(0, 245, 255, 0.2);
+    -webkit-transform: scale(1.08);
+    transform: scale(1.08);
+}
+
+.share-fab-btn svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--cyan);
+}
+
+.share-fab-menu {
+    position: absolute;
+    bottom: 66px;
+    right: 0;
+    background: linear-gradient(135deg, rgba(18, 18, 26, 0.98), rgba(26, 26, 37, 0.98));
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    border: 1.5px solid rgba(0, 245, 255, 0.2);
+    border-radius: 16px;
+    padding: 10px;
+    min-width: 200px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 245, 255, 0.08);
+    opacity: 0;
+    visibility: hidden;
+    -webkit-transform: translateY(10px) scale(0.95);
+    transform: translateY(10px) scale(0.95);
+    -webkit-transition: all 0.25s ease;
+    transition: all 0.25s ease;
+}
+
+.share-fab-menu.open {
+    opacity: 1;
+    visibility: visible;
+    -webkit-transform: translateY(0) scale(1);
+    transform: translateY(0) scale(1);
+}
+
+.share-fab-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 16px;
+    background: none;
+    border: none;
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    -webkit-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.share-fab-menu-item:hover {
+    background: rgba(0, 245, 255, 0.08);
+}
+
+.share-fab-menu-item svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.share-fab-menu-item .sfm-icon {
+    font-size: 1.2rem;
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+    .share-fab {
+        bottom: 16px;
+        bottom: calc(16px + var(--safe-bottom));
+        right: 16px;
+        right: calc(16px + var(--safe-right));
+    }
+
+    .share-fab-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+
+    .share-fab-btn svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .share-fab-menu {
+        bottom: 60px;
+        min-width: 180px;
+    }
+}
+
 /* Skip to content (accessibilite) */
 .skip-link {
     position: absolute;

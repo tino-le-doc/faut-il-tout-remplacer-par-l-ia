@@ -51,6 +51,13 @@ const I18N = {
         'btn.share': { fr: '📤 Partager ce débat', en: '📤 Share this debate', es: '📤 Compartir este debate' },
         'btn.copy': { fr: '🔗 Copier le lien', en: '🔗 Copy link', es: '🔗 Copiar enlace' },
 
+        // Share FAB
+        'share.fab.aria': { fr: 'Partager cette page', en: 'Share this page', es: 'Compartir esta página' },
+        'share.fab.whatsapp': { fr: 'WhatsApp', en: 'WhatsApp', es: 'WhatsApp' },
+        'share.fab.x': { fr: 'X (Twitter)', en: 'X (Twitter)', es: 'X (Twitter)' },
+        'share.fab.copy': { fr: 'Copier le lien', en: 'Copy link', es: 'Copiar enlace' },
+        'share.fab.copied': { fr: 'Lien copié !', en: 'Link copied!', es: '¡Enlace copiado!' },
+
         // Stats
         'stats.visites': { fr: 'visites', en: 'visits', es: 'visitas' },
         'stats.membres': { fr: 'membres', en: 'members', es: 'miembros' },
