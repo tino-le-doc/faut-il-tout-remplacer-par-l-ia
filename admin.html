@@ -1386,6 +1386,19 @@
                     '</td>' +
                     '</tr>';
             }).join('');
+
+            applyContactSearchFilter();
+        }
+
+        function applyContactSearchFilter() {
+            var searchInput = document.getElementById('contactSearch');
+            var q = searchInput.value.toLowerCase();
+            if (!q) return;
+            var rows = document.querySelectorAll('#contactsList tr');
+            rows.forEach(function(row) {
+                if (row.classList.contains('loading-row')) return;
+                row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
         }
 
         window.openContact = function(id) {
@@ -1457,14 +1470,7 @@
         };
 
         // Contact search
-        document.getElementById('contactSearch').addEventListener('input', function() {
-            var q = this.value.toLowerCase();
-            var rows = document.querySelectorAll('#contactsList tr');
-            rows.forEach(function(row) {
-                if (row.classList.contains('loading-row')) return;
-                row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
-            });
-        });
+        document.getElementById('contactSearch').addEventListener('input', applyContactSearchFilter);
 
         // ==================== VEILLE TECHNO ====================
         var veilleData = {};
