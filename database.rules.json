@@ -8,6 +8,7 @@
 
     // ==================== UTILISATEURS ====================
     "users": {
+      ".read": "auth != null && auth.token.email === 'martialfabrice@tino-le-doc.com'",
       "$uid": {
         ".read": "auth != null && auth.uid == $uid",
         ".write": "auth != null && auth.uid == $uid",
