@@ -1,0 +1,1923 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <!--
+      Copyright (c) 2025 TLD - Tous droits reserves
+      Toute copie, reproduction ou reutilisation non autorisee est interdite.
+      Licence proprietaire - voir fichier LICENSE
+    -->
+    <meta charset="UTF-8">
+    <meta http-equiv="content-language" content="fr">
+    <meta name="author" content="TLD">
+    <meta name="copyright" content="Copyright 2025 TLD. Tous droits reserves.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0a0f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="img/1000074494.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="img/1000074494.png">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Admin - TLD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        /* ===== Admin Layout ===== */
+        .admin-gate {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding: 20px;
+        }
+
+        .login-card {
+            max-width: 420px;
+            width: 100%;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            animation: fadeInUp 0.6s ease-out;
+            text-align: center;
+        }
+
+        .login-card h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--cyan), var(--magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-card p {
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+
+        .login-card .form-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .login-card label {
+            display: block;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--cyan);
+            margin-bottom: 6px;
+        }
+
+        .login-card input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .login-card input:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 20px rgba(0,245,255,0.15);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--cyan), var(--magenta));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 8px;
+        }
+
+        .login-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,245,255,0.3);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .login-error {
+            color: var(--red);
+            font-size: 0.85rem;
+            margin-top: 12px;
+            display: none;
+        }
+
+        /* ===== Dashboard Layout ===== */
+        .admin-wrapper {
+            display: none;
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+
+        .admin-topbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: linear-gradient(135deg, rgba(10,10,15,0.95), rgba(18,18,26,0.95));
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .admin-topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-topbar-left img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+        }
+
+        .admin-topbar-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            background: linear-gradient(135deg, var(--cyan), var(--magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .admin-topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-user-info {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .admin-logout-btn {
+            padding: 8px 16px;
+            background: rgba(255,68,68,0.15);
+            border: 1px solid rgba(255,68,68,0.3);
+            border-radius: 10px;
+            color: var(--red);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .admin-logout-btn:hover {
+            background: rgba(255,68,68,0.25);
+        }
+
+        .admin-body {
+            display: flex;
+            min-height: calc(100vh - 62px);
+        }
+
+        /* Sidebar */
+        .admin-sidebar {
+            width: 240px;
+            background: rgba(12,12,18,0.9);
+            border-right: 1px solid var(--glass-border);
+            padding: 16px 0;
+            flex-shrink: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            padding: 8px 16px;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 20px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(255,255,255,0.03);
+            color: var(--text);
+        }
+
+        .sidebar-item.active {
+            background: rgba(0,245,255,0.05);
+            color: var(--cyan);
+            border-left-color: var(--cyan);
+        }
+
+        .sidebar-item .si-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .sidebar-item .si-badge {
+            margin-left: auto;
+            background: var(--red);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 10px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        /* Main content */
+        .admin-content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .admin-section {
+            display: none;
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .admin-section.active {
+            display: block;
+        }
+
+        .section-header {
+            margin-bottom: 24px;
+        }
+
+        .section-header h2 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.6rem;
+            margin-bottom: 4px;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Stats cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(0,245,255,0.3);
+        }
+
+        .stat-card-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .stat-card-value {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 2rem;
+            color: var(--cyan);
+            line-height: 1;
+        }
+
+        .stat-card-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Data table */
+        .data-table-wrapper {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .data-table-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--glass-border);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .data-table-header h3 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .data-table-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            padding: 8px 14px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px;
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem;
+            outline: none;
+            transition: all 0.3s;
+            width: 200px;
+        }
+
+        .search-input:focus {
+            border-color: var(--cyan);
+        }
+
+        .btn-action {
+            padding: 8px 16px;
+            border: 1px solid rgba(0,245,255,0.3);
+            background: rgba(0,245,255,0.08);
+            border-radius: 10px;
+            color: var(--cyan);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-action:hover {
+            background: rgba(0,245,255,0.15);
+        }
+
+        .btn-action.danger {
+            border-color: rgba(255,68,68,0.3);
+            background: rgba(255,68,68,0.08);
+            color: var(--red);
+        }
+
+        .btn-action.danger:hover {
+            background: rgba(255,68,68,0.15);
+        }
+
+        .btn-action.success {
+            border-color: rgba(0,255,136,0.3);
+            background: rgba(0,255,136,0.08);
+            color: var(--green);
+        }
+
+        .btn-action.success:hover {
+            background: rgba(0,255,136,0.15);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            background: rgba(0,0,0,0.2);
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 12px 16px;
+            border-top: 1px solid rgba(255,255,255,0.04);
+            font-size: 0.9rem;
+            vertical-align: top;
+        }
+
+        .data-table tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .data-table .msg-preview {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-new {
+            background: rgba(0,245,255,0.15);
+            color: var(--cyan);
+        }
+
+        .badge-read {
+            background: rgba(255,255,255,0.08);
+            color: var(--text-secondary);
+        }
+
+        .badge-category {
+            background: rgba(255,0,170,0.15);
+            color: var(--magenta);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #12121a, #1a1a25);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        .modal-content h3 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+        }
+
+        .modal-content .form-group {
+            margin-bottom: 16px;
+        }
+
+        .modal-content label {
+            display: block;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--cyan);
+            margin-bottom: 6px;
+        }
+
+        .modal-content input,
+        .modal-content select,
+        .modal-content textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .modal-content input:focus,
+        .modal-content select:focus,
+        .modal-content textarea:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 15px rgba(0,245,255,0.1);
+        }
+
+        .modal-content textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .modal-content select option {
+            background: #1a1a25;
+            color: var(--text);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        /* Detail view */
+        .detail-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .detail-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .detail-label {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--cyan);
+            min-width: 100px;
+        }
+
+        .detail-value {
+            color: var(--text);
+            font-size: 0.9rem;
+            word-break: break-word;
+        }
+
+        /* Mobile sidebar toggle */
+        .sidebar-toggle {
+            display: none;
+            padding: 8px;
+            background: none;
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                position: fixed;
+                left: -260px;
+                top: 62px;
+                bottom: 0;
+                z-index: 99;
+                transition: left 0.3s ease;
+                background: rgba(10,10,15,0.98);
+                backdrop-filter: blur(12px);
+            }
+
+            .admin-sidebar.open {
+                left: 0;
+            }
+
+            .sidebar-toggle {
+                display: block;
+            }
+
+            .admin-content {
+                padding: 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+
+            .data-table-wrapper {
+                overflow-x: auto;
+            }
+
+            .admin-topbar-title {
+                font-size: 0.95rem;
+            }
+
+            .admin-user-info {
+                display: none;
+            }
+
+            .search-input {
+                width: 140px;
+            }
+        }
+
+        /* Scrollable table on small screens */
+        .table-scroll {
+            overflow-x: auto;
+        }
+
+        /* Loading state */
+        .loading-row td {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="floating-orb orb-1"></div>
+    <div class="floating-orb orb-2"></div>
+
+    <!-- ===== Login Gate ===== -->
+    <div class="admin-gate" id="adminGate">
+        <div class="login-card">
+            <img src="img/1000074494.png" alt="TLD" style="width:80px;margin-bottom:16px;border-radius:12px;">
+            <h1>Administration</h1>
+            <p>Acces reserve a l'administrateur du site</p>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" placeholder="admin@tino-le-doc.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Mot de passe</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="login-btn" id="loginBtn">Connexion</button>
+            </form>
+            <p class="login-error" id="loginError"></p>
+            <p style="margin-top:20px;font-size:0.8rem;color:var(--text-secondary);">
+                <a href="index.html" style="color:var(--cyan);text-decoration:none;">← Retour au site</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- ===== Admin Dashboard ===== -->
+    <div class="admin-wrapper" id="adminWrapper">
+        <!-- Topbar -->
+        <div class="admin-topbar">
+            <div class="admin-topbar-left">
+                <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+                <img src="img/1000074494.png" alt="TLD">
+                <span class="admin-topbar-title">TLD Admin</span>
+            </div>
+            <div class="admin-topbar-right">
+                <span class="admin-user-info" id="adminEmail"></span>
+                <a href="index.html" class="btn-action" style="text-decoration:none;font-size:0.8rem;">Voir le site</a>
+                <button class="admin-logout-btn" id="logoutBtn">Deconnexion</button>
+            </div>
+        </div>
+
+        <div class="admin-body">
+            <!-- Sidebar -->
+            <aside class="admin-sidebar" id="adminSidebar">
+                <div class="sidebar-section">General</div>
+                <div class="sidebar-item active" data-section="dashboard">
+                    <span class="si-icon">📊</span> Tableau de bord
+                </div>
+                <div class="sidebar-section">Contenu</div>
+                <div class="sidebar-item" data-section="contacts">
+                    <span class="si-icon">📧</span> Messages contact
+                    <span class="si-badge" id="badgeContacts" style="display:none;">0</span>
+                </div>
+                <div class="sidebar-item" data-section="veille">
+                    <span class="si-icon">📡</span> Veille techno
+                </div>
+                <div class="sidebar-item" data-section="avis">
+                    <span class="si-icon">⭐</span> Avis
+                </div>
+                <div class="sidebar-section">Communaute</div>
+                <div class="sidebar-item" data-section="tchat">
+                    <span class="si-icon">💬</span> Tchat public
+                </div>
+                <div class="sidebar-item" data-section="debats">
+                    <span class="si-icon">⚔️</span> Debats
+                </div>
+                <div class="sidebar-item" data-section="sondages">
+                    <span class="si-icon">📊</span> Sondages
+                </div>
+                <div class="sidebar-item" data-section="forum">
+                    <span class="si-icon">🏛️</span> Forum
+                </div>
+                <div class="sidebar-section">Utilisateurs</div>
+                <div class="sidebar-item" data-section="users">
+                    <span class="si-icon">👤</span> Utilisateurs
+                </div>
+            </aside>
+
+            <!-- Main content -->
+            <main class="admin-content">
+
+                <!-- ===== Dashboard ===== -->
+                <div class="admin-section active" id="sec-dashboard">
+                    <div class="section-header">
+                        <h2>Tableau de bord</h2>
+                        <p>Vue d'ensemble de votre site</p>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-card-icon">👁️</div>
+                            <div class="stat-card-value" id="statVisits">-</div>
+                            <div class="stat-card-label">Visites totales</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">👤</div>
+                            <div class="stat-card-value" id="statUsers">-</div>
+                            <div class="stat-card-label">Utilisateurs inscrits</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">📧</div>
+                            <div class="stat-card-value" id="statContacts">-</div>
+                            <div class="stat-card-label">Messages contact</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">💬</div>
+                            <div class="stat-card-value" id="statChat">-</div>
+                            <div class="stat-card-label">Messages tchat</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">📡</div>
+                            <div class="stat-card-value" id="statArticles">-</div>
+                            <div class="stat-card-label">Articles veille</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">⭐</div>
+                            <div class="stat-card-value" id="statReviews">-</div>
+                            <div class="stat-card-label">Avis publies</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">🏛️</div>
+                            <div class="stat-card-value" id="statForumGroups">-</div>
+                            <div class="stat-card-label">Groupes forum</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">🧠</div>
+                            <div class="stat-card-value" id="statQuiz">-</div>
+                            <div class="stat-card-label">Scores quiz</div>
+                        </div>
+                    </div>
+
+                    <!-- Recent contacts preview -->
+                    <div class="data-table-wrapper">
+                        <div class="data-table-header">
+                            <h3>Derniers messages contact</h3>
+                            <button class="btn-action" onclick="switchSection('contacts')">Voir tout →</button>
+                        </div>
+                        <div class="table-scroll">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Statut</th>
+                                        <th>Nom</th>
+                                        <th>Sujet</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashRecentContacts">
+                                    <tr class="loading-row"><td colspan="4">Chargement...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== Messages Contact ===== -->
+                <div class="admin-section" id="sec-contacts">
+                    <div class="section-header">
+                        <h2>Messages contact</h2>
+                        <p>Gerez les messages recus via le formulaire de contact</p>
+                    </div>
+                    <div class="data-table-wrapper">
+                        <div class="data-table-header">
+                            <h3 id="contactsCount">Messages</h3>
+                            <div class="data-table-actions">
+                                <input type="text" class="search-input" id="contactSearch" placeholder="Rechercher...">
+                                <button class="btn-action" onclick="refreshContacts()">Actualiser</button>
+                            </div>
+                        </div>
+                        <div class="table-scroll">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Statut</th>
+                                        <th>Nom</th>
+                                        <th>Email</th>
+                                        <th>Sujet</th>
+                                        <th>Message</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contactsList">
+                                    <tr class="loading-row"><td colspan="7">Chargement...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== Veille Techno ===== -->
+                <div class="admin-section" id="sec-veille">
+                    <div class="section-header">
+                        <h2>Veille technologique</h2>
+                        <p>Creez et gerez vos articles de veille IA</p>
+                    </div>
+                    <div class="data-table-wrapper">
+                        <div class="data-table-header">
+                            <h3 id="veilleCount">Articles</h3>
+                            <div class="data-table-actions">
+                                <input type="text" class="search-input" id="veilleSearch" placeholder="Rechercher...">
+                                <button class="btn-action success" onclick="openVeilleModal()">+ Nouvel article</button>
+                            </div>
+                        </div>
+                        <div class="table-scroll">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Titre</th>
+                                        <th>Categorie</th>
+                                        <th>Likes</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="veilleList">
+                                    <tr class="loading-row"><td colspan="5">Chargement...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== Avis ===== -->
+                <div class="admin-section" id="sec-avis">
+                    <div class="section-header">
+                        <h2>Avis</h2>
+                        <p>Moderez les avis laisses par les utilisateurs</p>
+                    </div>
+                    <div class="data-table-wrapper">
+                        <div class="data-table-header">
+                            <h3 id="avisCount">Avis</h3>
+                            <div class="data-table-actions">
+                                <input type="text" class="search-input" id="avisSearch" placeholder="Rechercher...">
+                            </div>
+                        </div>
+                        <div class="table-scroll">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Note</th>
+                                        <th>Pseudo</th>
+                                        <th>Commentaire</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="avisList">
+                                    <tr class="loading-row"><td colspan="5">Chargement...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== Tchat Public ===== -->
+                <div class="admin-section" id="sec-tchat">
+                    <div class="section-header">
+                        <h2>Tchat public</h2>
+                        <p>Surveillez et moderez les messages du tchat en direct</p>
+                    </div>
+                    <div class="data-table-wrapper">
+                        <div class="data-table-header">
+                            <h3 id="tchatCount">Messages</h3>
+                            <div class="data-table-actions">
+                                <input type="text" class="search-input" id="tchatSearch" placeholder="Rechercher...">
+                                <button class="btn-action" onclick="refreshChat()">Actualiser</button>
+                            </div>
+                        </div>
+                        <div class="table-scroll">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Pseudo</th>
+                                        <th>Message</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tchatList">
+                                    <tr class="loading-row"><td colspan="4">Chargement...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== Debats ===== -->
+                <div class="admin-section" id="sec-debats">
+                    <div class="section-header">
+                        <h2>Debats</h2>
+                        <p>Consultez les debats et arguments de la communaute</p>
+                    </div>
+                    <div class="data-table-wrapper">
+                        <div class="data-table-header">
+                            <h3 id="debatsCount">Debats</h3>
+                            <div class="data-table-actions">
+                                <button class="btn-action" onclick="refreshDebates()">Actualiser</button>
+                            </div>
+                        </div>
+                        <div class="table-scroll">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Pour</th>
+                                        <th>Contre</th>
+                                        <th>Arguments</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="debatsList">
+                                    <tr class="loading-row"><td colspan="4">Chargement...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== Sondages ===== -->
+                <div class="admin-section" id="sec-sondages">
+                    <div class="section-header">
+                        <h2>Sondages</h2>
+                        <p>Consultez les resultats des sondages</p>
+                    </div>
+                    <div class="data-table-wrapper">
+                        <div class="data-table-header">
+                            <h3 id="sondagesCount">Sondages</h3>
+                            <div class="data-table-actions">
+                                <button class="btn-action" onclick="refreshPolls()">Actualiser</button>
+                            </div>
+                        </div>
+                        <div class="table-scroll">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Question</th>
+                                        <th>Votes</th>
+                                        <th>Resultats</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sondagesList">
+                                    <tr class="loading-row"><td colspan="3">Chargement...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== Forum ===== -->
+                <div class="admin-section" id="sec-forum">
+                    <div class="section-header">
+                        <h2>Forum</h2>
+                        <p>Gerez les groupes de discussion du forum</p>
+                    </div>
+                    <div class="data-table-wrapper">
+                        <div class="data-table-header">
+                            <h3 id="forumCount">Groupes</h3>
+                            <div class="data-table-actions">
+                                <input type="text" class="search-input" id="forumSearch" placeholder="Rechercher...">
+                                <button class="btn-action" onclick="refreshForum()">Actualiser</button>
+                            </div>
+                        </div>
+                        <div class="table-scroll">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nom</th>
+                                        <th>Categorie</th>
+                                        <th>Membres</th>
+                                        <th>Type</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="forumList">
+                                    <tr class="loading-row"><td colspan="6">Chargement...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== Utilisateurs ===== -->
+                <div class="admin-section" id="sec-users">
+                    <div class="section-header">
+                        <h2>Utilisateurs</h2>
+                        <p>Liste des utilisateurs inscrits sur la plateforme</p>
+                    </div>
+                    <div class="data-table-wrapper">
+                        <div class="data-table-header">
+                            <h3 id="usersCount">Utilisateurs</h3>
+                            <div class="data-table-actions">
+                                <input type="text" class="search-input" id="usersSearch" placeholder="Rechercher un pseudo...">
+                            </div>
+                        </div>
+                        <div class="table-scroll">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Pseudo</th>
+                                        <th>Email</th>
+                                        <th>Inscrit le</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersList">
+                                    <tr class="loading-row"><td colspan="3">Chargement...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- ===== Modal Veille ===== -->
+    <div class="modal-overlay" id="veilleModal">
+        <div class="modal-content">
+            <h3 id="veilleModalTitle">Nouvel article</h3>
+            <input type="hidden" id="veilleEditId">
+            <div class="form-group">
+                <label for="veilleTitle">Titre</label>
+                <input type="text" id="veilleTitle" placeholder="Titre de l'article" maxlength="200" required>
+            </div>
+            <div class="form-group">
+                <label for="veilleCategory">Categorie</label>
+                <select id="veilleCategory">
+                    <option value="general">General</option>
+                    <option value="llm">LLM / ChatBots</option>
+                    <option value="image">Image / Video IA</option>
+                    <option value="code">Code / Dev IA</option>
+                    <option value="ethique">Ethique / Societe</option>
+                    <option value="business">Business / Startups</option>
+                    <option value="recherche">Recherche</option>
+                    <option value="iot">IoT / Objets connectes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="veilleDescription">Description</label>
+                <textarea id="veilleDescription" placeholder="Resume de l'article..." maxlength="2000"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="veilleUrl">Lien (URL)</label>
+                <input type="url" id="veilleUrl" placeholder="https://...">
+            </div>
+            <div class="form-group">
+                <label for="veilleSource">Source</label>
+                <input type="text" id="veilleSource" placeholder="Ex: OpenAI Blog, TechCrunch..." maxlength="100">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-action" onclick="closeVeilleModal()">Annuler</button>
+                <button class="btn-action success" id="veilleSaveBtn" onclick="saveVeille()">Publier</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Modal Detail Contact ===== -->
+    <div class="modal-overlay" id="contactModal">
+        <div class="modal-content">
+            <h3>Detail du message</h3>
+            <div id="contactDetail"></div>
+            <div class="modal-actions">
+                <button class="btn-action" onclick="closeContactModal()">Fermer</button>
+                <button class="btn-action success" id="contactReplyBtn" onclick="replyContact()">Repondre par email</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script>
+    (function() {
+        'use strict';
+
+        const db = firebaseDb;
+        const auth = firebaseAuth;
+
+        // ==================== STATE ====================
+        let contactsData = {};
+        let currentContactId = null;
+        let currentContactEmail = '';
+
+        // ==================== AUTH ====================
+        auth.onAuthStateChanged(function(user) {
+            if (user && isAdmin(user)) {
+                document.getElementById('adminGate').style.display = 'none';
+                document.getElementById('adminWrapper').style.display = 'block';
+                document.getElementById('adminEmail').textContent = user.email;
+                loadDashboard();
+            } else {
+                document.getElementById('adminGate').style.display = 'flex';
+                document.getElementById('adminWrapper').style.display = 'none';
+            }
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var email = document.getElementById('loginEmail').value.trim();
+            var password = document.getElementById('loginPassword').value;
+            var btn = document.getElementById('loginBtn');
+            var errEl = document.getElementById('loginError');
+            errEl.style.display = 'none';
+            btn.disabled = true;
+            btn.textContent = 'Connexion...';
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then(function(cred) {
+                    if (!isAdmin(cred.user)) {
+                        auth.signOut();
+                        errEl.textContent = 'Acces refuse. Ce compte n\'est pas administrateur.';
+                        errEl.style.display = 'block';
+                    }
+                })
+                .catch(function(err) {
+                    errEl.textContent = 'Identifiants incorrects.';
+                    errEl.style.display = 'block';
+                })
+                .finally(function() {
+                    btn.disabled = false;
+                    btn.textContent = 'Connexion';
+                });
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            auth.signOut();
+        });
+
+        // ==================== NAVIGATION ====================
+        var sidebarItems = document.querySelectorAll('.sidebar-item[data-section]');
+        sidebarItems.forEach(function(item) {
+            item.addEventListener('click', function() {
+                switchSection(item.getAttribute('data-section'));
+            });
+        });
+
+        window.switchSection = function(name) {
+            // Update sidebar
+            sidebarItems.forEach(function(el) {
+                el.classList.toggle('active', el.getAttribute('data-section') === name);
+            });
+            // Update sections
+            document.querySelectorAll('.admin-section').forEach(function(sec) {
+                sec.classList.toggle('active', sec.id === 'sec-' + name);
+            });
+            // Close mobile sidebar
+            document.getElementById('adminSidebar').classList.remove('open');
+        };
+
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            document.getElementById('adminSidebar').classList.toggle('open');
+        });
+
+        // ==================== HELPERS ====================
+        function formatDate(ts) {
+            if (!ts) return '-';
+            var d = new Date(ts);
+            return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+                + ' ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function truncate(str, len) {
+            if (!str) return '';
+            return str.length > len ? str.substring(0, len) + '...' : str;
+        }
+
+        function countSnap(snap) {
+            return snap.exists() ? Object.keys(snap.val()).length : 0;
+        }
+
+        // ==================== DASHBOARD ====================
+        function loadDashboard() {
+            // Visits
+            db.ref('counters/visits').once('value', function(snap) {
+                document.getElementById('statVisits').textContent = snap.val() || 0;
+            });
+
+            // Users (count pseudos as proxy)
+            db.ref('pseudos').once('value', function(snap) {
+                var n = countSnap(snap);
+                document.getElementById('statUsers').textContent = n;
+                document.getElementById('usersCount').textContent = 'Utilisateurs (' + n + ')';
+            });
+
+            // Contact messages
+            db.ref('contactMessages').once('value', function(snap) {
+                var n = countSnap(snap);
+                document.getElementById('statContacts').textContent = n;
+                contactsData = snap.val() || {};
+                renderContacts();
+                renderDashRecentContacts();
+
+                // Count unread
+                var unread = 0;
+                Object.values(contactsData).forEach(function(m) {
+                    if (!m.read) unread++;
+                });
+                var badge = document.getElementById('badgeContacts');
+                if (unread > 0) {
+                    badge.textContent = unread;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            });
+
+            // Chat messages count
+            db.ref('chatMessages').once('value', function(snap) {
+                document.getElementById('statChat').textContent = countSnap(snap);
+            });
+
+            // Veille articles
+            db.ref('veilleArticles').once('value', function(snap) {
+                document.getElementById('statArticles').textContent = countSnap(snap);
+                renderVeille(snap.val());
+            });
+
+            // Reviews
+            db.ref('reviews').once('value', function(snap) {
+                document.getElementById('statReviews').textContent = countSnap(snap);
+                renderAvis(snap.val());
+            });
+
+            // Forum groups
+            db.ref('forumGroups').once('value', function(snap) {
+                document.getElementById('statForumGroups').textContent = countSnap(snap);
+                renderForum(snap.val());
+            });
+
+            // Quiz scores
+            db.ref('quizScores').once('value', function(snap) {
+                document.getElementById('statQuiz').textContent = countSnap(snap);
+            });
+
+            // Load other sections
+            loadChat();
+            loadDebates();
+            loadPolls();
+            loadUsers();
+        }
+
+        // ==================== CONTACTS ====================
+        function renderDashRecentContacts() {
+            var tbody = document.getElementById('dashRecentContacts');
+            var entries = Object.entries(contactsData).sort(function(a, b) {
+                return (b[1].timestamp || 0) - (a[1].timestamp || 0);
+            }).slice(0, 5);
+
+            if (entries.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Aucun message</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = entries.map(function(entry) {
+                var m = entry[1];
+                return '<tr>' +
+                    '<td>' + (m.read ? '<span class="badge badge-read">Lu</span>' : '<span class="badge badge-new">Nouveau</span>') + '</td>' +
+                    '<td>' + escapeHtml(m.name || '-') + '</td>' +
+                    '<td>' + escapeHtml(m.subject || '-') + '</td>' +
+                    '<td>' + formatDate(m.timestamp) + '</td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        function renderContacts() {
+            var tbody = document.getElementById('contactsList');
+            var entries = Object.entries(contactsData).sort(function(a, b) {
+                return (b[1].timestamp || 0) - (a[1].timestamp || 0);
+            });
+            var n = entries.length;
+            document.getElementById('contactsCount').textContent = 'Messages (' + n + ')';
+
+            if (n === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Aucun message de contact</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = entries.map(function(entry) {
+                var id = entry[0];
+                var m = entry[1];
+                return '<tr>' +
+                    '<td>' + (m.read ? '<span class="badge badge-read">Lu</span>' : '<span class="badge badge-new">Nouveau</span>') + '</td>' +
+                    '<td>' + escapeHtml(m.name || '-') + '</td>' +
+                    '<td style="font-size:0.8rem;">' + escapeHtml(m.email || '-') + '</td>' +
+                    '<td><span class="badge badge-category">' + escapeHtml(m.subject || '-') + '</span></td>' +
+                    '<td class="msg-preview">' + escapeHtml(truncate(m.message, 60)) + '</td>' +
+                    '<td style="white-space:nowrap;">' + formatDate(m.timestamp) + '</td>' +
+                    '<td style="white-space:nowrap;">' +
+                        '<button class="btn-action" onclick="openContact(\'' + id + '\')" style="font-size:0.75rem;padding:5px 10px;">Voir</button> ' +
+                        '<button class="btn-action danger" onclick="deleteContact(\'' + id + '\')" style="font-size:0.75rem;padding:5px 10px;">Suppr.</button>' +
+                    '</td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        window.openContact = function(id) {
+            var m = contactsData[id];
+            if (!m) return;
+            currentContactId = id;
+            currentContactEmail = m.email || '';
+
+            document.getElementById('contactDetail').innerHTML =
+                '<div class="detail-card">' +
+                    '<div class="detail-row"><span class="detail-label">Nom</span><span class="detail-value">' + escapeHtml(m.name) + '</span></div>' +
+                    '<div class="detail-row"><span class="detail-label">Email</span><span class="detail-value">' + escapeHtml(m.email) + '</span></div>' +
+                    '<div class="detail-row"><span class="detail-label">Sujet</span><span class="detail-value"><span class="badge badge-category">' + escapeHtml(m.subject) + '</span></span></div>' +
+                    '<div class="detail-row"><span class="detail-label">Date</span><span class="detail-value">' + formatDate(m.timestamp) + '</span></div>' +
+                    '<div class="detail-row"><span class="detail-label">Message</span><span class="detail-value">' + escapeHtml(m.message).replace(/\n/g, '<br>') + '</span></div>' +
+                '</div>';
+
+            document.getElementById('contactModal').classList.add('open');
+
+            // Mark as read
+            if (!m.read) {
+                db.ref('contactMessages/' + id + '/read').set(true);
+                contactsData[id].read = true;
+                renderContacts();
+                renderDashRecentContacts();
+                // Update badge
+                var unread = Object.values(contactsData).filter(function(c) { return !c.read; }).length;
+                var badge = document.getElementById('badgeContacts');
+                if (unread > 0) {
+                    badge.textContent = unread;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        };
+
+        window.closeContactModal = function() {
+            document.getElementById('contactModal').classList.remove('open');
+        };
+
+        window.replyContact = function() {
+            if (currentContactEmail) {
+                var subject = encodeURIComponent('[TLD] Reponse a votre message');
+                window.open('mailto:' + currentContactEmail + '?subject=' + subject, '_blank');
+            }
+        };
+
+        window.deleteContact = function(id) {
+            if (!confirm('Supprimer ce message de contact ?')) return;
+            db.ref('contactMessages/' + id).remove()
+                .then(function() {
+                    delete contactsData[id];
+                    renderContacts();
+                    renderDashRecentContacts();
+                    showToast('Message supprime');
+                })
+                .catch(function() {
+                    showToast('Erreur lors de la suppression', true);
+                });
+        };
+
+        window.refreshContacts = function() {
+            db.ref('contactMessages').once('value', function(snap) {
+                contactsData = snap.val() || {};
+                renderContacts();
+                showToast('Messages actualises');
+            });
+        };
+
+        // Contact search
+        document.getElementById('contactSearch').addEventListener('input', function() {
+            var q = this.value.toLowerCase();
+            var rows = document.querySelectorAll('#contactsList tr');
+            rows.forEach(function(row) {
+                if (row.classList.contains('loading-row')) return;
+                row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+        });
+
+        // ==================== VEILLE TECHNO ====================
+        var veilleData = {};
+
+        function renderVeille(data) {
+            veilleData = data || {};
+            var tbody = document.getElementById('veilleList');
+            var entries = Object.entries(veilleData).sort(function(a, b) {
+                return (b[1].timestamp || 0) - (a[1].timestamp || 0);
+            });
+            var n = entries.length;
+            document.getElementById('veilleCount').textContent = 'Articles (' + n + ')';
+
+            if (n === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Aucun article publie</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = entries.map(function(entry) {
+                var id = entry[0];
+                var a = entry[1];
+                return '<tr>' +
+                    '<td>' + escapeHtml(truncate(a.title || a.titre || '-', 50)) + '</td>' +
+                    '<td><span class="badge badge-category">' + escapeHtml(a.category || a.categorie || '-') + '</span></td>' +
+                    '<td>' + (a.likesCount || 0) + '</td>' +
+                    '<td style="white-space:nowrap;">' + formatDate(a.timestamp) + '</td>' +
+                    '<td style="white-space:nowrap;">' +
+                        '<button class="btn-action" onclick="editVeille(\'' + id + '\')" style="font-size:0.75rem;padding:5px 10px;">Modifier</button> ' +
+                        '<button class="btn-action danger" onclick="deleteVeille(\'' + id + '\')" style="font-size:0.75rem;padding:5px 10px;">Suppr.</button>' +
+                    '</td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        window.openVeilleModal = function(editId) {
+            document.getElementById('veilleEditId').value = editId || '';
+            document.getElementById('veilleModalTitle').textContent = editId ? 'Modifier l\'article' : 'Nouvel article';
+            document.getElementById('veilleSaveBtn').textContent = editId ? 'Enregistrer' : 'Publier';
+
+            if (editId && veilleData[editId]) {
+                var a = veilleData[editId];
+                document.getElementById('veilleTitle').value = a.title || a.titre || '';
+                document.getElementById('veilleCategory').value = a.category || a.categorie || 'general';
+                document.getElementById('veilleDescription').value = a.description || a.resume || '';
+                document.getElementById('veilleUrl').value = a.url || a.lien || '';
+                document.getElementById('veilleSource').value = a.source || '';
+            } else {
+                document.getElementById('veilleTitle').value = '';
+                document.getElementById('veilleCategory').value = 'general';
+                document.getElementById('veilleDescription').value = '';
+                document.getElementById('veilleUrl').value = '';
+                document.getElementById('veilleSource').value = '';
+            }
+
+            document.getElementById('veilleModal').classList.add('open');
+        };
+
+        window.closeVeilleModal = function() {
+            document.getElementById('veilleModal').classList.remove('open');
+        };
+
+        window.editVeille = function(id) {
+            openVeilleModal(id);
+        };
+
+        window.saveVeille = function() {
+            var title = document.getElementById('veilleTitle').value.trim();
+            var category = document.getElementById('veilleCategory').value;
+            var description = document.getElementById('veilleDescription').value.trim();
+            var url = document.getElementById('veilleUrl').value.trim();
+            var source = document.getElementById('veilleSource').value.trim();
+            var editId = document.getElementById('veilleEditId').value;
+
+            if (!title) {
+                showToast('Veuillez entrer un titre', true);
+                return;
+            }
+
+            var articleData = {
+                title: title,
+                category: category,
+                description: description,
+                url: url,
+                source: source,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            var ref;
+            if (editId) {
+                // Keep existing timestamp if editing
+                ref = db.ref('veilleArticles/' + editId);
+                delete articleData.timestamp;
+                ref.update(articleData);
+            } else {
+                ref = db.ref('veilleArticles').push();
+                articleData.likesCount = 0;
+                ref.set(articleData);
+            }
+
+            ref.then(function() {
+                closeVeilleModal();
+                showToast(editId ? 'Article modifie' : 'Article publie');
+                // Refresh
+                db.ref('veilleArticles').once('value', function(snap) {
+                    renderVeille(snap.val());
+                    document.getElementById('statArticles').textContent = countSnap(snap);
+                });
+            }).catch(function() {
+                showToast('Erreur lors de l\'enregistrement', true);
+            });
+        };
+
+        window.deleteVeille = function(id) {
+            if (!confirm('Supprimer cet article de veille techno ?')) return;
+            db.ref('veilleArticles/' + id).remove()
+                .then(function() {
+                    delete veilleData[id];
+                    renderVeille(veilleData);
+                    showToast('Article supprime');
+                })
+                .catch(function() {
+                    showToast('Erreur lors de la suppression', true);
+                });
+        };
+
+        // Veille search
+        document.getElementById('veilleSearch').addEventListener('input', function() {
+            var q = this.value.toLowerCase();
+            var rows = document.querySelectorAll('#veilleList tr');
+            rows.forEach(function(row) {
+                row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+        });
+
+        // ==================== AVIS ====================
+        var avisData = {};
+
+        function renderAvis(data) {
+            avisData = data || {};
+            var tbody = document.getElementById('avisList');
+            var entries = Object.entries(avisData).sort(function(a, b) {
+                return (b[1].timestamp || 0) - (a[1].timestamp || 0);
+            });
+            var n = entries.length;
+            document.getElementById('avisCount').textContent = 'Avis (' + n + ')';
+
+            if (n === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Aucun avis</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = entries.map(function(entry) {
+                var id = entry[0];
+                var r = entry[1];
+                var stars = '';
+                for (var i = 0; i < 5; i++) {
+                    stars += i < (r.rating || 0) ? '★' : '☆';
+                }
+                return '<tr>' +
+                    '<td style="color:var(--gold);white-space:nowrap;">' + stars + '</td>' +
+                    '<td>' + escapeHtml(r.pseudo || r.name || '-') + '</td>' +
+                    '<td class="msg-preview">' + escapeHtml(truncate(r.text || r.comment || '', 80)) + '</td>' +
+                    '<td style="white-space:nowrap;">' + formatDate(r.timestamp) + '</td>' +
+                    '<td>' +
+                        '<button class="btn-action danger" onclick="deleteAvis(\'' + id + '\')" style="font-size:0.75rem;padding:5px 10px;">Suppr.</button>' +
+                    '</td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        window.deleteAvis = function(id) {
+            if (!confirm('Supprimer cet avis ?')) return;
+            db.ref('reviews/' + id).remove()
+                .then(function() {
+                    delete avisData[id];
+                    renderAvis(avisData);
+                    showToast('Avis supprime');
+                })
+                .catch(function() {
+                    showToast('Erreur lors de la suppression', true);
+                });
+        };
+
+        // Avis search
+        document.getElementById('avisSearch').addEventListener('input', function() {
+            var q = this.value.toLowerCase();
+            var rows = document.querySelectorAll('#avisList tr');
+            rows.forEach(function(row) {
+                row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+        });
+
+        // ==================== TCHAT ====================
+        function loadChat() {
+            db.ref('chatMessages').orderByChild('timestamp').limitToLast(100).once('value', function(snap) {
+                var data = snap.val() || {};
+                var tbody = document.getElementById('tchatList');
+                var entries = Object.entries(data).sort(function(a, b) {
+                    return (b[1].timestamp || 0) - (a[1].timestamp || 0);
+                });
+                document.getElementById('tchatCount').textContent = 'Messages (100 derniers)';
+
+                if (entries.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Aucun message</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = entries.map(function(entry) {
+                    var id = entry[0];
+                    var m = entry[1];
+                    return '<tr>' +
+                        '<td>' + escapeHtml(m.pseudo || '-') + '</td>' +
+                        '<td class="msg-preview">' + escapeHtml(truncate(m.text, 80)) + '</td>' +
+                        '<td style="white-space:nowrap;">' + formatDate(m.timestamp) + '</td>' +
+                        '<td>' +
+                            '<button class="btn-action danger" onclick="deleteChat(\'' + id + '\')" style="font-size:0.75rem;padding:5px 10px;">Suppr.</button>' +
+                        '</td>' +
+                        '</tr>';
+                }).join('');
+            });
+        }
+
+        window.deleteChat = function(id) {
+            if (!confirm('Supprimer ce message du tchat ?')) return;
+            db.ref('chatMessages/' + id).remove()
+                .then(function() {
+                    showToast('Message supprime');
+                    loadChat();
+                })
+                .catch(function() {
+                    showToast('Erreur lors de la suppression', true);
+                });
+        };
+
+        window.refreshChat = function() {
+            loadChat();
+            showToast('Tchat actualise');
+        };
+
+        // Chat search
+        document.getElementById('tchatSearch').addEventListener('input', function() {
+            var q = this.value.toLowerCase();
+            var rows = document.querySelectorAll('#tchatList tr');
+            rows.forEach(function(row) {
+                row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+        });
+
+        // ==================== DEBATS ====================
+        function loadDebates() {
+            db.ref('debates').once('value', function(snap) {
+                var data = snap.val() || {};
+                var tbody = document.getElementById('debatsList');
+                var entries = Object.entries(data).sort(function(a, b) {
+                    return b[0].localeCompare(a[0]);
+                });
+                document.getElementById('debatsCount').textContent = 'Debats (' + entries.length + ')';
+
+                if (entries.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Aucun debat</td></tr>';
+                    return;
+                }
+
+                // Also get arguments count
+                db.ref('debateArguments').once('value', function(argSnap) {
+                    var argData = argSnap.val() || {};
+
+                    tbody.innerHTML = entries.map(function(entry) {
+                        var date = entry[0];
+                        var d = entry[1];
+                        var argCount = argData[date] ? Object.keys(argData[date]).length : 0;
+                        return '<tr>' +
+                            '<td style="white-space:nowrap;">' + escapeHtml(date) + '</td>' +
+                            '<td style="color:var(--green);">' + (d.pour || 0) + ' votes</td>' +
+                            '<td style="color:var(--red);">' + (d.contre || 0) + ' votes</td>' +
+                            '<td>' + argCount + ' arguments</td>' +
+                            '</tr>';
+                    }).join('');
+                });
+            });
+        }
+
+        window.refreshDebates = function() {
+            loadDebates();
+            showToast('Debats actualises');
+        };
+
+        // ==================== SONDAGES ====================
+        function loadPolls() {
+            db.ref('polls').once('value', function(snap) {
+                var data = snap.val() || {};
+                var tbody = document.getElementById('sondagesList');
+                var entries = Object.entries(data);
+                document.getElementById('sondagesCount').textContent = 'Sondages (' + entries.length + ')';
+
+                if (entries.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="empty-state">Aucun sondage</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = entries.map(function(entry) {
+                    var id = entry[0];
+                    var p = entry[1];
+                    var total = p.totalVotes || 0;
+                    var resultsHtml = '';
+                    if (p.votes) {
+                        Object.entries(p.votes).forEach(function(v) {
+                            var pct = total > 0 ? Math.round((v[1] / total) * 100) : 0;
+                            resultsHtml += '<div style="font-size:0.8rem;margin:2px 0;">' +
+                                escapeHtml(v[0]) + ': <strong>' + pct + '%</strong> (' + v[1] + ')' +
+                                '</div>';
+                        });
+                    }
+                    return '<tr>' +
+                        '<td>' + escapeHtml(p.question || id) + '</td>' +
+                        '<td>' + total + '</td>' +
+                        '<td>' + resultsHtml + '</td>' +
+                        '</tr>';
+                }).join('');
+            });
+        }
+
+        window.refreshPolls = function() {
+            loadPolls();
+            showToast('Sondages actualises');
+        };
+
+        // ==================== FORUM ====================
+        function renderForum(data) {
+            var tbody = document.getElementById('forumList');
+            var entries = Object.entries(data || {}).sort(function(a, b) {
+                return (b[1].createdAt || 0) - (a[1].createdAt || 0);
+            });
+            document.getElementById('forumCount').textContent = 'Groupes (' + entries.length + ')';
+
+            if (entries.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Aucun groupe forum</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = entries.map(function(entry) {
+                var id = entry[0];
+                var g = entry[1];
+                return '<tr>' +
+                    '<td>' + escapeHtml(g.name || '-') + '</td>' +
+                    '<td><span class="badge badge-category">' + escapeHtml(g.category || '-') + '</span></td>' +
+                    '<td>' + (g.memberCount || 0) + '</td>' +
+                    '<td>' + (g.isPublic ? '<span style="color:var(--green);">Public</span>' : '<span style="color:var(--orange);">Prive</span>') + '</td>' +
+                    '<td style="white-space:nowrap;">' + formatDate(g.createdAt) + '</td>' +
+                    '<td>' +
+                        '<button class="btn-action danger" onclick="deleteForumGroup(\'' + id + '\')" style="font-size:0.75rem;padding:5px 10px;">Suppr.</button>' +
+                    '</td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        window.deleteForumGroup = function(id) {
+            if (!confirm('Supprimer ce groupe forum et tous ses messages ?')) return;
+            Promise.all([
+                db.ref('forumGroups/' + id).remove(),
+                db.ref('forumMessages/' + id).remove(),
+                db.ref('forumMembers/' + id).remove()
+            ]).then(function() {
+                showToast('Groupe forum supprime');
+                db.ref('forumGroups').once('value', function(snap) {
+                    renderForum(snap.val());
+                });
+            }).catch(function() {
+                showToast('Erreur lors de la suppression', true);
+            });
+        };
+
+        window.refreshForum = function() {
+            db.ref('forumGroups').once('value', function(snap) {
+                renderForum(snap.val());
+                showToast('Forum actualise');
+            });
+        };
+
+        // Forum search
+        document.getElementById('forumSearch').addEventListener('input', function() {
+            var q = this.value.toLowerCase();
+            var rows = document.querySelectorAll('#forumList tr');
+            rows.forEach(function(row) {
+                row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+        });
+
+        // ==================== UTILISATEURS ====================
+        function loadUsers() {
+            db.ref('pseudos').once('value', function(snap) {
+                var data = snap.val() || {};
+                var tbody = document.getElementById('usersList');
+                var entries = Object.entries(data);
+                document.getElementById('usersCount').textContent = 'Utilisateurs (' + entries.length + ')';
+
+                if (entries.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="empty-state">Aucun utilisateur</td></tr>';
+                    return;
+                }
+
+                // Load user details
+                var userPromises = entries.map(function(entry) {
+                    var pseudo = entry[0];
+                    var uid = entry[1];
+                    return db.ref('users/' + uid).once('value').then(function(uSnap) {
+                        var u = uSnap.val() || {};
+                        return {
+                            pseudo: pseudo,
+                            email: u.email || '-',
+                            createdAt: u.createdAt || null
+                        };
+                    }).catch(function() {
+                        return { pseudo: pseudo, email: '-', createdAt: null };
+                    });
+                });
+
+                Promise.all(userPromises).then(function(users) {
+                    users.sort(function(a, b) {
+                        return (b.createdAt || 0) - (a.createdAt || 0);
+                    });
+
+                    tbody.innerHTML = users.map(function(u) {
+                        return '<tr>' +
+                            '<td>' + escapeHtml(u.pseudo) + '</td>' +
+                            '<td style="font-size:0.8rem;">' + escapeHtml(u.email) + '</td>' +
+                            '<td style="white-space:nowrap;">' + formatDate(u.createdAt) + '</td>' +
+                            '</tr>';
+                    }).join('');
+                });
+            });
+        }
+
+        // Users search
+        document.getElementById('usersSearch').addEventListener('input', function() {
+            var q = this.value.toLowerCase();
+            var rows = document.querySelectorAll('#usersList tr');
+            rows.forEach(function(row) {
+                row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+        });
+
+        // ==================== CLOSE MODALS ON OVERLAY CLICK ====================
+        document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) {
+                    overlay.classList.remove('open');
+                }
+            });
+        });
+
+        console.log('🔧 Admin panel initialisé');
+    })();
+    </script>
+</body>
+</html>
