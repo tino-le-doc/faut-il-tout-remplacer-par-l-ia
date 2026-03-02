@@ -706,7 +706,10 @@
                 <button type="submit" class="login-btn" id="loginBtn">Connexion</button>
             </form>
             <p class="login-error" id="loginError"></p>
-            <p style="margin-top:20px;font-size:0.8rem;color:var(--text-secondary);">
+            <p style="margin-top:16px;font-size:0.85rem;">
+                <a href="#" id="resetPasswordLink" style="color:var(--cyan);text-decoration:none;">Mot de passe oublie ?</a>
+            </p>
+            <p style="margin-top:12px;font-size:0.8rem;color:var(--text-secondary);">
                 <a href="index.html" style="color:var(--cyan);text-decoration:none;">← Retour au site</a>
             </p>
         </div>
@@ -1208,12 +1211,52 @@
                     }
                 })
                 .catch(function(err) {
-                    errEl.textContent = 'Identifiants incorrects.';
+                    var code = err.code || '';
+                    if (code === 'auth/too-many-requests') {
+                        errEl.textContent = 'Trop de tentatives. Veuillez patienter quelques minutes avant de reessayer.';
+                    } else if (code === 'auth/network-request-failed') {
+                        errEl.textContent = 'Erreur reseau. Verifiez votre connexion internet.';
+                    } else if (code === 'auth/user-disabled') {
+                        errEl.textContent = 'Ce compte a ete desactive.';
+                    } else if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
+                        errEl.textContent = 'Email ou mot de passe incorrect.';
+                    } else {
+                        errEl.textContent = 'Erreur de connexion. Veuillez reessayer.';
+                    }
                     errEl.style.display = 'block';
                 })
                 .finally(function() {
                     btn.disabled = false;
                     btn.textContent = 'Connexion';
+                });
+        });
+
+        document.getElementById('resetPasswordLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            var email = document.getElementById('loginEmail').value.trim();
+            var errEl = document.getElementById('loginError');
+            if (!email) {
+                errEl.textContent = 'Entrez votre email ci-dessus, puis cliquez sur "Mot de passe oublie".';
+                errEl.style.display = 'block';
+                return;
+            }
+            auth.sendPasswordResetEmail(email)
+                .then(function() {
+                    errEl.textContent = 'Email de reinitialisation envoye a ' + email + '. Verifiez votre boite de reception.';
+                    errEl.style.display = 'block';
+                    errEl.style.color = 'var(--green)';
+                })
+                .catch(function(err) {
+                    var code = err.code || '';
+                    if (code === 'auth/user-not-found') {
+                        errEl.textContent = 'Aucun compte associe a cet email.';
+                    } else if (code === 'auth/too-many-requests') {
+                        errEl.textContent = 'Trop de tentatives. Veuillez patienter avant de reessayer.';
+                    } else {
+                        errEl.textContent = 'Erreur lors de l\'envoi. Veuillez reessayer.';
+                    }
+                    errEl.style.display = 'block';
+                    errEl.style.color = '';
                 });
         });
 
