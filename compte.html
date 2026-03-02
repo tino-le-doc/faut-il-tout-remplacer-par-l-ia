@@ -387,6 +387,28 @@
             margin-top: 10px;
         }
 
+        .admin-dashboard-link {
+            display: none;
+            margin-top: 12px;
+        }
+        .admin-dashboard-link a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            background: linear-gradient(135deg, var(--magenta), var(--purple, #8b5cf6));
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .admin-dashboard-link a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(255, 0, 128, 0.3);
+        }
+
         .profile-stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -741,6 +763,9 @@
                 <div class="profile-name" id="profileName">Chargement...</div>
                 <div class="profile-email" id="profileEmail"></div>
                 <div class="profile-badge">✨ Membre</div>
+                <div class="admin-dashboard-link" id="adminDashboardLink">
+                    <a href="admin.html">📊 Tableau de bord</a>
+                </div>
             </div>
 
             <div class="profile-stats">
@@ -868,6 +893,11 @@
             // User is logged in
             authContainer.style.display = 'none';
             profileContainer.classList.add('active');
+
+            // Show admin dashboard link for admin users
+            if (typeof isAdmin === 'function' && isAdmin(user)) {
+                document.getElementById('adminDashboardLink').style.display = 'block';
+            }
 
             try {
                 const snapshot = await db.ref('users/' + user.uid).once('value');
