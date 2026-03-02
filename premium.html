@@ -191,7 +191,7 @@
             </div>
             <div>
                 <a href="compte.html" class="plan-btn secondary" style="width:auto;padding:10px 20px;display:inline-block;text-decoration:none;">⚙️ Mon compte</a>
-                <button class="plan-btn secondary" style="width:auto;padding:10px 20px;margin-left:10px;" onclick="toggleConfig()">🔧</button>
+                <button class="plan-btn secondary" id="adminConfigBtn" style="width:auto;padding:10px 20px;margin-left:10px;display:none;" onclick="toggleConfig()">🔧</button>
             </div>
         </div>
 
@@ -326,6 +326,7 @@
     }
 
     function toggleConfig() {
+        if (!isAdmin(currentUser)) return;
         const box = document.getElementById('configBox');
         box.style.display = box.style.display === 'none' ? 'block' : 'none';
         document.getElementById('stripeKeyInput').value = stripeConfig.stripeKey || '';
@@ -334,6 +335,7 @@
     }
 
     function saveConfig() {
+        if (!isAdmin(currentUser)) return;
         const key = document.getElementById('stripeKeyInput').value.trim();
         const monthly = document.getElementById('priceMonthlyInput').value.trim();
         const yearly = document.getElementById('priceYearlyInput').value.trim();
@@ -373,6 +375,10 @@
                 userProfile = snapshot.val() || {};
                 document.getElementById('userAvatar').textContent = userProfile.pseudo ? userProfile.pseudo.charAt(0).toUpperCase() : '?';
                 document.getElementById('userName').textContent = userProfile.pseudo || 'Utilisateur';
+
+                if (isAdmin(user)) {
+                    document.getElementById('adminConfigBtn').style.display = 'inline-block';
+                }
 
                 if (userProfile.premium && userProfile.premiumExpiry > Date.now()) {
                     document.getElementById('userPlan').textContent = '✨ Premium';
