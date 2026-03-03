@@ -1436,11 +1436,10 @@
         function applyContactSearchFilter() {
             var searchInput = document.getElementById('contactSearch');
             var q = searchInput.value.toLowerCase();
-            if (!q) return;
             var rows = document.querySelectorAll('#contactsList tr');
             rows.forEach(function(row) {
                 if (row.classList.contains('loading-row')) return;
-                row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+                row.style.display = (!q || row.textContent.toLowerCase().includes(q)) ? '' : 'none';
             });
         }
 
