@@ -540,10 +540,12 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script>
         // Config Firebase chargee depuis js/firebase-config.js
         const db = firebaseDb;
+        const auth = firebaseAuth;
 
         // Polls data
         const defaultPolls = [
@@ -820,6 +822,11 @@
             btn.textContent = '⏳ Vote en cours...';
 
             try {
+                // Ensure anonymous auth for Firebase write permission
+                if (auth && !auth.currentUser) {
+                    await auth.signInAnonymously();
+                }
+
                 // Save vote to Firebase
                 await db.ref('polls/' + pollId + '/votes/' + selectedOption).transaction(count => (count || 0) + 1);
                 await db.ref('polls/' + pollId + '/totalVotes').transaction(count => (count || 0) + 1);
