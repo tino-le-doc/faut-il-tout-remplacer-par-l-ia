@@ -595,21 +595,21 @@ async function joinChat() {
         return;
     }
 
-    // Authentification requise pour écrire dans Firebase
+    // Authentification pour écrire dans Firebase
     joinBtn.disabled = true;
     try {
         if (!auth || !auth.currentUser) {
             await auth.signInAnonymously();
         }
     } catch (e) {
-        console.error('Erreur auth:', e);
-        joinBtn.disabled = false;
-        alert('Connexion impossible. Veuillez réessayer ou vous connecter via la page Compte.');
-        return;
+        console.error('Erreur auth anonyme (non bloquant):', e);
+        // L'auth anonyme peut être désactivée - on continue avec un ID local
     }
 
     user = p;
-    oderId = auth.currentUser.uid;
+    oderId = (auth && auth.currentUser)
+        ? auth.currentUser.uid
+        : 'guest_' + Math.random().toString(36).substr(2, 9);
 
     if (usersRef) {
         const uref = usersRef.child(oderId);
@@ -740,8 +740,11 @@ function sendMsg() {
         oderId: oderId,
         text: t,
         timestamp: Date.now()
+    }).catch(err => {
+        console.error('Envoi bloqué:', err);
+        alert('Envoi impossible. L\'authentification anonyme doit être activée dans Firebase.');
     });
-    
+
     RateLimiter.recordMessage();
     inp.value = '';
     
