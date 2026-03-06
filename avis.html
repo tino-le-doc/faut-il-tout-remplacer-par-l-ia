@@ -769,7 +769,7 @@
                     <div class="review-card">
                         <div class="review-header">
                             <div class="review-author">
-                                <div class="review-avatar">${r.name.charAt(0).toUpperCase()}</div>
+                                <div class="review-avatar">${(r.name || 'U').charAt(0).toUpperCase()}</div>
                                 <div>
                                     <div class="review-name">${escapeHtml(r.name)}</div>
                                     <div class="review-date">${date}</div>

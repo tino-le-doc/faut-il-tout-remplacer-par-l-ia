@@ -1094,7 +1094,7 @@
                 const ref = db.ref('debateArguments/' + todayKey + '/' + argId + '/likes');
 
                 if (isLiked) {
-                    await ref.transaction(count => Math.max((count || 1) - 1, 0));
+                    await ref.transaction(count => Math.max((count || 0) - 1, 0));
                     delete likedArguments[argId];
                 } else {
                     await ref.transaction(count => (count || 0) + 1);

@@ -2466,7 +2466,7 @@
         function createConvItem(id, type, name, lastMsg, lastTime, unread) {
             const avatarClass = type === 'dm' ? 'user' : 'group';
             const icon = type === 'group' ? '<span class="group-icon">👥</span>' : '';
-            const initial = name.charAt(0).toUpperCase();
+            const initial = (name || '?').charAt(0).toUpperCase();
             const time = lastTime ? formatTime(lastTime) : '';
             const preview = lastMsg ? escapeHtml(lastMsg.substring(0, 30)) + (lastMsg.length > 30 ? '...' : '') : 'Aucun message';
             const unreadBadge = unread > 0 ? `<div class="conv-unread">${unread}</div>` : '';
@@ -2677,7 +2677,7 @@
                 const conv = conversations[id];
                 if (conv) {
                     avatar.className = 'conv-avatar group';
-                    avatar.textContent = conv.name.charAt(0).toUpperCase();
+                    avatar.textContent = (conv.name || '?').charAt(0).toUpperCase();
                     nameEl.textContent = conv.name;
 
                     const groupSnap = await db.ref('groups/' + id + '/members').once('value');
@@ -2969,9 +2969,9 @@
                     let membersHTML = '';
                     for (const [oderId, data] of Object.entries(group.members)) {
                         // Pseudo depuis contacts locaux ou profil courant
-                        const pseudo = oderId === currentUser.uid
+                        const pseudo = (oderId === currentUser.uid
                             ? currentUserProfile.pseudo
-                            : (contacts[oderId] && contacts[oderId].pseudo) || 'Utilisateur';
+                            : (contacts[oderId] && contacts[oderId].pseudo)) || 'Utilisateur';
                         const role = data.role === 'admin' ? '👑 Admin' : 'Membre';
                         membersHTML += `
                             <div class="user-item">
@@ -2987,7 +2987,7 @@
                     content.innerHTML = `
                         <div style="text-align: center; margin-bottom: 20px;">
                             <div class="conv-avatar group" style="width: 80px; height: 80px; font-size: 2rem; margin: 0 auto 15px;">
-                                ${group.name.charAt(0).toUpperCase()}
+                                ${(group.name || '?').charAt(0).toUpperCase()}
                             </div>
                             <h3>${escapeHtml(group.name)}</h3>
                             <p style="color: var(--text-secondary);">${escapeHtml(group.description || 'Aucune description')}</p>
@@ -4344,7 +4344,7 @@
 
                 this._currentCallData = { callerName, convId, chatType, callerUid };
 
-                document.getElementById('incomingCallAvatar').textContent = callerName.charAt(0).toUpperCase();
+                document.getElementById('incomingCallAvatar').textContent = (callerName || '?').charAt(0).toUpperCase();
                 document.getElementById('incomingCallName').textContent = callerName;
                 document.getElementById('incomingCallOverlay').classList.add('active');
 

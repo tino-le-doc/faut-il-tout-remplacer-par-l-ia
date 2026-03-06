@@ -1424,8 +1424,8 @@
                     '<td class="msg-preview">' + escapeHtml(truncate(m.message, 60)) + '</td>' +
                     '<td style="white-space:nowrap;">' + formatDate(m.timestamp) + '</td>' +
                     '<td style="white-space:nowrap;">' +
-                        '<button class="btn-action" onclick="openContact(\'' + id + '\')" style="font-size:0.75rem;padding:5px 10px;">Voir</button> ' +
-                        '<button class="btn-action danger" onclick="deleteContact(\'' + id + '\')" style="font-size:0.75rem;padding:5px 10px;">Suppr.</button>' +
+                        '<button class="btn-action" data-id="' + escapeHtml(id) + '" onclick="openContact(this.dataset.id)" style="font-size:0.75rem;padding:5px 10px;">Voir</button> ' +
+                        '<button class="btn-action danger" data-id="' + escapeHtml(id) + '" onclick="deleteContact(this.dataset.id)" style="font-size:0.75rem;padding:5px 10px;">Suppr.</button>' +
                     '</td>' +
                     '</tr>';
             }).join('');
@@ -1540,8 +1540,8 @@
                     '<td>' + (a.likesCount || 0) + '</td>' +
                     '<td style="white-space:nowrap;">' + formatDate(a.timestamp) + '</td>' +
                     '<td style="white-space:nowrap;">' +
-                        '<button class="btn-action" onclick="editVeille(\'' + id + '\')" style="font-size:0.75rem;padding:5px 10px;">Modifier</button> ' +
-                        '<button class="btn-action danger" onclick="deleteVeille(\'' + id + '\')" style="font-size:0.75rem;padding:5px 10px;">Suppr.</button>' +
+                        '<button class="btn-action" data-id="' + escapeHtml(id) + '" onclick="editVeille(this.dataset.id)" style="font-size:0.75rem;padding:5px 10px;">Modifier</button> ' +
+                        '<button class="btn-action danger" data-id="' + escapeHtml(id) + '" onclick="deleteVeille(this.dataset.id)" style="font-size:0.75rem;padding:5px 10px;">Suppr.</button>' +
                     '</td>' +
                     '</tr>';
             }).join('');
@@ -1677,7 +1677,7 @@
                     '<td class="msg-preview">' + escapeHtml(truncate(r.text || r.comment || '', 80)) + '</td>' +
                     '<td style="white-space:nowrap;">' + formatDate(r.timestamp) + '</td>' +
                     '<td>' +
-                        '<button class="btn-action danger" onclick="deleteAvis(\'' + id + '\')" style="font-size:0.75rem;padding:5px 10px;">Suppr.</button>' +
+                        '<button class="btn-action danger" data-id="' + escapeHtml(id) + '" onclick="deleteAvis(this.dataset.id)" style="font-size:0.75rem;padding:5px 10px;">Suppr.</button>' +
                     '</td>' +
                     '</tr>';
             }).join('');
@@ -1728,7 +1728,7 @@
                         '<td class="msg-preview">' + escapeHtml(truncate(m.text, 80)) + '</td>' +
                         '<td style="white-space:nowrap;">' + formatDate(m.timestamp) + '</td>' +
                         '<td>' +
-                            '<button class="btn-action danger" onclick="deleteChat(\'' + id + '\')" style="font-size:0.75rem;padding:5px 10px;">Suppr.</button>' +
+                            '<button class="btn-action danger" data-id="' + escapeHtml(id) + '" onclick="deleteChat(this.dataset.id)" style="font-size:0.75rem;padding:5px 10px;">Suppr.</button>' +
                         '</td>' +
                         '</tr>';
                 }).join('');
@@ -1863,7 +1863,7 @@
                     '<td>' + (g.isPublic ? '<span style="color:var(--green);">Public</span>' : '<span style="color:var(--orange);">Prive</span>') + '</td>' +
                     '<td style="white-space:nowrap;">' + formatDate(g.createdAt) + '</td>' +
                     '<td>' +
-                        '<button class="btn-action danger" onclick="deleteForumGroup(\'' + id + '\')" style="font-size:0.75rem;padding:5px 10px;">Suppr.</button>' +
+                        '<button class="btn-action danger" data-id="' + escapeHtml(id) + '" onclick="deleteForumGroup(this.dataset.id)" style="font-size:0.75rem;padding:5px 10px;">Suppr.</button>' +
                     '</td>' +
                     '</tr>';
             }).join('');
