@@ -1305,7 +1305,7 @@
                 alert('✅ Abonné ! Vous recevrez la question du débat chaque matin.');
             } catch (err) {
                 console.error('Erreur abonnement:', err);
-                alert('Erreur lors de l\'abonnement. Réessayez.');
+                alert('Erreur lors de l\'abonnement : ' + (err.message || err));
             }
         }
 
