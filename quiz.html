@@ -24,8 +24,12 @@
     <meta property="og:description" content="Saurez-vous distinguer ce qui est fait par l'IA ou par un humain ? Testez vos connaissances." data-i18n="quiz.desc">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://tino-le-doc.com/quiz.html">
+    <link rel="canonical" href="https://tino-le-doc.com/quiz.html">
     <meta property="og:locale" content="fr_FR" data-i18n="og.locale">
     <meta property="og:image" content="https://tino-le-doc.com/img/1000074494.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@tino_le_doc">
+    <meta name="twitter:image" content="https://tino-le-doc.com/img/1000074494.png">
     <title data-i18n="quiz.title">Quiz IA ou Humain ? 🧠 TLD</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/common.css">
@@ -581,7 +585,7 @@
     <div class="container" id="main-content">
         <header class="header">
             <a href="index.html">
-                <img src="img/1000074494.png" alt="TLD" class="logo">
+                <img src="img/1000074494.png" alt="TLD" class="logo" loading="lazy">
             </a>
             <a href="index.html" class="back-link">← Retour à l'accueil</a>
             <h1>🧠 Quiz : IA ou Humain ?</h1>
@@ -798,7 +802,7 @@
                 contentDiv.innerHTML = `<div class="question-text">"${q.content}"</div>`;
             } else {
                 contentDiv.innerHTML = `
-                    <img src="${q.content}" alt="Question" class="question-image">
+                    <img src="${q.content}" alt="Question" class="question-image" loading="lazy">
                     <p class="image-caption">Cette image a-t-elle été créée par une IA ?</p>
                 `;
             }
