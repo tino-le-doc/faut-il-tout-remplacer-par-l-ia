@@ -111,6 +111,41 @@
             color: var(--text-secondary);
         }
 
+        /* Notification subscribe */
+        .notif-container {
+            margin-top: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .notif-btn {
+            padding: 10px 22px;
+            background: linear-gradient(135deg, rgba(0, 245, 255, 0.08), rgba(255, 0, 170, 0.08));
+            border: 1px solid var(--cyan);
+            border-radius: 25px;
+            color: var(--cyan);
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .notif-btn:hover { transform: scale(1.05); background: linear-gradient(135deg, rgba(0, 245, 255, 0.18), rgba(255, 0, 170, 0.18)); }
+
+        .notif-btn.subscribed {
+            border-color: var(--text-secondary);
+            color: var(--text-secondary);
+            background: var(--glass);
+        }
+
+        .notif-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
         /* Debate Card */
         .debate-card {
             background: var(--glass);
@@ -733,6 +768,10 @@
             <a href="index.html" class="back-link">← Retour à l'accueil</a>
             <h1>⚔️ Débat du Jour</h1>
             <p class="subtitle">Prenez position et défendez vos arguments !</p>
+            <div class="notif-container" id="notifContainer" style="display:none">
+                <button class="notif-btn" id="notifBtn" onclick="toggleNotification()">🔔 S'abonner aux débats quotidiens</button>
+                <p class="notif-desc">Recevez la question du jour chaque matin</p>
+            </div>
         </header>
 
         <!-- Debate Card -->
@@ -1199,8 +1238,98 @@
             return div.innerHTML;
         }
 
+        // ===================== PUSH NOTIFICATIONS =====================
+        const VAPID_PUBLIC_KEY = 'BAQ3-fXcbSYe3ahHwusrPnzT67_elgs5oyo5vMiftYWT8Z3oHcgnHB5i4Q4W3qFU5BLeqB7IYAx9mtcV-8-wP0U';
+
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+            const rawData = window.atob(base64);
+            return new Uint8Array([...rawData].map(c => c.charCodeAt(0)));
+        }
+
+        function initNotifBtn() {
+            if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+            const container = document.getElementById('notifContainer');
+            if (container) container.style.display = 'flex';
+            updateNotifBtn(localStorage.getItem('pushSubscribed') === 'true');
+        }
+
+        function updateNotifBtn(subscribed) {
+            const btn = document.getElementById('notifBtn');
+            if (!btn) return;
+            if (subscribed) {
+                btn.innerHTML = '🔕 Se désabonner';
+                btn.classList.add('subscribed');
+            } else {
+                btn.innerHTML = '🔔 S\'abonner aux débats quotidiens';
+                btn.classList.remove('subscribed');
+            }
+        }
+
+        async function toggleNotification() {
+            const isSubscribed = localStorage.getItem('pushSubscribed') === 'true';
+            if (isSubscribed) {
+                await unsubscribeNotifications();
+            } else {
+                await subscribeNotifications();
+            }
+        }
+
+        async function subscribeNotifications() {
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission !== 'granted') {
+                    alert('Permission refusée. Activez les notifications dans les paramètres du navigateur.');
+                    return;
+                }
+                const reg = await navigator.serviceWorker.ready;
+                const sub = await reg.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+                });
+
+                const toB64url = buf => btoa(String.fromCharCode(...new Uint8Array(buf)))
+                    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+                const subId = crypto.randomUUID();
+                await db.ref('pushSubscriptions/' + subId).set({
+                    endpoint: sub.endpoint,
+                    keys: { p256dh: toB64url(sub.getKey('p256dh')), auth: toB64url(sub.getKey('auth')) },
+                    createdAt: Date.now()
+                });
+
+                localStorage.setItem('pushSubscribed', 'true');
+                localStorage.setItem('pushSubId', subId);
+                updateNotifBtn(true);
+                alert('✅ Abonné ! Vous recevrez la question du débat chaque matin.');
+            } catch (err) {
+                console.error('Erreur abonnement:', err);
+                alert('Erreur lors de l\'abonnement. Réessayez.');
+            }
+        }
+
+        async function unsubscribeNotifications() {
+            try {
+                const reg = await navigator.serviceWorker.ready;
+                const sub = await reg.pushManager.getSubscription();
+                if (sub) await sub.unsubscribe();
+
+                const subId = localStorage.getItem('pushSubId');
+                if (subId) await db.ref('pushSubscriptions/' + subId).remove();
+
+                localStorage.removeItem('pushSubscribed');
+                localStorage.removeItem('pushSubId');
+                updateNotifBtn(false);
+                alert('🔕 Désabonné des notifications.');
+            } catch (err) {
+                console.error('Erreur désabonnement:', err);
+            }
+        }
+
         // Start
         init();
+        initNotifBtn();
     </script>
 
     <!-- Bouton Partager Flottant -->

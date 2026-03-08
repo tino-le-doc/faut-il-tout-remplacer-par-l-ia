@@ -1,5 +1,5 @@
 // Service Worker - TLD PWA
-const CACHE_NAME = 'tld-cache-v1';
+const CACHE_NAME = 'tld-cache-v2';
 const OFFLINE_URL = '/offline.html';
 
 // Ressources essentielles a mettre en cache lors de l'installation
@@ -36,6 +36,36 @@ self.addEventListener('activate', (event) => {
       );
     }).then(() => {
       return self.clients.claim();
+    })
+  );
+});
+
+// Push notifications
+self.addEventListener('push', (event) => {
+  let data = { title: '🔥 TLD - Débat du Jour', body: 'Un nouveau débat vous attend !', url: '/debat.html' };
+  try { if (event.data) data = { ...data, ...event.data.json() }; } catch (e) {}
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: '/img/1000074494.png',
+      badge: '/img/1000074494.png',
+      data: { url: data.url },
+      vibrate: [200, 100, 200],
+      tag: 'debat-du-jour'
+    })
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      const url = event.notification.data?.url || '/debat.html';
+      for (const client of clientList) {
+        if (client.url.includes(url) && 'focus' in client) return client.focus();
+      }
+      return clients.openWindow(url);
     })
   );
 });
