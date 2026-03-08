@@ -260,6 +260,15 @@
       }
     },
 
+    // ==================== PUSH NOTIFICATIONS ====================
+    "pushSubscriptions": {
+      ".read": "auth != null && auth.token.email === 'martialfabrice@tino-le-doc.com'",
+      ".write": true,
+      "$subId": {
+        ".validate": "newData.hasChildren(['endpoint', 'keys', 'createdAt']) && newData.child('endpoint').isString() && newData.child('endpoint').val().length < 600 && newData.child('createdAt').isNumber()"
+      }
+    },
+
     // ==================== VEILLE TECHNOLOGIQUE ====================
     // Seul l'admin peut creer/modifier/supprimer des articles
     // Les utilisateurs connectes peuvent liker
