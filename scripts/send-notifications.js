@@ -14,10 +14,15 @@ const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY;
 const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY;
 const FIREBASE_DATABASE_SECRET = process.env.FIREBASE_DATABASE_SECRET;
 const FIREBASE_DB_URL = 'https://tino-le-doc-default-rtdb.europe-west1.firebasedatabase.app';
+const DRY_RUN = process.env.DRY_RUN === 'true';
 
 if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY || !FIREBASE_DATABASE_SECRET) {
     console.error('❌ Variables d\'environnement manquantes (VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, FIREBASE_DATABASE_SECRET)');
     process.exit(1);
+}
+
+if (DRY_RUN) {
+    console.log('🔍 Mode dry run activé — aucune notification ne sera envoyée.');
 }
 
 webpush.setVapidDetails('mailto:martialfabrice@tino-le-doc.com', VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
@@ -92,6 +97,11 @@ async function main() {
     await Promise.allSettled(
         entries.map(async ([key, sub]) => {
             try {
+                if (DRY_RUN) {
+                    console.log(`[dry run] Notification simulée pour: ${key}`);
+                    sent++;
+                    return;
+                }
                 await webpush.sendNotification(sub, payload);
                 sent++;
             } catch (err) {
