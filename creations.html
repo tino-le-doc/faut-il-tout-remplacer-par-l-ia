@@ -758,8 +758,9 @@
             showToast('🎉 Création publiée avec succès !');
             resetForm();
         } catch(err) {
-            console.error(err);
-            showToast('Erreur lors de la publication. Réessayez.', true);
+            console.error('Publication error:', err);
+            const msg = err?.code || err?.message || String(err);
+            showToast('Erreur : ' + msg, true);
         } finally {
             publishBtn.disabled = false;
             publishBtn.textContent = 'Publier 🚀';
