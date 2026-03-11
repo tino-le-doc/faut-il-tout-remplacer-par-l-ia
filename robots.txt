@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /sitemap.xml
 
 Sitemap: https://tino-le-doc.com/sitemap.xml
