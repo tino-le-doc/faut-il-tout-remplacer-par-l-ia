@@ -286,6 +286,43 @@
           ".write": "auth != null"
         }
       }
+    },
+
+    // ==================== CREATIONS (art musical & graphique) ====================
+    // Tout utilisateur connecte peut publier et lire les creations
+    // Chaque auteur peut supprimer sa propre creation ; l'admin peut tout supprimer
+    "creations": {
+      ".read": "auth != null",
+      ".indexOn": ["timestamp", "category", "authorId"],
+      "$creationId": {
+        ".write": "auth != null && (!data.exists() || data.child('authorId').val() == auth.uid || auth.token.email === 'martialfabrice@tino-le-doc.com')",
+        ".validate": "newData.hasChildren(['title', 'category', 'authorId', 'authorPseudo', 'timestamp']) && newData.child('title').isString() && newData.child('title').val().length >= 1 && newData.child('title').val().length <= 100 && newData.child('category').isString() && newData.child('desc').isString() && newData.child('desc').val().length <= 2000",
+        "likesCount": {
+          ".write": "auth != null"
+        }
+      }
+    },
+
+    // ==================== LIKES DES CREATIONS ====================
+    "creationLikes": {
+      "$creationId": {
+        ".read": "auth != null",
+        "$uid": {
+          ".write": "auth != null && auth.uid == $uid"
+        }
+      }
+    },
+
+    // ==================== COMMENTAIRES DES CREATIONS ====================
+    "creationComments": {
+      "$creationId": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+        ".indexOn": ["timestamp"],
+        "$commentId": {
+          ".validate": "newData.hasChildren(['text', 'authorId', 'authorPseudo', 'timestamp']) && newData.child('text').isString() && newData.child('text').val().length >= 1 && newData.child('text').val().length <= 500"
+        }
+      }
     }
   }
 }
