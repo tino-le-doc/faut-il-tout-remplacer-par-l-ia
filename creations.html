@@ -139,8 +139,12 @@
         .upload-zone input[type="file"] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
         .upload-preview { max-width:100%; max-height:200px; border-radius:12px; margin-top:12px; display:none; object-fit:cover; }
         .upload-preview.active { display:block; }
+        .upload-video-preview { max-width:100%; max-height:200px; border-radius:12px; margin-top:12px; display:none; outline:none; }
+        .upload-video-preview.active { display:block; }
         .upload-filename { font-size:0.8rem; color:var(--green); margin-top:8px; display:none; }
         .upload-filename.active { display:block; }
+        .duration-badge { display:inline-block; margin-top:6px; padding:3px 10px; background:rgba(0,255,136,0.15); border:1px solid var(--green); border-radius:20px; font-size:0.75rem; color:var(--green); }
+        .duration-badge.error { background:rgba(255,68,68,0.15); border-color:var(--red); color:var(--red); }
 
         .or-separator { text-align:center; color:var(--text-secondary); font-size:0.8rem; margin:12px 0; position:relative; }
         .or-separator::before, .or-separator::after { content:''; position:absolute; top:50%; width:40%; height:1px; background:var(--glass-border); }
@@ -351,6 +355,25 @@
 
                 <div class="or-separator">— ou —</div>
 
+                <!-- Video upload (max 30s) -->
+                <div class="form-row">
+                    <label>Vidéo directe <small style="color:var(--orange)">⏱️ max 30 secondes</small></label>
+                    <div class="upload-zone" id="videoUploadZone">
+                        <input type="file" id="videoFileInput" accept="video/mp4,video/webm,video/quicktime,video/ogg,video/*">
+                        <div class="upload-zone-icon">🎬</div>
+                        <div class="upload-zone-text">Glissez une vidéo ici ou cliquez pour choisir<br><small>MP4, WEBM, MOV — max 30s — max 150 Mo</small></div>
+                        <video class="upload-video-preview" id="videoUploadPreview" controls muted playsinline></video>
+                        <div class="upload-filename" id="videoUploadFilename"></div>
+                        <div id="videoDurationBadge"></div>
+                    </div>
+                    <div class="upload-progress" id="videoUploadProgress">
+                        <div class="progress-bar"><div class="progress-fill" id="videoProgressFill" style="width:0%"></div></div>
+                        <div class="progress-text" id="videoProgressText">Téléversement vidéo en cours...</div>
+                    </div>
+                </div>
+
+                <div class="or-separator">— ou —</div>
+
                 <!-- Video URL -->
                 <div class="form-row">
                     <label>Lien Vidéo (YouTube, Vimeo…)</label>
@@ -426,6 +449,7 @@
     let currentFilter = 'all';
     let uploadedImageUrl = null;
     let uploadedImageFile = null;
+    let uploadedVideoFile = null;
     let creationsRef;
     let commentsRefs = {};
 
@@ -447,6 +471,14 @@
     const uploadProgress = document.getElementById('uploadProgress');
     const progressFill = document.getElementById('progressFill');
     const progressText = document.getElementById('progressText');
+    const videoFileInput = document.getElementById('videoFileInput');
+    const videoUploadZone = document.getElementById('videoUploadZone');
+    const videoUploadPreview = document.getElementById('videoUploadPreview');
+    const videoUploadFilename = document.getElementById('videoUploadFilename');
+    const videoUploadProgress = document.getElementById('videoUploadProgress');
+    const videoProgressFill = document.getElementById('videoProgressFill');
+    const videoProgressText = document.getElementById('videoProgressText');
+    const videoDurationBadge = document.getElementById('videoDurationBadge');
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightboxImg');
 
@@ -506,19 +538,104 @@
             return;
         }
         uploadedImageFile = file;
+        // Clear video if image chosen
+        clearVideoUpload();
+        videoUrlInput.value = '';
         uploadZone.classList.add('has-file');
         uploadFilename.textContent = '✅ ' + file.name;
         uploadFilename.classList.add('active');
-        // Preview
         const reader = new FileReader();
         reader.onload = e => {
             uploadPreview.src = e.target.result;
             uploadPreview.classList.add('active');
         };
         reader.readAsDataURL(file);
-        uploadedImageUrl = null; // will be uploaded on publish
-        // Clear video url if file chosen
-        videoUrlInput.value = '';
+        uploadedImageUrl = null;
+    }
+
+    // ---- Video file upload ----
+    videoFileInput.addEventListener('change', e => {
+        handleVideoFile(e.target.files[0]);
+    });
+    videoUploadZone.addEventListener('dragover', e => {
+        e.preventDefault();
+        videoUploadZone.classList.add('dragover');
+    });
+    videoUploadZone.addEventListener('dragleave', () => videoUploadZone.classList.remove('dragover'));
+    videoUploadZone.addEventListener('drop', e => {
+        e.preventDefault();
+        videoUploadZone.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file) handleVideoFile(file);
+    });
+
+    function handleVideoFile(file) {
+        if (!file) return;
+        const allowedTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/ogg', 'video/x-msvideo'];
+        if (!file.type.startsWith('video/') && !allowedTypes.includes(file.type)) {
+            showToast('Format non supporté. Utilisez MP4, WEBM ou MOV.', true);
+            return;
+        }
+        if (file.size > 150 * 1024 * 1024) {
+            showToast('Vidéo trop grande. Maximum 150 Mo.', true);
+            return;
+        }
+        // Check duration via temporary object URL
+        const tempUrl = URL.createObjectURL(file);
+        const tempVideo = document.createElement('video');
+        tempVideo.preload = 'metadata';
+        tempVideo.src = tempUrl;
+        tempVideo.onloadedmetadata = () => {
+            URL.revokeObjectURL(tempUrl);
+            const dur = tempVideo.duration;
+            if (dur > 30) {
+                videoDurationBadge.innerHTML = `<span class="duration-badge error">⛔ ${Math.round(dur)}s — dépasse 30s max</span>`;
+                videoUploadZone.classList.remove('has-file');
+                showToast('Vidéo trop longue ! Maximum 30 secondes.', true);
+                uploadedVideoFile = null;
+                videoFileInput.value = '';
+                return;
+            }
+            // Valid — show preview
+            uploadedVideoFile = file;
+            // Clear image and embed URL if video chosen
+            clearImageUpload();
+            videoUrlInput.value = '';
+            videoUploadZone.classList.add('has-file');
+            videoUploadFilename.textContent = '✅ ' + file.name;
+            videoUploadFilename.classList.add('active');
+            videoDurationBadge.innerHTML = `<span class="duration-badge">⏱️ ${Math.round(dur)}s</span>`;
+            videoUploadPreview.src = URL.createObjectURL(file);
+            videoUploadPreview.classList.add('active');
+        };
+        tempVideo.onerror = () => {
+            showToast('Impossible de lire ce fichier vidéo.', true);
+            URL.revokeObjectURL(tempUrl);
+        };
+    }
+
+    function clearVideoUpload() {
+        uploadedVideoFile = null;
+        videoFileInput.value = '';
+        videoUploadPreview.src = '';
+        videoUploadPreview.classList.remove('active');
+        videoUploadFilename.textContent = '';
+        videoUploadFilename.classList.remove('active');
+        videoUploadZone.classList.remove('has-file');
+        videoDurationBadge.innerHTML = '';
+        videoUploadProgress.classList.remove('active');
+    }
+
+    function clearImageUpload() {
+        uploadedImageFile = null;
+        uploadedImageUrl = null;
+        fileInput.value = '';
+        uploadPreview.src = '';
+        uploadPreview.classList.remove('active');
+        uploadFilename.textContent = '';
+        uploadFilename.classList.remove('active');
+        uploadZone.classList.remove('has-file');
+        uploadProgress.classList.remove('active');
     }
 
     // ---- Reset form ----
@@ -527,15 +644,8 @@
         titleInput.value = '';
         descInput.value = '';
         videoUrlInput.value = '';
-        fileInput.value = '';
-        uploadedImageFile = null;
-        uploadedImageUrl = null;
-        uploadPreview.src = '';
-        uploadPreview.classList.remove('active');
-        uploadFilename.textContent = '';
-        uploadFilename.classList.remove('active');
-        uploadZone.classList.remove('has-file');
-        uploadProgress.classList.remove('active');
+        clearImageUpload();
+        clearVideoUpload();
         document.getElementById('titleCharCount').textContent = '0 / 100';
         document.getElementById('descCharCount').textContent = '0 / 2000';
         document.getElementById('catArt').checked = true;
@@ -580,32 +690,43 @@
             let mediaUrl = null;
             let mediaType = 'none';
 
-            // Upload image if selected
-            if (uploadedImageFile) {
+            // Helper to upload a file to Storage
+            async function uploadToStorage(file, progressBarEl, progressFillEl, progressTextEl, label) {
                 if (!firebaseStorage) throw new Error('Storage non disponible');
-                const ext = uploadedImageFile.name.split('.').pop();
+                const ext = file.name.split('.').pop();
                 const filename = Date.now() + '_' + crypto.getRandomValues(new Uint32Array(1))[0] + '.' + ext;
                 const storageRef = firebaseStorage.ref('creations/' + currentUser.uid + '/' + filename);
-                uploadProgress.classList.add('active');
-                progressFill.style.width = '0%';
-                progressText.textContent = 'Téléversement...';
+                progressBarEl.classList.add('active');
+                progressFillEl.style.width = '0%';
+                progressTextEl.textContent = label + '...';
+                let downloadUrl;
                 await new Promise((resolve, reject) => {
-                    const task = storageRef.put(uploadedImageFile);
+                    const task = storageRef.put(file);
                     task.on('state_changed',
                         snap => {
                             const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
-                            progressFill.style.width = pct + '%';
-                            progressText.textContent = 'Téléversement ' + pct + '%…';
+                            progressFillEl.style.width = pct + '%';
+                            progressTextEl.textContent = label + ' ' + pct + '%…';
                         },
                         reject,
                         async () => {
-                            mediaUrl = await storageRef.getDownloadURL();
+                            downloadUrl = await storageRef.getDownloadURL();
                             resolve();
                         }
                     );
                 });
+                return downloadUrl;
+            }
+
+            // Upload image if selected
+            if (uploadedImageFile) {
+                mediaUrl = await uploadToStorage(uploadedImageFile, uploadProgress, progressFill, progressText, 'Image');
                 mediaType = 'image';
                 progressText.textContent = '✅ Image téléversée !';
+            } else if (uploadedVideoFile) {
+                mediaUrl = await uploadToStorage(uploadedVideoFile, videoUploadProgress, videoProgressFill, videoProgressText, 'Vidéo');
+                mediaType = 'video-upload';
+                videoProgressText.textContent = '✅ Vidéo téléversée !';
             } else if (videoRaw) {
                 const embedUrl = getEmbedUrl(videoRaw);
                 if (!embedUrl) { showToast('Lien vidéo non reconnu. Utilisez YouTube ou Vimeo.', true); publishBtn.disabled = false; publishBtn.textContent = 'Publier 🚀'; return; }
@@ -694,6 +815,11 @@
             mediaHtml = `<div class="card-media">
                 <span class="card-cat-badge ${escapeHtml(creation.category)}">${catLabel}</span>
                 <img src="${escapeHtml(creation.mediaUrl)}" alt="${escapeHtml(creation.title)}" loading="lazy" onclick="openLightbox('${escapeHtml(creation.mediaUrl)}')">
+            </div>`;
+        } else if (creation.mediaType === 'video-upload' && creation.mediaUrl) {
+            mediaHtml = `<div class="card-media">
+                <span class="card-cat-badge ${escapeHtml(creation.category)}">${catLabel}</span>
+                <video src="${escapeHtml(creation.mediaUrl)}" controls playsinline preload="metadata" style="width:100%;max-height:420px;display:block;background:#000;border-radius:0;" title="${escapeHtml(creation.title)}"></video>
             </div>`;
         } else if (creation.mediaType === 'video' && creation.mediaUrl) {
             mediaHtml = `<div class="card-media">
@@ -871,8 +997,8 @@
             await firebaseDb.ref('creations/' + creationId).remove();
             await firebaseDb.ref('creationLikes/' + creationId).remove();
             await firebaseDb.ref('creationComments/' + creationId).remove();
-            // Delete from storage if image
-            if (mediaType === 'image' && mediaUrl && firebaseStorage) {
+            // Delete from storage if image or uploaded video
+            if ((mediaType === 'image' || mediaType === 'video-upload') && mediaUrl && firebaseStorage) {
                 try {
                     const ref = firebaseStorage.refFromURL(mediaUrl);
                     await ref.delete();
