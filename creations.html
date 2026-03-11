@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta name="google-site-verification" content="kueDijqdBruvzy4WhCQoXnfmzw8X964hNdl0rv-jfyE" />
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WML1YG17WW"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-WML1YG17WW');
+  </script>
+    <!--
+      Copyright (c) 2025 TLD - Tous droits reserves
+      Toute copie, reproduction ou reutilisation non autorisee est interdite.
+      Licence proprietaire - voir fichier LICENSE
+    -->
+    <meta charset="UTF-8">
+    <meta http-equiv="content-language" content="fr">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8612974241235499"
+         crossorigin="anonymous"></script>
+    <meta name="author" content="TLD">
+    <meta name="copyright" content="Copyright 2025 TLD. Tous droits reserves.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a0f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="img/1000074494.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="img/1000074494.png">
+    <meta name="description" content="Partagez vos créations artistiques musicales et graphiques avec la communauté TLD. Photos, vidéos et idées bienvenues !">
+    <meta property="og:title" content="Créations - TLD | Art Musical & Graphique">
+    <meta property="og:description" content="Partagez vos créations artistiques avec la communauté TLD.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tino-le-doc.com/creations.html">
+    <link rel="canonical" href="https://tino-le-doc.com/creations.html">
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:image" content="https://tino-le-doc.com/img/1000074494.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@tino_le_doc">
+    <meta name="twitter:image" content="https://tino-le-doc.com/img/1000074494.png">
+    <title>Créations 🎨 TLD | Art Musical & Graphique</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --cyan: #00f5ff;
+            --magenta: #ff00aa;
+            --yellow: #f5ff00;
+            --orange: #ff9500;
+            --green: #00ff88;
+            --red: #ff4444;
+            --gold: #ffd700;
+            --text: #e8e8e8;
+            --text-secondary: #a0a0a0;
+            --glass: rgba(255,255,255,0.05);
+            --glass-border: rgba(255,255,255,0.1);
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Space Grotesk',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; min-height:100dvh; }
+        .container { max-width:1000px; margin:0 auto; padding:15px 15px 80px; }
+
+        /* ===== HEADER ===== */
+        .logo { text-align:center; padding:10px 0 5px; }
+        .logo img { max-width:130px; filter:drop-shadow(0 5px 20px rgba(255,149,0,0.4)); }
+        .back { color:var(--cyan); text-decoration:none; font-size:0.85rem; display:inline-flex; align-items:center; gap:5px; margin-bottom:10px; }
+        .back:hover { text-decoration:underline; }
+
+        header { text-align:center; padding:15px 0 20px; }
+        header h1 { font-family:'Syne',sans-serif; font-size:2rem; background:linear-gradient(135deg,var(--magenta),var(--cyan),var(--yellow)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:8px; }
+        header p { color:var(--text-secondary); font-size:0.9rem; }
+
+        .badges { display:flex; gap:8px; justify-content:center; margin-top:10px; flex-wrap:wrap; }
+        .badge { padding:5px 12px; background:var(--glass); border-radius:20px; font-size:0.75rem; display:flex; align-items:center; gap:5px; }
+        .badge.music { border:1px solid var(--magenta); color:var(--magenta); }
+        .badge.art { border:1px solid var(--cyan); color:var(--cyan); }
+        .badge.idea { border:1px solid var(--yellow); color:var(--yellow); }
+
+        /* ===== NAV DROPDOWN ===== */
+        nav.nav-dropdown { text-align:center; margin:10px 0; }
+        nav.nav-dropdown select { padding:8px 16px; background:var(--glass); border:1px solid var(--glass-border); border-radius:20px; color:var(--text); font-family:inherit; font-size:0.85rem; cursor:pointer; }
+        nav.nav-dropdown select:focus { outline:none; border-color:var(--cyan); }
+
+        /* ===== AUTH GATE ===== */
+        .auth-gate { background:var(--glass); border:1px solid var(--glass-border); border-radius:20px; padding:40px 20px; text-align:center; margin:20px 0; }
+        .auth-gate h2 { font-family:'Syne',sans-serif; color:var(--cyan); margin-bottom:12px; }
+        .auth-gate p { color:var(--text-secondary); margin-bottom:20px; font-size:0.9rem; }
+        .btn-primary { padding:12px 32px; background:linear-gradient(135deg,var(--magenta),var(--cyan)); border:none; border-radius:12px; color:#fff; font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; cursor:pointer; transition:all 0.2s; text-decoration:none; display:inline-block; }
+        .btn-primary:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(255,0,170,0.4); }
+        .btn-secondary { padding:10px 24px; background:var(--glass); border:1px solid var(--glass-border); border-radius:12px; color:var(--text); font-family:inherit; font-size:0.9rem; cursor:pointer; transition:all 0.2s; }
+        .btn-secondary:hover { border-color:var(--cyan); color:var(--cyan); }
+        .btn-danger { padding:8px 18px; background:rgba(255,68,68,0.15); border:1px solid var(--red); border-radius:10px; color:var(--red); font-family:inherit; font-size:0.8rem; cursor:pointer; transition:all 0.2s; }
+        .btn-danger:hover { background:rgba(255,68,68,0.25); }
+
+        /* ===== MAIN LAYOUT ===== */
+        .main { display:none; }
+        .main.active { display:block; }
+
+        /* ===== POST FORM ===== */
+        .post-form { background:var(--glass); border:1px solid var(--glass-border); border-radius:20px; padding:20px; margin-bottom:20px; }
+        .post-form h2 { font-family:'Syne',sans-serif; font-size:1.2rem; color:var(--cyan); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+        .form-row { margin-bottom:14px; }
+        .form-row label { display:block; font-size:0.8rem; color:var(--text-secondary); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.05em; }
+        .form-row input[type="text"],
+        .form-row textarea,
+        .form-row select {
+            width:100%;
+            padding:10px 14px;
+            background:rgba(255,255,255,0.05);
+            border:1px solid var(--glass-border);
+            border-radius:12px;
+            color:var(--text);
+            font-family:inherit;
+            font-size:0.95rem;
+            resize:vertical;
+            transition:border-color 0.2s;
+        }
+        .form-row input:focus,
+        .form-row textarea:focus,
+        .form-row select:focus { outline:none; border-color:var(--cyan); }
+        .form-row textarea { min-height:80px; }
+        .form-row select option { background:#1a1a25; }
+
+        /* Category radio buttons */
+        .cat-radios { display:flex; gap:10px; flex-wrap:wrap; }
+        .cat-radio { display:none; }
+        .cat-label { padding:8px 16px; background:var(--glass); border:1px solid var(--glass-border); border-radius:20px; font-size:0.85rem; cursor:pointer; transition:all 0.2s; user-select:none; }
+        .cat-radio:checked + .cat-label { background:rgba(0,245,255,0.15); border-color:var(--cyan); color:var(--cyan); }
+        .cat-radio[value="musique"]:checked + .cat-label { background:rgba(255,0,170,0.15); border-color:var(--magenta); color:var(--magenta); }
+        .cat-radio[value="idees"]:checked + .cat-label { background:rgba(245,255,0,0.15); border-color:var(--yellow); color:var(--yellow); }
+
+        /* Upload zone */
+        .upload-zone { border:2px dashed var(--glass-border); border-radius:16px; padding:24px; text-align:center; cursor:pointer; transition:all 0.2s; position:relative; }
+        .upload-zone:hover, .upload-zone.dragover { border-color:var(--cyan); background:rgba(0,245,255,0.05); }
+        .upload-zone.has-file { border-color:var(--green); border-style:solid; }
+        .upload-zone-icon { font-size:2rem; margin-bottom:8px; }
+        .upload-zone-text { color:var(--text-secondary); font-size:0.85rem; }
+        .upload-zone input[type="file"] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+        .upload-preview { max-width:100%; max-height:200px; border-radius:12px; margin-top:12px; display:none; object-fit:cover; }
+        .upload-preview.active { display:block; }
+        .upload-filename { font-size:0.8rem; color:var(--green); margin-top:8px; display:none; }
+        .upload-filename.active { display:block; }
+
+        .or-separator { text-align:center; color:var(--text-secondary); font-size:0.8rem; margin:12px 0; position:relative; }
+        .or-separator::before, .or-separator::after { content:''; position:absolute; top:50%; width:40%; height:1px; background:var(--glass-border); }
+        .or-separator::before { left:0; }
+        .or-separator::after { right:0; }
+
+        /* Upload progress */
+        .upload-progress { display:none; margin-top:10px; }
+        .upload-progress.active { display:block; }
+        .progress-bar { height:6px; background:var(--glass-border); border-radius:3px; overflow:hidden; }
+        .progress-fill { height:100%; background:linear-gradient(90deg,var(--magenta),var(--cyan)); border-radius:3px; transition:width 0.3s; }
+        .progress-text { font-size:0.75rem; color:var(--cyan); margin-top:4px; }
+
+        .form-actions { display:flex; gap:10px; align-items:center; justify-content:flex-end; margin-top:16px; }
+        .char-count { font-size:0.75rem; color:var(--text-secondary); flex:1; }
+
+        /* ===== FILTER TABS ===== */
+        .filter-tabs { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+        .filter-tab { padding:8px 18px; background:var(--glass); border:1px solid var(--glass-border); border-radius:20px; font-size:0.85rem; cursor:pointer; transition:all 0.2s; font-family:inherit; color:var(--text); }
+        .filter-tab:hover { border-color:var(--cyan); }
+        .filter-tab.active { background:rgba(0,245,255,0.15); border-color:var(--cyan); color:var(--cyan); }
+        .filter-tab[data-cat="musique"].active { background:rgba(255,0,170,0.15); border-color:var(--magenta); color:var(--magenta); }
+        .filter-tab[data-cat="art"].active { background:rgba(0,245,255,0.15); border-color:var(--cyan); color:var(--cyan); }
+        .filter-tab[data-cat="idees"].active { background:rgba(245,255,0,0.15); border-color:var(--yellow); color:var(--yellow); }
+
+        /* ===== FEED ===== */
+        .feed { display:flex; flex-direction:column; gap:20px; }
+        .feed-empty { text-align:center; padding:60px 20px; color:var(--text-secondary); }
+        .feed-empty .icon { font-size:3rem; margin-bottom:12px; }
+        .feed-loading { text-align:center; padding:30px; color:var(--text-secondary); }
+        @keyframes spin { to { transform:rotate(360deg); } }
+        .spinner { width:30px; height:30px; border:3px solid var(--glass-border); border-top-color:var(--cyan); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 10px; }
+
+        /* ===== CREATION CARD ===== */
+        .card { background:var(--glass); border:1px solid var(--glass-border); border-radius:20px; overflow:hidden; animation:cardIn 0.4s ease; transition:border-color 0.2s; }
+        @keyframes cardIn { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
+        .card:hover { border-color:rgba(255,255,255,0.18); }
+
+        .card-media { position:relative; width:100%; background:#000; overflow:hidden; }
+        .card-media img { width:100%; max-height:420px; object-fit:cover; display:block; cursor:pointer; transition:transform 0.3s; }
+        .card-media img:hover { transform:scale(1.02); }
+        .card-media iframe { width:100%; aspect-ratio:16/9; border:none; display:block; }
+        .card-media-placeholder { width:100%; aspect-ratio:16/9; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.03); }
+        .card-media-placeholder span { font-size:4rem; }
+
+        .card-cat-badge { position:absolute; top:12px; left:12px; padding:4px 12px; border-radius:20px; font-size:0.75rem; font-weight:700; backdrop-filter:blur(10px); }
+        .card-cat-badge.musique { background:rgba(255,0,170,0.7); color:#fff; }
+        .card-cat-badge.art { background:rgba(0,245,255,0.7); color:#000; }
+        .card-cat-badge.idees { background:rgba(245,255,0,0.7); color:#000; }
+
+        .card-body { padding:16px; }
+        .card-header { display:flex; align-items:flex-start; gap:12px; margin-bottom:10px; }
+        .card-avatar { width:38px; height:38px; background:linear-gradient(135deg,var(--orange),var(--yellow)); border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:700; color:#000; font-size:1rem; flex-shrink:0; }
+        .card-meta { flex:1; min-width:0; }
+        .card-author { font-weight:700; font-size:0.95rem; color:var(--orange); }
+        .card-time { font-size:0.75rem; color:var(--text-secondary); margin-top:2px; }
+        .card-title { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; margin-bottom:8px; line-height:1.3; word-break:break-word; }
+        .card-desc { color:var(--text-secondary); font-size:0.88rem; line-height:1.5; margin-bottom:14px; white-space:pre-wrap; word-break:break-word; }
+        .card-desc.collapsed { display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+        .card-read-more { color:var(--cyan); font-size:0.8rem; cursor:pointer; background:none; border:none; font-family:inherit; padding:0; margin-bottom:14px; }
+
+        /* Card actions */
+        .card-actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+        .action-btn { display:flex; align-items:center; gap:5px; padding:7px 14px; background:var(--glass); border:1px solid var(--glass-border); border-radius:20px; font-size:0.8rem; cursor:pointer; transition:all 0.2s; color:var(--text); font-family:inherit; }
+        .action-btn:hover { border-color:var(--cyan); color:var(--cyan); }
+        .action-btn.liked { background:rgba(255,0,170,0.15); border-color:var(--magenta); color:var(--magenta); }
+        .action-btn .count { font-weight:700; }
+        .action-btn-delete { margin-left:auto; }
+
+        /* ===== COMMENTS ===== */
+        .comments-section { display:none; border-top:1px solid var(--glass-border); padding-top:14px; margin-top:14px; }
+        .comments-section.active { display:block; }
+        .comments-list { display:flex; flex-direction:column; gap:10px; margin-bottom:14px; max-height:300px; overflow-y:auto; }
+        .comments-list::-webkit-scrollbar { width:4px; }
+        .comments-list::-webkit-scrollbar-thumb { background:var(--cyan); border-radius:2px; }
+        .comment { display:flex; gap:10px; }
+        .comment-avatar { width:30px; height:30px; background:linear-gradient(135deg,var(--magenta),var(--cyan)); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.75rem; color:#fff; flex-shrink:0; }
+        .comment-bubble { flex:1; background:rgba(255,255,255,0.05); border-radius:12px; padding:8px 12px; }
+        .comment-bubble-own { background:rgba(0,245,255,0.08); }
+        .comment-top { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:4px; }
+        .comment-author { font-weight:700; font-size:0.78rem; color:var(--orange); }
+        .comment-time { font-size:0.7rem; color:var(--text-secondary); }
+        .comment-text { font-size:0.83rem; line-height:1.4; word-break:break-word; white-space:pre-wrap; }
+        .comment-empty { text-align:center; color:var(--text-secondary); font-size:0.85rem; padding:12px; }
+
+        .comment-form { display:flex; gap:8px; align-items:flex-end; }
+        .comment-input { flex:1; padding:10px 14px; background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); border-radius:20px; color:var(--text); font-family:inherit; font-size:0.85rem; resize:none; min-height:42px; max-height:100px; transition:border-color 0.2s; }
+        .comment-input:focus { outline:none; border-color:var(--cyan); }
+        .comment-submit { padding:10px 14px; background:linear-gradient(135deg,var(--magenta),var(--cyan)); border:none; border-radius:20px; color:#fff; font-size:1rem; cursor:pointer; flex-shrink:0; transition:all 0.2s; }
+        .comment-submit:hover { transform:scale(1.05); }
+        .comment-submit:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+        /* ===== LIGHTBOX ===== */
+        .lightbox { position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:9999; display:none; align-items:center; justify-content:center; padding:20px; }
+        .lightbox.active { display:flex; }
+        .lightbox img { max-width:100%; max-height:90vh; border-radius:12px; object-fit:contain; }
+        .lightbox-close { position:fixed; top:20px; right:20px; font-size:2rem; color:#fff; cursor:pointer; background:none; border:none; z-index:10000; }
+
+        /* ===== TOAST ===== */
+        .toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px); background:rgba(0,245,255,0.15); border:1px solid var(--cyan); border-radius:12px; padding:10px 20px; font-size:0.88rem; color:var(--text); backdrop-filter:blur(10px); opacity:0; transition:all 0.3s; white-space:nowrap; z-index:9998; pointer-events:none; }
+        .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+        .toast.error { background:rgba(255,68,68,0.15); border-color:var(--red); }
+
+        /* ===== FOOTER ===== */
+        footer { text-align:center; padding:20px 15px; font-size:0.8rem; color:var(--text-secondary); }
+        footer a { color:var(--cyan); text-decoration:none; }
+        footer a:hover { text-decoration:underline; }
+
+        /* ===== RESPONSIVE ===== */
+        @media(max-width:600px) {
+            header h1 { font-size:1.5rem; }
+            .card-media img { max-height:260px; }
+            .post-form { padding:15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <a href="index.html"><img src="img/1000074494.png" alt="Logo TLD"></a>
+        </div>
+        <a href="index.html" class="back">← Retour à l'accueil</a>
+
+        <nav class="nav-dropdown" aria-label="Navigation rapide">
+            <select onchange="if(this.value) window.location.href=this.value" aria-label="Naviguer vers une page">
+                <option value="">&#9776; Menu</option>
+                <option value="index.html">&#127968; Accueil</option>
+                <option value="creations.html" selected>&#127912; Créations</option>
+                <option value="veille-techno.html">&#128225; Veille Techno</option>
+                <option value="quiz.html">&#129504; Quiz</option>
+                <option value="sondages.html">&#128202; Sondages</option>
+                <option value="debat.html">&#9876;&#65039; Débat</option>
+                <option value="tchat.html">&#128172; Tchat</option>
+                <option value="messagerie.html">&#9993;&#65039; Messagerie</option>
+                <option value="forum.html">&#127963;&#65039; Forum</option>
+                <option value="avis.html">&#11088; Avis</option>
+                <option value="compte.html">&#128100; Compte</option>
+                <option value="premium.html">&#128081; Premium</option>
+                <option value="boutique.html">&#128722; Boutique</option>
+                <option value="appareils-connectes.html">&#128225; Appareils IA</option>
+                <option value="contact.html">&#128231; Contact</option>
+                <option value="confidentialite.html">&#128274; Confidentialité</option>
+            </select>
+        </nav>
+
+        <header>
+            <h1>🎨 Espace Créations</h1>
+            <p>Partagez vos créations musicales, graphiques et vos idées avec la communauté</p>
+            <div class="badges">
+                <span class="badge music">🎵 Musique</span>
+                <span class="badge art">🎨 Art Graphique</span>
+                <span class="badge idea">💡 Idées</span>
+            </div>
+        </header>
+
+        <!-- Auth gate -->
+        <div class="auth-gate" id="authGate">
+            <h2>🔒 Accès Membres</h2>
+            <p>Connectez-vous pour partager vos créations et interagir avec la communauté.</p>
+            <a href="compte.html" class="btn-primary">Se connecter / S'inscrire</a>
+        </div>
+
+        <!-- Main content (visible after login) -->
+        <div class="main" id="mainContent">
+
+            <!-- Post form -->
+            <div class="post-form" id="postForm">
+                <h2>✨ Partager une création</h2>
+
+                <div class="form-row">
+                    <label>Titre *</label>
+                    <input type="text" id="postTitle" placeholder="Donnez un titre à votre création..." maxlength="100">
+                </div>
+
+                <div class="form-row">
+                    <label>Catégorie *</label>
+                    <div class="cat-radios">
+                        <input type="radio" class="cat-radio" name="postCat" id="catMusique" value="musique">
+                        <label class="cat-label" for="catMusique">🎵 Musique</label>
+                        <input type="radio" class="cat-radio" name="postCat" id="catArt" value="art" checked>
+                        <label class="cat-label" for="catArt">🎨 Art Graphique</label>
+                        <input type="radio" class="cat-radio" name="postCat" id="catIdees" value="idees">
+                        <label class="cat-label" for="catIdees">💡 Idées</label>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <label>Description</label>
+                    <textarea id="postDesc" placeholder="Décrivez votre création, partagez votre processus créatif..." maxlength="2000"></textarea>
+                    <div class="char-count" id="descCharCount">0 / 2000</div>
+                </div>
+
+                <!-- Image upload -->
+                <div class="form-row">
+                    <label>Photo (image)</label>
+                    <div class="upload-zone" id="uploadZone">
+                        <input type="file" id="fileInput" accept="image/*">
+                        <div class="upload-zone-icon">🖼️</div>
+                        <div class="upload-zone-text">Glissez une image ici ou cliquez pour choisir<br><small>JPG, PNG, GIF, WEBP — max 10 Mo</small></div>
+                        <img class="upload-preview" id="uploadPreview" alt="Aperçu">
+                        <div class="upload-filename" id="uploadFilename"></div>
+                    </div>
+                    <div class="upload-progress" id="uploadProgress">
+                        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+                        <div class="progress-text" id="progressText">Téléversement en cours...</div>
+                    </div>
+                </div>
+
+                <div class="or-separator">— ou —</div>
+
+                <!-- Video URL -->
+                <div class="form-row">
+                    <label>Lien Vidéo (YouTube, Vimeo…)</label>
+                    <input type="text" id="videoUrl" placeholder="https://www.youtube.com/watch?v=...">
+                </div>
+
+                <div class="form-actions">
+                    <span class="char-count" id="titleCharCount">0 / 100</span>
+                    <button class="btn-secondary" id="resetBtn" type="button">Annuler</button>
+                    <button class="btn-primary" id="publishBtn" type="button">Publier 🚀</button>
+                </div>
+            </div>
+
+            <!-- Filter tabs -->
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-cat="all">🌟 Tout voir</button>
+                <button class="filter-tab" data-cat="musique">🎵 Musique</button>
+                <button class="filter-tab" data-cat="art">🎨 Art Graphique</button>
+                <button class="filter-tab" data-cat="idees">💡 Idées</button>
+            </div>
+
+            <!-- Feed -->
+            <div class="feed-loading" id="feedLoading">
+                <div class="spinner"></div>
+                <div>Chargement des créations...</div>
+            </div>
+            <div class="feed" id="feed"></div>
+            <div class="feed-empty" id="feedEmpty" style="display:none">
+                <div class="icon">🎨</div>
+                <p>Aucune création dans cette catégorie.</p>
+                <p style="font-size:0.85rem;margin-top:8px;">Soyez le premier à partager !</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2025 TLD — <a href="confidentialite.html">Confidentialité</a> — <a href="contact.html">Contact</a></p>
+        </footer>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightboxClose">✕</button>
+        <img id="lightboxImg" src="" alt="">
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/i18n.js" defer></script>
+    <script>
+    // ============================================================
+    //  Créations — Page principale
+    // ============================================================
+
+    // Init Firebase Storage
+    let firebaseStorage;
+    try {
+        firebaseStorage = firebase.storage();
+    } catch(e) {
+        console.error('Storage init error:', e);
+    }
+
+    // State
+    let currentUser = null;
+    let currentPseudo = '';
+    let currentFilter = 'all';
+    let uploadedImageUrl = null;
+    let uploadedImageFile = null;
+    let creationsRef;
+    let commentsRefs = {};
+
+    // DOM
+    const authGate = document.getElementById('authGate');
+    const mainContent = document.getElementById('mainContent');
+    const feed = document.getElementById('feed');
+    const feedEmpty = document.getElementById('feedEmpty');
+    const feedLoading = document.getElementById('feedLoading');
+    const publishBtn = document.getElementById('publishBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const titleInput = document.getElementById('postTitle');
+    const descInput = document.getElementById('postDesc');
+    const videoUrlInput = document.getElementById('videoUrl');
+    const fileInput = document.getElementById('fileInput');
+    const uploadZone = document.getElementById('uploadZone');
+    const uploadPreview = document.getElementById('uploadPreview');
+    const uploadFilename = document.getElementById('uploadFilename');
+    const uploadProgress = document.getElementById('uploadProgress');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+
+    // ---- Auth ----
+    firebaseAuth.onAuthStateChanged(async user => {
+        currentUser = user;
+        if (user) {
+            authGate.style.display = 'none';
+            mainContent.classList.add('active');
+            // Load pseudo from DB
+            try {
+                const snap = await firebaseDb.ref('users/' + user.uid + '/pseudo').once('value');
+                currentPseudo = snap.val() || user.displayName || user.email.split('@')[0];
+            } catch(e) {
+                currentPseudo = user.displayName || user.email.split('@')[0];
+            }
+            initFeed();
+        } else {
+            authGate.style.display = 'block';
+            mainContent.classList.remove('active');
+        }
+    });
+
+    // ---- Character counters ----
+    titleInput.addEventListener('input', () => {
+        document.getElementById('titleCharCount').textContent = titleInput.value.length + ' / 100';
+    });
+    descInput.addEventListener('input', () => {
+        document.getElementById('descCharCount').textContent = descInput.value.length + ' / 2000';
+    });
+
+    // ---- File upload ----
+    fileInput.addEventListener('change', e => {
+        handleFile(e.target.files[0]);
+    });
+
+    uploadZone.addEventListener('dragover', e => {
+        e.preventDefault();
+        uploadZone.classList.add('dragover');
+    });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+    uploadZone.addEventListener('drop', e => {
+        e.preventDefault();
+        uploadZone.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file) handleFile(file);
+    });
+
+    function handleFile(file) {
+        if (!file) return;
+        if (!file.type.startsWith('image/')) {
+            showToast('Seules les images sont acceptées (JPG, PNG, GIF, WEBP).', true);
+            return;
+        }
+        if (file.size > 10 * 1024 * 1024) {
+            showToast('Image trop grande. Maximum 10 Mo.', true);
+            return;
+        }
+        uploadedImageFile = file;
+        uploadZone.classList.add('has-file');
+        uploadFilename.textContent = '✅ ' + file.name;
+        uploadFilename.classList.add('active');
+        // Preview
+        const reader = new FileReader();
+        reader.onload = e => {
+            uploadPreview.src = e.target.result;
+            uploadPreview.classList.add('active');
+        };
+        reader.readAsDataURL(file);
+        uploadedImageUrl = null; // will be uploaded on publish
+        // Clear video url if file chosen
+        videoUrlInput.value = '';
+    }
+
+    // ---- Reset form ----
+    resetBtn.addEventListener('click', resetForm);
+    function resetForm() {
+        titleInput.value = '';
+        descInput.value = '';
+        videoUrlInput.value = '';
+        fileInput.value = '';
+        uploadedImageFile = null;
+        uploadedImageUrl = null;
+        uploadPreview.src = '';
+        uploadPreview.classList.remove('active');
+        uploadFilename.textContent = '';
+        uploadFilename.classList.remove('active');
+        uploadZone.classList.remove('has-file');
+        uploadProgress.classList.remove('active');
+        document.getElementById('titleCharCount').textContent = '0 / 100';
+        document.getElementById('descCharCount').textContent = '0 / 2000';
+        document.getElementById('catArt').checked = true;
+    }
+
+    // ---- Extract YouTube/Vimeo embed ----
+    function getEmbedUrl(url) {
+        if (!url) return null;
+        // YouTube
+        const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+        if (ytMatch) return 'https://www.youtube.com/embed/' + ytMatch[1] + '?rel=0';
+        // Vimeo
+        const vmMatch = url.match(/vimeo\.com\/(\d+)/);
+        if (vmMatch) return 'https://player.vimeo.com/video/' + vmMatch[1];
+        return null;
+    }
+
+    // ---- Publish ----
+    publishBtn.addEventListener('click', async () => {
+        if (!currentUser) { showToast('Connectez-vous pour publier.', true); return; }
+
+        const title = titleInput.value.trim();
+        const desc = descInput.value.trim();
+        const catEl = document.querySelector('input[name="postCat"]:checked');
+        const cat = catEl ? catEl.value : 'art';
+        const videoRaw = videoUrlInput.value.trim();
+
+        if (!title) { showToast('Veuillez saisir un titre.', true); return; }
+
+        // Content moderation
+        const titleCheck = ModerationSystem.checkContent(title);
+        if (!titleCheck.isValid) { showToast(titleCheck.message, true); return; }
+        if (desc) {
+            const descCheck = ModerationSystem.checkContent(desc);
+            if (!descCheck.isValid) { showToast(descCheck.message, true); return; }
+        }
+
+        publishBtn.disabled = true;
+        publishBtn.textContent = 'Publication...';
+
+        try {
+            let mediaUrl = null;
+            let mediaType = 'none';
+
+            // Upload image if selected
+            if (uploadedImageFile) {
+                if (!firebaseStorage) throw new Error('Storage non disponible');
+                const ext = uploadedImageFile.name.split('.').pop();
+                const filename = Date.now() + '_' + crypto.getRandomValues(new Uint32Array(1))[0] + '.' + ext;
+                const storageRef = firebaseStorage.ref('creations/' + currentUser.uid + '/' + filename);
+                uploadProgress.classList.add('active');
+                progressFill.style.width = '0%';
+                progressText.textContent = 'Téléversement...';
+                await new Promise((resolve, reject) => {
+                    const task = storageRef.put(uploadedImageFile);
+                    task.on('state_changed',
+                        snap => {
+                            const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
+                            progressFill.style.width = pct + '%';
+                            progressText.textContent = 'Téléversement ' + pct + '%…';
+                        },
+                        reject,
+                        async () => {
+                            mediaUrl = await storageRef.getDownloadURL();
+                            resolve();
+                        }
+                    );
+                });
+                mediaType = 'image';
+                progressText.textContent = '✅ Image téléversée !';
+            } else if (videoRaw) {
+                const embedUrl = getEmbedUrl(videoRaw);
+                if (!embedUrl) { showToast('Lien vidéo non reconnu. Utilisez YouTube ou Vimeo.', true); publishBtn.disabled = false; publishBtn.textContent = 'Publier 🚀'; return; }
+                mediaUrl = embedUrl;
+                mediaType = 'video';
+            }
+
+            const postData = {
+                title: title,
+                desc: desc || '',
+                category: cat,
+                mediaType: mediaType,
+                mediaUrl: mediaUrl || '',
+                authorId: currentUser.uid,
+                authorPseudo: currentPseudo,
+                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                likesCount: 0
+            };
+
+            await firebaseDb.ref('creations').push(postData);
+            showToast('🎉 Création publiée avec succès !');
+            resetForm();
+        } catch(err) {
+            console.error(err);
+            showToast('Erreur lors de la publication. Réessayez.', true);
+        } finally {
+            publishBtn.disabled = false;
+            publishBtn.textContent = 'Publier 🚀';
+        }
+    });
+
+    // ---- Filter tabs ----
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentFilter = tab.dataset.cat;
+            renderFeed();
+        });
+    });
+
+    // ---- Feed ----
+    let allCreations = [];
+
+    function initFeed() {
+        creationsRef = firebaseDb.ref('creations').orderByChild('timestamp');
+        feedLoading.style.display = 'block';
+
+        creationsRef.on('value', snap => {
+            allCreations = [];
+            snap.forEach(child => {
+                allCreations.unshift({ id: child.key, ...child.val() });
+            });
+            feedLoading.style.display = 'none';
+            renderFeed();
+        });
+    }
+
+    function renderFeed() {
+        const filtered = currentFilter === 'all'
+            ? allCreations
+            : allCreations.filter(c => c.category === currentFilter);
+
+        feed.innerHTML = '';
+        if (filtered.length === 0) {
+            feedEmpty.style.display = 'block';
+        } else {
+            feedEmpty.style.display = 'none';
+            filtered.forEach(creation => {
+                feed.appendChild(buildCard(creation));
+            });
+        }
+    }
+
+    function buildCard(creation) {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.id = 'card-' + creation.id;
+
+        const catLabels = { musique:'🎵 Musique', art:'🎨 Art Graphique', idees:'💡 Idées' };
+        const catLabel = catLabels[creation.category] || creation.category;
+
+        // Media
+        let mediaHtml = '';
+        if (creation.mediaType === 'image' && creation.mediaUrl) {
+            mediaHtml = `<div class="card-media">
+                <span class="card-cat-badge ${escapeHtml(creation.category)}">${catLabel}</span>
+                <img src="${escapeHtml(creation.mediaUrl)}" alt="${escapeHtml(creation.title)}" loading="lazy" onclick="openLightbox('${escapeHtml(creation.mediaUrl)}')">
+            </div>`;
+        } else if (creation.mediaType === 'video' && creation.mediaUrl) {
+            mediaHtml = `<div class="card-media">
+                <span class="card-cat-badge ${escapeHtml(creation.category)}">${catLabel}</span>
+                <iframe src="${escapeHtml(creation.mediaUrl)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy" title="${escapeHtml(creation.title)}"></iframe>
+            </div>`;
+        } else {
+            const catIcons = { musique:'🎵', art:'🎨', idees:'💡' };
+            const icon = catIcons[creation.category] || '✨';
+            mediaHtml = `<div class="card-media">
+                <span class="card-cat-badge ${escapeHtml(creation.category)}">${catLabel}</span>
+                <div class="card-media-placeholder"><span>${icon}</span></div>
+            </div>`;
+        }
+
+        const initials = (creation.authorPseudo || '?').charAt(0).toUpperCase();
+        const timeStr = creation.timestamp ? timeAgo(creation.timestamp) : '';
+        const descTruncated = creation.desc && creation.desc.length > 200;
+        const isOwnPost = currentUser && currentUser.uid === creation.authorId;
+
+        card.innerHTML = `
+            ${mediaHtml}
+            <div class="card-body">
+                <div class="card-header">
+                    <div class="card-avatar">${escapeHtml(initials)}</div>
+                    <div class="card-meta">
+                        <div class="card-author">${escapeHtml(creation.authorPseudo || 'Anonyme')}</div>
+                        <div class="card-time">${timeStr}</div>
+                    </div>
+                </div>
+                <div class="card-title">${escapeHtml(creation.title)}</div>
+                ${creation.desc ? `<div class="card-desc ${descTruncated ? 'collapsed' : ''}" id="desc-${creation.id}">${escapeHtml(creation.desc)}</div>${descTruncated ? `<button class="card-read-more" onclick="toggleDesc('${creation.id}', this)">Lire la suite ▼</button>` : ''}` : ''}
+                <div class="card-actions">
+                    <button class="action-btn like-btn" id="like-btn-${creation.id}" onclick="toggleLike('${creation.id}')">
+                        ❤️ <span class="count" id="like-count-${creation.id}">${creation.likesCount || 0}</span>
+                    </button>
+                    <button class="action-btn" onclick="toggleComments('${creation.id}')">
+                        💬 <span class="count" id="comment-count-${creation.id}">0</span>
+                    </button>
+                    <button class="action-btn" onclick="shareCreation('${creation.id}', '${escapeHtml(creation.title.replace(/'/g, "\\'"))}')">
+                        🔗 Partager
+                    </button>
+                    ${isOwnPost || (currentUser && currentUser.email === 'martialfabrice@tino-le-doc.com')
+                        ? `<button class="btn-danger action-btn-delete" onclick="deleteCreation('${creation.id}', '${creation.mediaUrl ? escapeHtml(creation.mediaUrl) : ''}', '${creation.mediaType}')">🗑️ Supprimer</button>`
+                        : ''}
+                </div>
+
+                <div class="comments-section" id="comments-${creation.id}">
+                    <div class="comments-list" id="comments-list-${creation.id}">
+                        <div class="comment-empty">Chargement...</div>
+                    </div>
+                    <div class="comment-form">
+                        <textarea class="comment-input" id="comment-input-${creation.id}" placeholder="Votre commentaire..." maxlength="500" rows="1"></textarea>
+                        <button class="comment-submit" onclick="submitComment('${creation.id}')" title="Envoyer">➤</button>
+                    </div>
+                </div>
+            </div>`;
+
+        // Load like state
+        loadLikeState(creation.id);
+        // Load comment count
+        loadCommentCount(creation.id);
+
+        return card;
+    }
+
+    // ---- Likes ----
+    function loadLikeState(creationId) {
+        if (!currentUser) return;
+        firebaseDb.ref('creationLikes/' + creationId + '/' + currentUser.uid).once('value').then(snap => {
+            const btn = document.getElementById('like-btn-' + creationId);
+            if (btn && snap.val()) btn.classList.add('liked');
+        });
+        // Live like count
+        firebaseDb.ref('creations/' + creationId + '/likesCount').on('value', snap => {
+            const el = document.getElementById('like-count-' + creationId);
+            if (el) el.textContent = snap.val() || 0;
+        });
+    }
+
+    async function toggleLike(creationId) {
+        if (!currentUser) { showToast('Connectez-vous pour liker.', true); return; }
+        const likeRef = firebaseDb.ref('creationLikes/' + creationId + '/' + currentUser.uid);
+        const likeCountRef = firebaseDb.ref('creations/' + creationId + '/likesCount');
+        const snap = await likeRef.once('value');
+        const btn = document.getElementById('like-btn-' + creationId);
+        if (snap.val()) {
+            await likeRef.remove();
+            await likeCountRef.transaction(n => Math.max(0, (n || 0) - 1));
+            if (btn) btn.classList.remove('liked');
+        } else {
+            await likeRef.set(true);
+            await likeCountRef.transaction(n => (n || 0) + 1);
+            if (btn) btn.classList.add('liked');
+        }
+    }
+
+    // ---- Comments ----
+    function loadCommentCount(creationId) {
+        firebaseDb.ref('creationComments/' + creationId).on('value', snap => {
+            const el = document.getElementById('comment-count-' + creationId);
+            if (el) el.textContent = snap.numChildren() || 0;
+        });
+    }
+
+    function toggleComments(creationId) {
+        const section = document.getElementById('comments-' + creationId);
+        if (!section) return;
+        const isOpen = section.classList.toggle('active');
+        if (isOpen) loadComments(creationId);
+    }
+
+    function loadComments(creationId) {
+        const list = document.getElementById('comments-list-' + creationId);
+        if (!list) return;
+        firebaseDb.ref('creationComments/' + creationId).orderByChild('timestamp').on('value', snap => {
+            list.innerHTML = '';
+            if (!snap.exists() || snap.numChildren() === 0) {
+                list.innerHTML = '<div class="comment-empty">Aucun commentaire. Soyez le premier !</div>';
+                return;
+            }
+            snap.forEach(child => {
+                const c = child.val();
+                const isOwn = currentUser && currentUser.uid === c.authorId;
+                const initials = (c.authorPseudo || '?').charAt(0).toUpperCase();
+                const div = document.createElement('div');
+                div.className = 'comment';
+                div.innerHTML = `
+                    <div class="comment-avatar">${escapeHtml(initials)}</div>
+                    <div class="comment-bubble ${isOwn ? 'comment-bubble-own' : ''}">
+                        <div class="comment-top">
+                            <span class="comment-author">${escapeHtml(c.authorPseudo || 'Anonyme')}</span>
+                            <span class="comment-time">${c.timestamp ? timeAgo(c.timestamp) : ''}</span>
+                        </div>
+                        <div class="comment-text">${escapeHtml(c.text)}</div>
+                    </div>`;
+                list.appendChild(div);
+            });
+            list.scrollTop = list.scrollHeight;
+        });
+    }
+
+    async function submitComment(creationId) {
+        if (!currentUser) { showToast('Connectez-vous pour commenter.', true); return; }
+        const input = document.getElementById('comment-input-' + creationId);
+        const text = input ? input.value.trim() : '';
+        if (!text) return;
+        if (text.length > 500) { showToast('Commentaire trop long (max 500 caractères).', true); return; }
+
+        const modCheck = ModerationSystem.checkContent(text);
+        if (!modCheck.isValid) { showToast(modCheck.message, true); return; }
+
+        const submitBtn = input.nextElementSibling;
+        if (submitBtn) submitBtn.disabled = true;
+        try {
+            await firebaseDb.ref('creationComments/' + creationId).push({
+                text: text,
+                authorId: currentUser.uid,
+                authorPseudo: currentPseudo,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            if (input) input.value = '';
+        } catch(e) {
+            showToast('Erreur lors de l\'envoi du commentaire.', true);
+        } finally {
+            if (submitBtn) submitBtn.disabled = false;
+        }
+    }
+
+    // ---- Delete ----
+    async function deleteCreation(creationId, mediaUrl, mediaType) {
+        if (!currentUser) return;
+        if (!confirm('Supprimer cette création ? Cette action est irréversible.')) return;
+        try {
+            await firebaseDb.ref('creations/' + creationId).remove();
+            await firebaseDb.ref('creationLikes/' + creationId).remove();
+            await firebaseDb.ref('creationComments/' + creationId).remove();
+            // Delete from storage if image
+            if (mediaType === 'image' && mediaUrl && firebaseStorage) {
+                try {
+                    const ref = firebaseStorage.refFromURL(mediaUrl);
+                    await ref.delete();
+                } catch(e) { /* ignore storage delete errors */ }
+            }
+            const card = document.getElementById('card-' + creationId);
+            if (card) card.remove();
+            showToast('Création supprimée.');
+        } catch(e) {
+            showToast('Erreur lors de la suppression.', true);
+        }
+    }
+
+    // ---- Share ----
+    function shareCreation(id, title) {
+        const url = window.location.origin + '/creations.html#' + id;
+        if (navigator.share) {
+            navigator.share({ title: title, url: url }).catch(() => {});
+        } else {
+            navigator.clipboard.writeText(url).then(() => showToast('Lien copié !')).catch(() => showToast('Impossible de copier le lien.', true));
+        }
+    }
+
+    // ---- Toggle desc ----
+    function toggleDesc(id, btn) {
+        const desc = document.getElementById('desc-' + id);
+        if (!desc) return;
+        if (desc.classList.contains('collapsed')) {
+            desc.classList.remove('collapsed');
+            btn.textContent = 'Réduire ▲';
+        } else {
+            desc.classList.add('collapsed');
+            btn.textContent = 'Lire la suite ▼';
+        }
+    }
+
+    // ---- Lightbox ----
+    function openLightbox(src) {
+        lightboxImg.src = src;
+        lightbox.classList.add('active');
+    }
+    document.getElementById('lightboxClose').addEventListener('click', () => {
+        lightbox.classList.remove('active');
+        lightboxImg.src = '';
+    });
+    lightbox.addEventListener('click', e => {
+        if (e.target === lightbox) { lightbox.classList.remove('active'); lightboxImg.src = ''; }
+    });
+
+    // ---- Utils ----
+    function timeAgo(ts) {
+        const diff = Date.now() - ts;
+        if (diff < 60000) return 'À l\'instant';
+        if (diff < 3600000) return Math.floor(diff/60000) + ' min';
+        if (diff < 86400000) return Math.floor(diff/3600000) + 'h';
+        if (diff < 2592000000) return Math.floor(diff/86400000) + 'j';
+        return new Date(ts).toLocaleDateString('fr-FR');
+    }
+
+    // Make functions global for inline onclick
+    window.openLightbox = openLightbox;
+    window.toggleLike = toggleLike;
+    window.toggleComments = toggleComments;
+    window.submitComment = submitComment;
+    window.deleteCreation = deleteCreation;
+    window.shareCreation = shareCreation;
+    window.toggleDesc = toggleDesc;
+    </script>
+</body>
+</html>
