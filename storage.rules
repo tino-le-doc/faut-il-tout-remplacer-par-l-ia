@@ -1,0 +1,27 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ==================== CRÉATIONS (images & vidéos) ====================
+    // Un utilisateur connecté peut lire/écrire uniquement dans son dossier
+    match /creations/{userId}/{fileName} {
+      // Lecture publique (pour afficher les médias dans le feed)
+      allow read: if true;
+
+      // Écriture : uniquement l'utilisateur propriétaire du dossier
+      allow write: if request.auth != null
+                   && request.auth.uid == userId
+                   && request.resource.size <= 150 * 1024 * 1024  // max 150 Mo
+                   && (
+                       request.resource.contentType.matches('image/.*') ||
+                       request.resource.contentType.matches('video/.*')
+                      );
+
+      // Suppression : propriétaire ou admin
+      allow delete: if request.auth != null
+                    && (request.auth.uid == userId
+                        || request.auth.token.email == 'martialfabrice@tino-le-doc.com');
+    }
+
+  }
+}
