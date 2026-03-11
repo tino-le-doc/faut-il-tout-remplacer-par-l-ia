@@ -357,11 +357,11 @@
 
                 <!-- Video upload (max 30s) -->
                 <div class="form-row">
-                    <label>Vidéo directe <small style="color:var(--orange)">⏱️ max 30 secondes</small></label>
+                    <label>Vidéo directe <small style="color:var(--orange)">⏱️ 5s min — 30s max</small></label>
                     <div class="upload-zone" id="videoUploadZone">
                         <input type="file" id="videoFileInput" accept="video/mp4,video/webm,video/quicktime,video/ogg,video/*">
                         <div class="upload-zone-icon">🎬</div>
-                        <div class="upload-zone-text">Glissez une vidéo ici ou cliquez pour choisir<br><small>MP4, WEBM, MOV — max 30s — max 150 Mo</small></div>
+                        <div class="upload-zone-text">Glissez une vidéo ici ou cliquez pour choisir<br><small>MP4, WEBM, MOV — 5s min — 30s max — 150 Mo max</small></div>
                         <video class="upload-video-preview" id="videoUploadPreview" controls muted playsinline></video>
                         <div class="upload-filename" id="videoUploadFilename"></div>
                         <div id="videoDurationBadge"></div>
@@ -588,6 +588,14 @@
         tempVideo.onloadedmetadata = () => {
             URL.revokeObjectURL(tempUrl);
             const dur = tempVideo.duration;
+            if (dur < 5) {
+                videoDurationBadge.innerHTML = `<span class="duration-badge error">⛔ ${Math.round(dur)}s — minimum 5s requis</span>`;
+                videoUploadZone.classList.remove('has-file');
+                showToast('Vidéo trop courte ! Minimum 5 secondes.', true);
+                uploadedVideoFile = null;
+                videoFileInput.value = '';
+                return;
+            }
             if (dur > 30) {
                 videoDurationBadge.innerHTML = `<span class="duration-badge error">⛔ ${Math.round(dur)}s — dépasse 30s max</span>`;
                 videoUploadZone.classList.remove('has-file');
