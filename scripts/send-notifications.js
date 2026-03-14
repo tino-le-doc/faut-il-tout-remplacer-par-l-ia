@@ -25,10 +25,18 @@ if (DRY_RUN) {
     console.log('🔍 Mode dry run activé — aucune notification ne sera envoyée.');
 }
 
+function toUrlSafeBase64(key) {
+    return Buffer.from(key, 'base64')
+        .toString('base64')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+}
+
 webpush.setVapidDetails(
     'mailto:martialfabrice@tino-le-doc.com',
-    VAPID_PUBLIC_KEY.replace(/=+$/, ''),
-    VAPID_PRIVATE_KEY.replace(/=+$/, '')
+    toUrlSafeBase64(VAPID_PUBLIC_KEY),
+    toUrlSafeBase64(VAPID_PRIVATE_KEY)
 );
 
 // Doit rester synchronisé avec la liste dans debat.html
