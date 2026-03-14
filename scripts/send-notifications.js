@@ -25,7 +25,11 @@ if (DRY_RUN) {
     console.log('🔍 Mode dry run activé — aucune notification ne sera envoyée.');
 }
 
-webpush.setVapidDetails('mailto:martialfabrice@tino-le-doc.com', VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+webpush.setVapidDetails(
+    'mailto:martialfabrice@tino-le-doc.com',
+    VAPID_PUBLIC_KEY.replace(/=+$/, ''),
+    VAPID_PRIVATE_KEY.replace(/=+$/, '')
+);
 
 // Doit rester synchronisé avec la liste dans debat.html
 const debates = [
