@@ -26,11 +26,7 @@ if (DRY_RUN) {
 }
 
 function toUrlSafeBase64(key) {
-    return Buffer.from(key, 'base64')
-        .toString('base64')
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=+$/, '');
+    return key.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
 webpush.setVapidDetails(

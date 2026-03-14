@@ -1262,11 +1262,23 @@
             return new Uint8Array([...rawData].map(c => c.charCodeAt(0)));
         }
 
-        function initNotifBtn() {
+        async function initNotifBtn() {
             if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
             const container = document.getElementById('notifContainer');
             if (container) container.style.display = 'flex';
-            updateNotifBtn(localStorage.getItem('pushSubscribed') === 'true');
+            try {
+                const reg = await navigator.serviceWorker.ready;
+                const sub = await reg.pushManager.getSubscription();
+                const isReallySubscribed = !!sub;
+                // Sync localStorage avec l'état réel du navigateur
+                if (!isReallySubscribed) {
+                    localStorage.removeItem('pushSubscribed');
+                    localStorage.removeItem('pushSubId');
+                }
+                updateNotifBtn(isReallySubscribed);
+            } catch (e) {
+                updateNotifBtn(localStorage.getItem('pushSubscribed') === 'true');
+            }
         }
 
         function updateNotifBtn(subscribed) {
@@ -1282,11 +1294,21 @@
         }
 
         async function toggleNotification() {
-            const isSubscribed = localStorage.getItem('pushSubscribed') === 'true';
-            if (isSubscribed) {
-                await unsubscribeNotifications();
-            } else {
-                await subscribeNotifications();
+            try {
+                const reg = await navigator.serviceWorker.ready;
+                const sub = await reg.pushManager.getSubscription();
+                if (sub) {
+                    await unsubscribeNotifications();
+                } else {
+                    await subscribeNotifications();
+                }
+            } catch (e) {
+                // Fallback sur localStorage si le service worker n'est pas disponible
+                if (localStorage.getItem('pushSubscribed') === 'true') {
+                    await unsubscribeNotifications();
+                } else {
+                    await subscribeNotifications();
+                }
             }
         }
 
