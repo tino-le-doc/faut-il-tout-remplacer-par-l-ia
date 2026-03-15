@@ -18,4 +18,4 @@ jobs:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TINO_LE_DOC_473BF }}
           channelId: live
-          projectId: tino-le-doc-473bf
+          projectId: tino-le-doc.com
