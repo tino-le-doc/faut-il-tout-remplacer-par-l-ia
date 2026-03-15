@@ -9,11 +9,35 @@
     "public": ".",
     "ignore": [
       "firebase.json",
+      "database.rules.json",
+      "storage.rules",
+      "CNAME",
+      "README.md",
+      "LICENSE",
+      "scripts/**",
       "**/.*",
-      "**/node_modules/**",
-      "README.md"
+      "**/node_modules/**"
     ],
+    "cleanUrls": true,
     "headers": [
+      {
+        "source": "/sw.js",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "/manifest.json",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      },
       {
         "source": "**/*.@(js|css)",
         "headers": [
@@ -29,6 +53,19 @@
           {
             "key": "Cache-Control",
             "value": "max-age=86400"
+          }
+        ]
+      },
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
+          {
+            "key": "X-Frame-Options",
+            "value": "SAMEORIGIN"
           }
         ]
       }
