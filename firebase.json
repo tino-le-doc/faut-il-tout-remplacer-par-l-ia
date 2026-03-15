@@ -6,6 +6,7 @@
     "rules": "storage.rules"
   },
   "hosting": {
+    "site": "tino-le-doc-473bf",
     "public": ".",
     "ignore": [
       "firebase.json",
