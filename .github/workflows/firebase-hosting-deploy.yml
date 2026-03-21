@@ -16,6 +16,6 @@ jobs:
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TINO_LE_DOC_473BF }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TINO_LE_DOC_COM }}
           channelId: live
-          projectId: tino-le-doc-473bf
+          projectId: tino-le-doc.com
