@@ -16,7 +16,9 @@
       "README.md",
       "LICENSE",
       "scripts/**",
-      "**/.*",
+      ".git/**",
+      ".github/**",
+      ".gitignore",
       "**/node_modules/**"
     ],
     "cleanUrls": true,
