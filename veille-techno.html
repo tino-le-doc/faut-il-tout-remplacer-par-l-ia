@@ -1279,7 +1279,7 @@
                 return;
             }
 
-            safeSetHTML(container, toShow.map(article => {
+            container.innerHTML = toShow.map(article => {
                 const badge = BADGE_MAP[article.category] || { cls: 'badge-ia', label: article.category };
                 const date = article.timestamp ? formatDate(article.timestamp) : '';
                 const tags = (article.tags || []).map(t => '<span class="tag">' + escapeHtml(t) + '</span>').join('');
@@ -1382,7 +1382,7 @@
         function renderTrending(items) {
             const list = document.getElementById('trendingList');
             if (items.length === 0) {
-                safeSetHTML(list, '<p style="color:var(--text-secondary);font-size:0.9rem;">Pas encore de tendances. Like des articles !</p>');
+                list.innerHTML = '<p style="color:var(--text-secondary);font-size:0.9rem;">Pas encore de tendances. Like des articles !</p>';
                 return;
             }
             list.innerHTML = items.map((item, i) => {
