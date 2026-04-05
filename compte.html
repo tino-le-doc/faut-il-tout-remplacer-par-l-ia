@@ -1182,12 +1182,12 @@
             console.log('✅ Profil sauvegardé');
             showSuccess('🎉 Compte créé avec succès ! Bienvenue ' + pseudo);
             
-            // Redirige vers la page demandée, ou vers l'accueil
+            // 🔑 Attendre 4000ms pour que Firebase persiste la session correctement
             const urlParams = new URLSearchParams(window.location.search);
             const redirectPage = urlParams.get('redirect') || 'index.html';
             setTimeout(() => {
                 window.location.href = redirectPage;
-            }, 1500);
+            }, 4000);
 
         } catch (error) {
             console.error('❌ Erreur inscription:', error.code, error.message);
@@ -1261,12 +1261,13 @@
             console.log('✅ Connexion réussie');
             showSuccess('🎉 Connexion réussie !');
             
-            // Redirige vers la page demandée, ou vers l'accueil
+            // 🔑 Attendre 4000ms pour que Firebase persiste la session complètement
+            // dans le localStorage/IndexedDB avant de rediriger
             const urlParams = new URLSearchParams(window.location.search);
             const redirectPage = urlParams.get('redirect') || 'index.html';
             setTimeout(() => {
                 window.location.href = redirectPage;
-            }, 1500);
+            }, 4000);
 
         } catch (error) {
             console.error('❌ Erreur connexion:', error.code, error.message);
@@ -1420,12 +1421,12 @@
                 console.log('Utilisateur Google existant');
                 showSuccess('Connexion réussie !');
                 
-                // Redirige vers la page demandée, ou vers l'accueil
+                // 🔑 Attendre 4000ms pour que Firebase persiste la session correctement
                 const urlParams = new URLSearchParams(window.location.search);
                 const redirectPage = urlParams.get('redirect') || 'index.html';
                 setTimeout(() => {
                     window.location.href = redirectPage;
-                }, 1500);
+                }, 4000);
             } else {
                 pendingGoogleUser = user;
                 const suggested = (user.displayName || user.email.split('@')[0])
@@ -1543,6 +1544,13 @@
             document.getElementById('pseudoModal').classList.remove('active');
             pendingGoogleUser = null;
             showSuccess('Compte cree avec succes ! Bienvenue ' + pseudo);
+            
+            // 🔑 Rediriger après 4000ms pour laisser Firebase persister complètement
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectPage = urlParams.get('redirect') || 'index.html';
+            setTimeout(() => {
+                window.location.href = redirectPage;
+            }, 4000);
 
         } catch (error) {
             console.error('Erreur sauvegarde pseudo:', error);

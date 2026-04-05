@@ -182,7 +182,15 @@ const ModerationSystem = {
  * Si l'utilisateur n'est pas connecté, redirige vers compte.html.
  * @returns {Promise<boolean>} true si authentifié, false sinon
  */
-function requireAuth() {
+async function requireAuth() {
+    // 🔑 CRITICAL: Attendre que Firebase ait restauré la session depuis le stockage!
+    // Sans cet attente, on check l'utilisateur AVANT que la session soit chargée.
+    await persistenceReady;
+    
+    // Ajout d'un délai supplémentaire pour que la session soit VRAIMENT chargée en RAM
+    // 1000ms garantit que les données sont totalement restaurées des IndexedDB/localStorage
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
     return new Promise((resolve) => {
         if (!firebaseAuth) {
             console.warn('🔴 Firebase Auth non disponible');
@@ -190,15 +198,23 @@ function requireAuth() {
             return;
         }
 
-        // onAuthStateChanged est le seul moyen fiable de connaître l'état auth après
-        // restauration depuis IndexedDB. Ne pas l'appeler après setPersistence()
-        // (ça pouvait intercepter un null transitoire avant que la session soit rechargée).
+        // Vérifier immédiatement si currentUser est déjà en mémoire
+        if (firebaseAuth.currentUser) {
+            console.log('✅ Session trouvée immédiatement:', firebaseAuth.currentUser.email);
+            resolve(true);
+            return;
+        }
+
+        console.log('🔍 Attente du chargement de la session Firebase...');
+
         const timeout = setTimeout(() => {
             console.warn('⏱️ Timeout Firebase Auth - redirection vers login');
             const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-            window.location.href = 'compte.html?redirect=' + encodeURIComponent(currentPage);
+            if (!currentPage.includes('compte') && !currentPage.includes('index') && !currentPage.includes('confidentialite') && !currentPage.includes('offline')) {
+                window.location.href = 'compte.html?redirect=' + encodeURIComponent(currentPage);
+            }
             resolve(false);
-        }, 5000);
+        }, 8000);
 
         const unsubscribe = firebaseAuth.onAuthStateChanged((user) => {
             clearTimeout(timeout);
