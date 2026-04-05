@@ -16,6 +16,7 @@ Based on the latest PageSpeed Insights scan, here are the remaining optimization
 **Solutions:**
 
 #### Option A: Remove Unused Polyfills
+
 ```javascript
 // Don't load polyfills if not needed
 // Check if your browser support target needs them:
@@ -28,6 +29,7 @@ Based on the latest PageSpeed Insights scan, here are the remaining optimization
 ```
 
 #### Option B: Dynamic Firebase Import
+
 ```javascript
 // Instead of loading all Firebase modules globally,
 // load only what you need:
@@ -61,6 +63,7 @@ if (document.readyState === 'complete') {
 **Solutions:**
 
 #### Minify CSS
+
 ```bash
 # Install cssnano or similar
 npm install cssnano --save-dev
@@ -75,6 +78,7 @@ cat css/common.css | npx cssnano > css/common.min.css
 **Expected Savings:** 2-3 KiB
 
 #### Remove Unused CSS
+
 ```bash
 # Use PurgeCSS or similar tool
 npm install purgecss --save-dev
@@ -92,6 +96,7 @@ npm install purgecss --save-dev
 **Ways to Improve:**
 
 #### A. Serve WebP with Better Quality
+
 ```bash
 # Current: -q 80 (good quality)
 # Test: -q 75 for less critical images
@@ -103,6 +108,7 @@ ls -lh img/icon* | awk '{print $9, $5}'
 ```
 
 #### B. Image Lazy Loading Best Practices
+
 ```html
 <!-- Already implemented ✅ -->
 <img src="..." loading="lazy" decoding="async" width="X" height="Y">
@@ -192,7 +198,7 @@ Check if all converted images are actually used in HTML.
 ## 📈 Expected Improvements
 
 | Optimization | Savings | Impact |
-|---|---|---|
+| --- | --- | --- |
 | Minify CSS | 2-3 KiB | Negligible |
 | Remove JS duplicates | 1-2 KiB | Negligible |
 | Lazy Firebase modules | 30-50 KiB | Positive |
@@ -205,6 +211,7 @@ Check if all converted images are actually used in HTML.
 ## ⚡ Ranking by Effort vs Reward
 
 ### 🟢 Low Effort, High Reward
+
 1. Deploy cache headers (DONE - 4,459 KiB)
 2. Minify CSS (2-3 KiB, 5 min)
 3. Check duplicate imports (1-2 KiB, 5 min)
