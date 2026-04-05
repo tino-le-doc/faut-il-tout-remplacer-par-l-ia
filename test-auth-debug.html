@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Debug Firebase Auth</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #0a0a0f;
+            color: #e8e8e8;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .log {
+            background: #12121a;
+            border-left: 3px solid #00f5ff;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        .error {
+            border-left-color: #ff4444;
+            background: #2a1a1a;
+            color: #ff6666;
+        }
+        .success {
+            border-left-color: #00ff88;
+            background: #1a2a1a;
+            color: #00ff88;
+        }
+        .warning {
+            border-left-color: #ff9500;
+            background: #2a2010;
+            color: #ffb366;
+        }
+        .header {
+            font-size: 1.5rem;
+            margin: 20px 0 10px 0;
+            color: #00f5ff;
+            border-bottom: 2px solid #00f5ff;
+            padding-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #00f5ff;
+            color: #0a0a0f;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        button:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Debug Firebase Auth Session</h1>
+    
+    <div class="header">📊 État Global</div>
+    <div id="status"></div>
+    
+    <div class="header">🔍 Diagnostic</div>
+    <div>
+        <button onclick="checkFirebaseLoaded()">Check Firebase</button>
+        <button onclick="checkPersistence()">Check Persistence</button>
+        <button onclick="checkLocalStorage()">Check localStorage</button>
+        <button onclick="checkCurrentUser()">Check Current User</button>
+        <button onclick="checkOnAuthStateChanged()">Simulate onAuthStateChanged</button>
+        <button onclick="logAll()">Log Everything</button>
+        <button onclick="clearLogs()">Clear Logs</button>
+    </div>
+    
+    <div class="header">📝 Output</div>
+    <div id="logs"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+
+    <script>
+    const logsDiv = document.getElementById('logs');
+    const statusDiv = document.getElementById('status');
+
+    function log(msg, type = 'info') {
+        const div = document.createElement('div');
+        div.className = 'log ' + type;
+        div.textContent = msg;
+        logsDiv.appendChild(div);
+        console.log('[' + type.toUpperCase() + ']', msg);
+    }
+
+    function updateStatus() {
+        const status = {
+            'Firebase Loaded': typeof firebase !== 'undefined' ? '✅' : '❌',
+            'firebaseApp': typeof firebaseApp !== 'undefined' ? '✅' : '❌',
+            'firebaseAuth': typeof firebaseAuth !== 'undefined' ? '✅' : '❌',
+            'firebaseDb': typeof firebaseDb !== 'undefined' ? '✅' : '❌',
+            'firebase.auth()': typeof firebase?.auth?.() !== 'undefined' ? '✅' : '❌',
+            'firebase.auth().currentUser': firebase?.auth?.()?.currentUser ? '✅ ' + firebase.auth().currentUser.email : '❌ null',
+        };
+        
+        let html = '';
+        for (const [key, value] of Object.entries(status)) {
+            html += `<div class="log">${key}: <strong>${value}</strong></div>`;
+        }
+        statusDiv.innerHTML = html;
+    }
+
+    function checkFirebaseLoaded() {
+        log('=== Checking Firebase SDK ===', 'warning');
+        
+        if (typeof firebase === 'undefined') {
+            log('❌ Firebase SDK NOT LOADED', 'error');
+            return;
+        }
+        log('✅ firebase object exists', 'success');
+        
+        if (!firebase.apps) {
+            log('❌ firebase.apps is undefined', 'error');
+            return;
+        }
+        log(`✅ firebase.apps.length = ${firebase.apps.length}`, 'success');
+        
+        if (!firebase.apps[0]) {
+            log('❌ No Firebase app initialized', 'error');
+            return;
+        }
+        log(`✅ Firebase app initialized: ${firebase.apps[0].name}`, 'success');
+        
+        if (!firebase.auth) {
+            log('❌ firebase.auth is not available', 'error');
+            return;
+        }
+        log('✅ firebase.auth() available', 'success');
+        
+        updateStatus();
+    }
+
+    function checkPersistence() {
+        log('=== Checking Persistence Configuration ===', 'warning');
+        
+        if (typeof firebase === 'undefined') {
+            log('❌ Firebase not loaded', 'error');
+            return;
+        }
+        
+        const auth = firebase.auth();
+        if (!auth) {
+            log('❌ firebase.auth() returned null', 'error');
+            return;
+        }
+        
+        log(`✅ auth object: ${typeof auth}`, 'success');
+        
+        if (!auth.Persistence) {
+            log('⚠️ auth.Persistence not available', 'warning');
+        } else {
+            log(`✅ auth.Persistence.LOCAL = ${auth.Persistence.LOCAL}`, 'success');
+            log(`✅ auth.Persistence.SESSION = ${auth.Persistence.SESSION}`, 'success');
+            log(`✅ auth.Persistence.NONE = ${auth.Persistence.NONE}`, 'success');
+        }
+        
+        updateStatus();
+    }
+
+    function checkLocalStorage() {
+        log('=== Checking localStorage ===', 'warning');
+        
+        const keys = Object.keys(localStorage);
+        log(`Total keys in localStorage: ${keys.length}`, 'info');
+        
+        const firebaseKeys = keys.filter(k => k.includes('firebase'));
+        log(`Firebase-related keys: ${firebaseKeys.length}`, firebaseKeys.length > 0 ? 'success' : 'warning');
+        
+        firebaseKeys.forEach(key => {
+            const value = localStorage.getItem(key);
+            const preview = value.substring(0, 100) + (value.length > 100 ? '...' : '');
+            log(`📦 ${key}: ${preview}`, 'info');
+        });
+        
+        if (firebaseKeys.length === 0) {
+            log('⚠️ No Firebase keys in localStorage - session not saved!', 'warning');
+        }
+        
+        updateStatus();
+    }
+
+    function checkCurrentUser() {
+        log('=== Checking firebase.auth().currentUser ===', 'warning');
+        
+        if (typeof firebase === 'undefined') {
+            log('❌ Firebase not loaded', 'error');
+            return;
+        }
+        
+        const auth = firebase.auth();
+        const user = auth.currentUser;
+        
+        if (!user) {
+            log('❌ currentUser is null (not logged in)', 'warning');
+            return;
+        }
+        
+        log(`✅ User logged in: ${user.email}`, 'success');
+        log(`   - uid: ${user.uid}`, 'info');
+        log(`   - displayName: ${user.displayName || 'N/A'}`, 'info');
+        log(`   - isAnonymous: ${user.isAnonymous}`, 'info');
+        log(`   - emailVerified: ${user.emailVerified}`, 'info');
+        
+        updateStatus();
+    }
+
+    function checkOnAuthStateChanged() {
+        log('=== Checking onAuthStateChanged listener ===', 'warning');
+        
+        if (typeof firebase === 'undefined') {
+            log('❌ Firebase not loaded', 'error');
+            return;
+        }
+        
+        const auth = firebase.auth();
+        
+        log('Attaching onAuthStateChanged listener...', 'info');
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            if (user) {
+                log(`✅ onAuthStateChanged triggered: User logged in (${user.email})`, 'success');
+            } else {
+                log('⚠️ onAuthStateChanged triggered: No user (null)', 'warning');
+            }
+            
+            // Clean up listener
+            unsubscribe();
+        });
+        
+        log('Listener attached. Waiting for response...', 'info');
+        
+        updateStatus();
+    }
+
+    function logAll() {
+        log('=== Full Diagnostic Report ===', 'warning');
+        checkFirebaseLoaded();
+        setTimeout(() => checkPersistence(), 100);
+        setTimeout(() => checkLocalStorage(), 200);
+        setTimeout(() => checkCurrentUser(), 300);
+    }
+
+    function clearLogs() {
+        logsDiv.innerHTML = '';
+        log('Logs cleared', 'info');
+    }
+
+    // Initial check on page load
+    window.addEventListener('load', () => {
+        log('Page loaded', 'success');
+        setTimeout(() => {
+            updateStatus();
+            checkFirebaseLoaded();
+        }, 1000);
+    });
+    </script>
+</body>
+</html>

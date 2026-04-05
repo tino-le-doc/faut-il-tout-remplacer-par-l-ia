@@ -407,25 +407,50 @@ const CATEGORIES = {
 };
 
 // ==================== AUTH ====================
-auth.onAuthStateChanged(async user => {
-    if (user && !user.isAnonymous) {
-        currentUser = user;
-        try {
-            const snap = await db.ref('users/' + user.uid).once('value');
-            const profile = snap.val();
-            currentUserName = (profile && profile.pseudo) || user.displayName || user.email.split('@')[0];
-        } catch(e) {
-            currentUserName = user.email ? user.email.split('@')[0] : 'Utilisateur';
+persistenceReady.then(() => {
+    auth.onAuthStateChanged(async user => {
+        if (user && !user.isAnonymous) {
+            currentUser = user;
+            try {
+                const snap = await db.ref('users/' + user.uid).once('value');
+                const profile = snap.val();
+                currentUserName = (profile && profile.pseudo) || user.displayName || user.email.split('@')[0];
+            } catch(e) {
+                currentUserName = user.email ? user.email.split('@')[0] : 'Utilisateur';
+            }
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('forumContent').style.display = 'block';
+            loadGroups();
+            loadInvites();
+        } else {
+            currentUser = null;
+            document.getElementById('authSection').style.display = 'block';
+            document.getElementById('forumContent').style.display = 'none';
         }
-        document.getElementById('authSection').style.display = 'none';
-        document.getElementById('forumContent').style.display = 'block';
-        loadGroups();
-        loadInvites();
-    } else {
-        currentUser = null;
-        document.getElementById('authSection').style.display = 'block';
-        document.getElementById('forumContent').style.display = 'none';
-    }
+    });
+}).catch(err => {
+    console.error('Persistence init error, loading forum anyway:', err);
+    // Fallback
+    auth.onAuthStateChanged(async user => {
+        if (user && !user.isAnonymous) {
+            currentUser = user;
+            try {
+                const snap = await db.ref('users/' + user.uid).once('value');
+                const profile = snap.val();
+                currentUserName = (profile && profile.pseudo) || user.displayName || user.email.split('@')[0];
+            } catch(e) {
+                currentUserName = user.email ? user.email.split('@')[0] : 'Utilisateur';
+            }
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('forumContent').style.display = 'block';
+            loadGroups();
+            loadInvites();
+        } else {
+            currentUser = null;
+            document.getElementById('authSection').style.display = 'block';
+            document.getElementById('forumContent').style.display = 'none';
+        }
+    });
 });
 
 // ==================== GROUPS ====================

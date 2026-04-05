@@ -2101,29 +2101,55 @@
         let messageListeners = {};
 
         // ==================== AUTH STATE ====================
-        auth.onAuthStateChanged(async user => {
-            if (user) {
-                currentUser = user;
-                try {
-                    const snapshot = await db.ref('users/' + user.uid).once('value');
-                    currentUserProfile = snapshot.val();
-                    
-                    if (currentUserProfile && currentUserProfile.pseudo) {
-                        document.getElementById('loginRequired').style.display = 'none';
-                        document.getElementById('main-content').style.display = 'flex';
-                        initApp();
-                    } else {
-                        // Profil incomplet ou inexistant, rediriger vers la page compte
+        persistenceReady.then(() => {
+            auth.onAuthStateChanged(async user => {
+                if (user) {
+                    currentUser = user;
+                    try {
+                        const snapshot = await db.ref('users/' + user.uid).once('value');
+                        currentUserProfile = snapshot.val();
+                        
+                        if (currentUserProfile && currentUserProfile.pseudo) {
+                            document.getElementById('loginRequired').style.display = 'none';
+                            document.getElementById('main-content').style.display = 'flex';
+                            initApp();
+                        } else {
+                            // Profil incomplet ou inexistant, rediriger vers la page compte
+                            window.location.href = 'compte.html';
+                        }
+                    } catch (e) {
+                        console.error('Erreur profil:', e);
                         window.location.href = 'compte.html';
                     }
-                } catch (e) {
-                    console.error('Erreur profil:', e);
-                    window.location.href = 'compte.html';
+                } else {
+                    document.getElementById('loginRequired').style.display = 'flex';
+                    document.getElementById('main-content').style.display = 'none';
                 }
-            } else {
-                document.getElementById('loginRequired').style.display = 'flex';
-                document.getElementById('main-content').style.display = 'none';
-            }
+            });
+        }).catch(err => {
+            console.error('Persistence init error:', err);
+            auth.onAuthStateChanged(async user => {
+                if (user) {
+                    currentUser = user;
+                    try {
+                        const snapshot = await db.ref('users/' + user.uid).once('value');
+                        currentUserProfile = snapshot.val();
+                        if (currentUserProfile && currentUserProfile.pseudo) {
+                            document.getElementById('loginRequired').style.display = 'none';
+                            document.getElementById('main-content').style.display = 'flex';
+                            initApp();
+                        } else {
+                            window.location.href = 'compte.html';
+                        }
+                    } catch (e) {
+                        console.error('Erreur profil:', e);
+                        window.location.href = 'compte.html';
+                    }
+                } else {
+                    document.getElementById('loginRequired').style.display = 'flex';
+                    document.getElementById('main-content').style.display = 'none';
+                }
+            });
         });
 
         // ==================== INIT APP ====================
