@@ -11,7 +11,7 @@ from PIL import Image
 import subprocess
 
 # Configuration
-IMG_DIR = Path(__file__).parent / "img"
+IMG_DIR = Path(__file__).parent.parent / "img"
 QUALITY_WEBP = 80
 QUALITY_AVIF = 85
 FORMATS = ['.png', '.jpg', '.jpeg']
