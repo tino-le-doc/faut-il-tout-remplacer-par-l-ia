@@ -1,9 +1,7 @@
 {
   "rules": {
-
     ".read": false,
     ".write": false,
-
     "users": {
       ".read": "auth != null && auth.token.email === 'martialfabrice@tino-le-doc.com'",
       "$uid": {
@@ -12,8 +10,6 @@
         ".validate": "newData.hasChildren(['email', 'pseudo', 'createdAt'])"
       }
     },
-
-    // ==================== PSEUDOS (unicite) ====================
     "pseudos": {
       ".read": true,
       "$pseudo": {
@@ -21,7 +17,6 @@
         ".validate": "newData.val() == auth.uid"
       }
     },
-
     "counters": {
       "visits": {
         ".read": true,
@@ -39,10 +34,6 @@
         ".validate": "newData.isNumber()"
       }
     },
-
-    // ==================== CONTACT ====================
-    // Les messages de contact sont en ecriture publique (formulaire anonyme)
-    // mais en lecture uniquement pour l'admin
     "contactMessages": {
       ".read": "auth != null && auth.token.email === 'martialfabrice@tino-le-doc.com'",
       ".write": true,
@@ -51,8 +42,6 @@
         ".validate": "newData.hasChildren(['name', 'email', 'message', 'timestamp'])"
       }
     },
-
-    // ==================== TCHAT PUBLIC ====================
     "chatMessages": {
       ".read": true,
       ".write": "auth != null",
@@ -61,22 +50,18 @@
         ".validate": "newData.hasChildren(['text', 'pseudo', 'timestamp']) && newData.child('text').isString() && newData.child('text').val().length <= 1000"
       }
     },
-
     "chatUsers": {
       ".read": true,
       "$userId": {
         ".write": "auth != null && auth.uid == $userId"
       }
     },
-
     "chatTyping": {
       ".read": true,
       "$userId": {
         ".write": "auth != null && auth.uid == $userId"
       }
     },
-
-    // ==================== AVIS ====================
     "reviews": {
       ".read": true,
       ".write": "auth != null",
@@ -85,30 +70,24 @@
         ".validate": "newData.hasChildren(['text', 'rating', 'timestamp']) && newData.child('rating').isNumber() && newData.child('rating').val() >= 1 && newData.child('rating').val() <= 5 && newData.child('text').isString() && newData.child('text').val().length <= 2000"
       }
     },
-
-    // ==================== CONTACTS & AMIS ====================
     "contacts": {
       "$userId": {
         ".read": "auth != null && auth.uid == $userId",
         ".write": "auth != null && auth.uid == $userId"
       }
     },
-
     "friendRequests": {
       "$userId": {
         ".read": "auth != null && auth.uid == $userId",
         ".write": "auth != null"
       }
     },
-
-    // ==================== MESSAGERIE PRIVEE ====================
     "userConversations": {
       "$userId": {
         ".read": "auth != null && auth.uid == $userId",
         ".write": "auth != null"
       }
     },
-
     "dmMessages": {
       "$convId": {
         ".read": "auth != null",
@@ -119,14 +98,12 @@
         }
       }
     },
-
     "groups": {
       "$groupId": {
         ".read": "auth != null",
         ".write": "auth != null"
       }
     },
-
     "groupMessages": {
       "$groupId": {
         ".read": "auth != null",
@@ -134,30 +111,24 @@
         ".indexOn": ["timestamp"]
       }
     },
-
     "dmVideoRoom": {
       "$convId": {
         ".read": "auth != null",
         ".write": "auth != null"
       }
     },
-
     "groupVideoRoom": {
       "$groupId": {
         ".read": "auth != null",
         ".write": "auth != null"
       }
     },
-
-    // ==================== APPELS ENTRANTS ====================
     "incomingCalls": {
       "$userId": {
         ".read": "auth != null && auth.uid == $userId",
         ".write": "auth != null"
       }
     },
-
-    // ==================== QUIZ ====================
     "quizScores": {
       ".read": true,
       ".write": "auth != null",
@@ -166,8 +137,6 @@
         ".validate": "newData.hasChildren(['pseudo', 'accuracy', 'timestamp']) && newData.child('accuracy').isNumber()"
       }
     },
-
-    // ==================== SONDAGES ====================
     "polls": {
       ".read": true,
       "$pollId": {
@@ -182,15 +151,12 @@
         }
       }
     },
-
     "dailyVotes": {
       ".read": true,
       "$date": {
         ".write": "auth != null"
       }
     },
-
-    // ==================== DEBATS ====================
     "debates": {
       ".read": true,
       "$date": {
@@ -203,7 +169,6 @@
         }
       }
     },
-
     "debateArguments": {
       ".read": true,
       "$date": {
@@ -217,9 +182,6 @@
         }
       }
     },
-
-    // ==================== FORUM ====================
-    // Groupes de discussion publics/prives
     "forumGroups": {
       ".read": "auth != null",
       ".indexOn": ["category", "createdAt", "memberCount", "isPublic"],
@@ -227,8 +189,6 @@
         ".write": "auth != null"
       }
     },
-
-    // Membres des groupes forum
     "forumMembers": {
       "$groupId": {
         ".read": "auth != null",
@@ -237,8 +197,6 @@
         }
       }
     },
-
-    // Messages des groupes forum
     "forumMessages": {
       "$groupId": {
         ".read": "auth != null",
@@ -246,8 +204,6 @@
         ".indexOn": ["timestamp", "isPinned"]
       }
     },
-
-    // Invitations forum (groupes prives)
     "forumInvites": {
       "$userId": {
         ".read": "auth != null && auth.uid == $userId",
@@ -255,8 +211,6 @@
         ".indexOn": ["timestamp"]
       }
     },
-
-    // ==================== PUSH NOTIFICATIONS ====================
     "pushSubscriptions": {
       ".read": "auth != null && auth.token.email === 'martialfabrice@tino-le-doc.com'",
       ".write": true,
@@ -264,10 +218,6 @@
         ".validate": "newData.hasChildren(['endpoint', 'keys', 'createdAt']) && newData.child('endpoint').isString() && newData.child('endpoint').val().length < 2000 && newData.child('createdAt').isNumber()"
       }
     },
-
-    // ==================== VEILLE TECHNOLOGIQUE ====================
-    // Seul l'admin peut creer/modifier/supprimer des articles
-    // Les utilisateurs connectes peuvent liker
     "veilleArticles": {
       ".read": true,
       ".indexOn": ["timestamp", "likesCount", "category"],
@@ -283,10 +233,6 @@
         }
       }
     },
-
-    // ==================== CREATIONS (art musical & graphique) ====================
-    // Tout utilisateur connecte peut publier et lire les creations
-    // Chaque auteur peut supprimer sa propre creation ; l'admin peut tout supprimer
     "creations": {
       ".read": "auth != null",
       ".indexOn": ["timestamp", "category", "authorId"],
@@ -298,8 +244,6 @@
         }
       }
     },
-
-    // ==================== LIKES DES CREATIONS ====================
     "creationLikes": {
       "$creationId": {
         ".read": "auth != null",
@@ -308,8 +252,6 @@
         }
       }
     },
-
-    // ==================== COMMENTAIRES DES CREATIONS ====================
     "creationComments": {
       "$creationId": {
         ".read": "auth != null",
