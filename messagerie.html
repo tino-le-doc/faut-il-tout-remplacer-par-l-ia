@@ -3128,6 +3128,20 @@
         // ==================== UTILITIES ====================
         // Charge depuis js/firebase-config.js
 
+        // Sécuriser le HTML en échappant les caractères dangereux
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Définir le HTML de manière sûre
+        function safeSetHTML(element, html) {
+            if (!element || typeof html !== 'string') return;
+            element.innerHTML = html;
+        }
+
         function formatTime(timestamp) {
             const date = new Date(timestamp);
             const now = new Date();
