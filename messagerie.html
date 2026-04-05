@@ -2030,30 +2030,30 @@
     </div>
 
     <!-- Modal: Video Call -->
-    <div class="modal-overlay" id="modalVideoCall" style="background:rgba(0,0,0,0.95);">
-        <div class="modal" style="max-width:100%;width:100%;max-height:100vh;max-height:100dvh;height:100vh;height:100dvh;background:#0a0a0f;border-radius:0;border:none;">
-            <div class="modal-header" style="background:linear-gradient(135deg,rgba(255,68,68,0.2),rgba(255,149,0,0.2));padding:12px 20px;flex-shrink:0;">
+    <div class="modal-overlay" id="modalVideoCall">
+        <div class="modal modal-fullscreen">
+            <div class="modal-header modal-header-gradient">
                 <h2><span class="vc-rec"></span> Appel vidéo - <span id="vcCallName">...</span></h2>
-                <div style="display:flex;align-items:center;gap:10px;">
-                    <span id="vcParticipantCount" style="font-size:0.8rem;color:rgba(255,255,255,0.6);">0 en appel</span>
+                <div class="vc-header-flex">
+                    <span id="vcParticipantCount" class="vc-count">0 en appel</span>
                     <button class="modal-close" onclick="DMVideoChat.leaveCall()">✕</button>
                 </div>
             </div>
-            <div class="modal-body" style="padding:0;max-height:none;overflow:hidden;flex:1;display:flex;flex-direction:column;">
+            <div class="modal-body modal-body-full">
                 <!-- Ecran de jointure -->
-                <div id="vcJoinScreen" style="padding:40px 20px;text-align:center;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-                    <div style="font-size:4rem;margin-bottom:20px;">📹</div>
-                    <h3 style="font-family:'Syne',sans-serif;font-size:1.3rem;margin-bottom:10px;">Appel vidéo</h3>
-                    <p style="color:rgba(255,255,255,0.6);margin-bottom:20px;">Démarrez un appel vidéo en direct</p>
-                    <button id="vcJoinBtn" onclick="DMVideoChat.joinCall()" style="padding:15px 35px;border:none;border-radius:15px;font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#00ff88,#00cc6a);color:#0a0a0f;transition:all 0.3s;">📹 Rejoindre l'appel</button>
+                <div id="vcJoinScreen" class="vc-join-screen d-none">
+                    <div class="vc-icon">📹</div>
+                    <h3 class="vc-title">Appel vidéo</h3>
+                    <p class="vc-desc">Démarrez un appel vidéo en direct</p>
+                    <button id="vcJoinBtn" onclick="DMVideoChat.joinCall()" class="vc-btn">:pointer;background:linear-gradient(135deg,#00ff88,#00cc6a);color:#0a0a0f;transition:all 0.3s;">📹 Rejoindre l'appel</button>
                 </div>
                 <!-- Grille vidéo -->
-                <div id="vcVideoGrid" style="display:none;padding:10px;background:#000;flex:1;align-content:center;"></div>
+                <div id="vcVideoGrid" class="vc-grid"></div>
                 <!-- Controles -->
-                <div id="vcControls" style="display:none;padding:15px;background:rgba(0,0,0,0.8);justify-content:center;gap:12px;align-items:center;flex-shrink:0;">
+                <div id="vcControls" class="vc-controls">
                     <button class="icon-btn" id="vcMicBtn" onclick="DMVideoChat.toggleMic()" title="Micro">🎤</button>
                     <button class="icon-btn" id="vcCamBtn" onclick="DMVideoChat.toggleCam()" title="Caméra">📹</button>
-                    <button class="icon-btn danger" id="vcLeaveBtn" onclick="DMVideoChat.leaveCall()" title="Raccrocher" style="background:var(--red);color:white;">📞</button>
+                    <button class="icon-btn btn-danger-red" id="vcLeaveBtn" onclick="DMVideoChat.leaveCall()" title="Raccrocher">📞</button>
                 </div>
             </div>
         </div>

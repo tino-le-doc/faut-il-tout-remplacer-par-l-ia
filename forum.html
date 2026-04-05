@@ -255,7 +255,7 @@
             <div class="toolbar">
                 <div class="toolbar-left">
                     <input type="text" class="search-input" id="searchInput" placeholder="🔍 Rechercher un groupe..." maxlength="50">
-                    <select class="filter-select" id="filterCategory">
+                    <select class="filter-select" id="filterCategory" aria-label="Filtrer par catégorie">
                         <option value="">Toutes les categories</option>
                         <option value="ia">🤖 Intelligence Artificielle</option>
                         <option value="dev">💻 Developpement</option>
@@ -266,7 +266,7 @@
                     </select>
                 </div>
                 <button class="create-btn" id="createGroupBtn">+ Creer un groupe</button>
-                <button class="create-btn invites-btn" id="invitesBtn" style="background:rgba(255,255,255,0.1)">
+                <button class="create-btn invites-btn" id="invitesBtn">
                     📩 Invitations <span class="invites-badge d-none" id="invitesBadge">0</span>
                 </button>
             </div>
@@ -350,7 +350,7 @@
         <div class="modal">
             <h2>📩 Invitations</h2>
             <div id="invitesList" class="mt-1">
-                <p style="color:var(--text-secondary);text-align:center;padding:20px">Aucune invitation</p>
+                <p class="empty-invitation">Aucune invitation</p>
             </div>
             <div class="modal-actions">
                 <button class="btn-cancel" id="closeInvitesModal">Fermer</button>
