@@ -218,3 +218,57 @@ function requireAuth() {
         });
     });
 }
+
+/**
+ * Injecte un badge utilisateur fixe sur toutes les pages.
+ * Affiche le pseudo + avatar si connecté, "Connexion" sinon.
+ * Skippé sur index.html (possède son propre user-bar).
+ */
+function initUserBadge() {
+    // index.html a déjà un user-bar dédié
+    const page = window.location.pathname.split('/').pop() || 'index.html';
+    if (page === '' || page === 'index.html' || page === 'index') return;
+    // Ne pas créer deux fois
+    if (document.getElementById('globalUserBadge')) return;
+    if (!firebaseAuth || !firebaseDb) return;
+
+    const badge = document.createElement('a');
+    badge.id = 'globalUserBadge';
+    badge.href = 'compte.html';
+    badge.className = 'global-user-badge';
+    badge.setAttribute('aria-label', 'Mon compte');
+    badge.innerHTML = '<span class="gub-icon">👤</span><span class="gub-text">Connexion</span>';
+    document.body.appendChild(badge);
+
+    firebaseAuth.onAuthStateChanged(async (user) => {
+        if (user) {
+            try {
+                const snap = await firebaseDb.ref('users/' + user.uid + '/pseudo').once('value');
+                const pseudo = snap.val();
+                if (pseudo) {
+                    badge.classList.add('connected');
+                    badge.innerHTML = `
+                        <div class="gub-avatar">${escapeHtml(pseudo.charAt(0).toUpperCase())}</div>
+                        <span class="gub-text">${escapeHtml(pseudo)}</span>
+                    `;
+                } else {
+                    badge.classList.add('connected');
+                    badge.innerHTML = '<span class="gub-icon">✅</span><span class="gub-text">Connecté</span>';
+                }
+            } catch (e) {
+                badge.classList.add('connected');
+                badge.innerHTML = '<span class="gub-icon">✅</span><span class="gub-text">Connecté</span>';
+            }
+        } else {
+            badge.classList.remove('connected');
+            badge.innerHTML = '<span class="gub-icon">👤</span><span class="gub-text">Connexion</span>';
+        }
+    });
+}
+
+// Lancer après que le DOM soit prêt
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initUserBadge);
+} else {
+    initUserBadge();
+}
