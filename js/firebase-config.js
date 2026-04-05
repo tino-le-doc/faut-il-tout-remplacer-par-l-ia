@@ -196,12 +196,18 @@ const ModerationSystem = {
 async function requireAuth() {
     await persistenceReady;
     
+    // Attendre un délai supplémentaire pour que Firebase ait le temps de lire la session
+    // depuis le localStorage/sessionStorage du navigateur
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
     return new Promise((resolve) => {
         if (!firebaseAuth) {
-            console.warn('Firebase Auth non disponible');
+            console.warn('🔴 Firebase Auth non disponible');
             resolve(false);
             return;
         }
+
+        console.log('🔍 Vérification de l\'authentification Firebase...');
 
         // Timeout de sécurité pour éviter les boucles infinies
         const timeout = setTimeout(() => {
@@ -209,7 +215,7 @@ async function requireAuth() {
             const currentPage = window.location.pathname.split('/').pop() || 'index.html';
             window.location.href = 'compte.html?redirect=' + encodeURIComponent(currentPage);
             resolve(false);
-        }, 5000);
+        }, 8000);
 
         const unsubscribe = firebaseAuth.onAuthStateChanged((user) => {
             clearTimeout(timeout);
@@ -221,11 +227,12 @@ async function requireAuth() {
                 resolve(true);
             } else {
                 // Pas authentifié → rediriger vers login
-                console.log('🔐 Redirection vers login requise');
+                console.log('🔐 Pas authentifié - redirection vers login');
                 const currentPage = window.location.pathname.split('/').pop() || 'index.html';
                 
                 // Éviter les boucles infinies : ne pas rediriger si on est déjà sur compte.html
                 if (!currentPage.includes('compte') && !currentPage.includes('index') && !currentPage.includes('confidentialite') && !currentPage.includes('offline')) {
+                    console.log('📍 Redirection vers:', 'compte.html?redirect=' + currentPage);
                     window.location.href = 'compte.html?redirect=' + encodeURIComponent(currentPage);
                 }
                 resolve(false);
