@@ -4096,7 +4096,6 @@
             playVideo(videoEl, retries = 5) {
                 if (!videoEl) return;
                 videoEl.controls = false;
-                videoEl.playsInline = true;
                 videoEl.setAttribute('data-managed-inline', '');
                 const attempt = () => {
                     const p = videoEl.play();
@@ -4123,7 +4122,6 @@
 
                 const video = document.createElement('video');
                 video.autoplay = true;
-                video.playsInline = true;
                 video.setAttribute('data-managed-inline', '');
                 video.controls = false;
                 if (isLocal) video.muted = true;
