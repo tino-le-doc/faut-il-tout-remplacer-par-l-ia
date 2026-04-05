@@ -58,6 +58,38 @@ function isAdmin(user) {
     return user && user.email === ADMIN_EMAIL;
 }
 
+/**
+ * Verifie que l'utilisateur est authentifie
+ * Redirige vers compte.html si pas connecte
+ * @param {string} redirectPage - Page actuelle (pour revenir apres connexion)
+ * @returns {Promise} Resolu si authentifie, rejete sinon
+ */
+function requireAuth(redirectPage = null) {
+    return persistenceReady.then(() => {
+        return new Promise((resolve, reject) => {
+            // Attendre un peu pour que le listener auth soit pret
+            setTimeout(() => {
+                const user = firebaseAuth.currentUser;
+                if (user) {
+                    console.log('✅ Utilisateur authentifie:', user.email);
+                    resolve(user);
+                } else {
+                    console.warn('⚠️ Acces refuse: utilisateur non authentifie');
+                    // Rediriger vers login avec redirect URL
+                    const currentPage = redirectPage || window.location.pathname.split('/').pop() || 'index.html';
+                    const loginUrl = `compte.html?redirect=${encodeURIComponent(currentPage)}`;
+                    window.location.href = loginUrl;
+                    reject(new Error('Utilisateur non authentifie'));
+                }
+            }, 100);
+        });
+    }).catch(err => {
+        console.error('Erreur verification authentification:', err);
+        window.location.href = `compte.html?redirect=${encodeURIComponent(window.location.pathname.split('/').pop() || 'index.html')}`;
+        return Promise.reject(err);
+    });
+}
+
 /* Utilitaires partages */
 
 /**

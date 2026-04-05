@@ -526,6 +526,12 @@
         });
     }
 
+    // ==================== ACCESS CONTROL ====================
+    // Cette page est protegee - verifier l'authentification
+    requireAuth('creations.html').catch(err => {
+        console.error('Acces refuse:', err.message);
+    });
+
     if (typeof persistenceReady !== 'undefined') {
         setupAuthListener();
     } else {

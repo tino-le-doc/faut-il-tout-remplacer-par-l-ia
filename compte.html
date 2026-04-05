@@ -1180,6 +1180,13 @@
 
             console.log('✅ Profil sauvegardé');
             showSuccess('🎉 Compte créé avec succès ! Bienvenue ' + pseudo);
+            
+            // Redirige vers la page demandée, ou vers l'accueil
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectPage = urlParams.get('redirect') || 'index.html';
+            setTimeout(() => {
+                window.location.href = redirectPage;
+            }, 1500);
 
         } catch (error) {
             console.error('❌ Erreur inscription:', error.code, error.message);
@@ -1252,6 +1259,13 @@
             await auth.signInWithEmailAndPassword(email, password);
             console.log('✅ Connexion réussie');
             showSuccess('🎉 Connexion réussie !');
+            
+            // Redirige vers la page demandée, ou vers l'accueil
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectPage = urlParams.get('redirect') || 'index.html';
+            setTimeout(() => {
+                window.location.href = redirectPage;
+            }, 1500);
 
         } catch (error) {
             console.error('❌ Erreur connexion:', error.code, error.message);
@@ -1403,6 +1417,13 @@
             if (snapshot.exists()) {
                 console.log('Utilisateur Google existant');
                 showSuccess('Connexion réussie !');
+                
+                // Redirige vers la page demandée, ou vers l'accueil
+                const urlParams = new URLSearchParams(window.location.search);
+                const redirectPage = urlParams.get('redirect') || 'index.html';
+                setTimeout(() => {
+                    window.location.href = redirectPage;
+                }, 1500);
             } else {
                 pendingGoogleUser = user;
                 const suggested = (user.displayName || user.email.split('@')[0])

@@ -406,6 +406,12 @@ const CATEGORIES = {
     autre: '💬 Autre'
 };
 
+// ==================== ACCESS CONTROL ====================
+// Cette page est protegee - verifier l'authentification
+requireAuth('forum.html').catch(err => {
+    console.error('Acces refuse:', err.message);
+});
+
 // ==================== AUTH ====================
 // Attendre que persistenceReady soit défini (sortie de firebase-config.js)
 function setupAuthListener() {
