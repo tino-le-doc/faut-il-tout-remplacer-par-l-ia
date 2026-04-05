@@ -21,8 +21,8 @@ jobs:
           projectId: tino-le-doc
 
       - name: Deploy Database Rules
-        uses: w9jds/firebase-action@master
-        with:
-          args: deploy --only database
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_TINO_LE_DOC_COM }}' > /tmp/sa.json
+          npx firebase-tools deploy --only database --project tino-le-doc
         env:
-          GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TINO_LE_DOC_COM }}
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/sa.json
