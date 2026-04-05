@@ -188,9 +188,12 @@
         <!-- Config Stripe -->
         <div class="config-box" id="configBox">
             <div class="config-title">⚙️ Configuration Stripe (Admin)</div>
-            <input type="text" class="config-input" id="stripeKeyInput" placeholder="Clé publique Stripe (pk_test_... ou pk_live_...)">
-            <input type="text" class="config-input" id="priceMonthlyInput" placeholder="Price ID Mensuel (price_...)">
-            <input type="text" class="config-input" id="priceYearlyInput" placeholder="Price ID Annuel (price_...)">
+            <label for="stripeKeyInput">Clé publique Stripe</label>
+            <input type="text" class="config-input" id="stripeKeyInput" placeholder="pk_test_... ou pk_live_..." required>
+            <label for="priceMonthlyInput">Price ID Mensuel</label>
+            <input type="text" class="config-input" id="priceMonthlyInput" placeholder="price_..." required>
+            <label for="priceYearlyInput">Price ID Annuel</label>
+            <input type="text" class="config-input" id="priceYearlyInput" placeholder="price_..." required>
             <button class="config-btn" onclick="saveConfig()">💾 Sauvegarder</button>
             <p class="config-note">⚠️ Ces clés sont sauvegardées localement. Pour la production, utilisez un backend sécurisé.</p>
         </div>
