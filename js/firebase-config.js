@@ -24,6 +24,18 @@ try {
     // Auth n'est pas toujours charge (ex: avis.html)
     if (firebase.auth) {
         firebaseAuth = firebase.auth();
+        // IMPORTANT: Configure la persistence de session entre les pages
+        // LOCAL = persiste dans localStorage (par défaut, mais explicite ici)
+        // Cette promesse est attendue avant que les listeners auth ne soient ajoutés
+        firebaseAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+            .then(() => {
+                console.log('✅ Session persistence configurée (LOCAL)');
+            })
+            .catch(error => {
+                // La plupart des erreurs sont dues aux cookies tiers désactivés
+                // On continue sans persistence, Firebase continuera de fonctionner
+                console.warn('⚠️ Persistence non configurée:', error.code);
+            });
     }
     // Analytics n'est pas toujours charge
     if (firebase.analytics) {
