@@ -225,9 +225,6 @@ function requireAuth() {
  * Skippé sur index.html (possède son propre user-bar).
  */
 function initUserBadge() {
-    // index.html a déjà un user-bar dédié
-    const page = window.location.pathname.split('/').pop() || 'index.html';
-    if (page === '' || page === 'index.html' || page === 'index') return;
     // Ne pas créer deux fois
     if (document.getElementById('globalUserBadge')) return;
     if (!firebaseAuth || !firebaseDb) return;
