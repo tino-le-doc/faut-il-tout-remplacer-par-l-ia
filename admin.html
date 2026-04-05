@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-site-verification" content="kueDijqdBruvzy4WhCQoXnfmzw8X964hNdl0rv-jfyE" />
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-WML1YG17WW"></script>
@@ -11,15 +13,13 @@
     gtag('config', 'G-WML1YG17WW');
   </script>
     <!--
-      Copyright (c) 2025 TLD - Tous droits reserves
+      Copyright (c) 2025 TLD - Tous droits réservés
       Toute copie, reproduction ou reutilisation non autorisee est interdite.
       Licence proprietaire - voir fichier LICENSE
     -->
-    <meta charset="UTF-8">
     <meta http-equiv="content-language" content="fr">
     <meta name="author" content="TLD">
-    <meta name="copyright" content="Copyright 2025 TLD. Tous droits reserves.">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="copyright" content="Copyright 2025 TLD. Tous droits réservés.">
     <meta name="theme-color" content="#0a0a0f">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -28,8 +28,10 @@
     <link rel="icon" type="image/png" sizes="192x192" href="img/1000074494.png">
     <meta name="robots" content="noindex, nofollow">
     <title>Admin - TLD</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/common.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="css/common.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="css/common.css"></noscript>
     <style>
         /* ===== Admin Layout ===== */
         .admin-gate {
@@ -706,11 +708,11 @@
             <form id="loginForm">
                 <div class="form-group">
                     <label for="loginEmail">Email</label>
-                    <input type="email" id="loginEmail" placeholder="admin@tino-le-doc.com" required>
+                    <input type="email" id="loginEmail" aria-label="Email administrateur" placeholder="admin@tino-le-doc.com" required>
                 </div>
                 <div class="form-group">
                     <label for="loginPassword">Mot de passe</label>
-                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                    <input type="password" id="loginPassword" aria-label="Mot de passe" placeholder="••••••••" required>
                 </div>
                 <button type="submit" class="login-btn" id="loginBtn">Connexion</button>
             </form>
@@ -863,7 +865,7 @@
                         <div class="data-table-header">
                             <h3 id="contactsCount">Messages</h3>
                             <div class="data-table-actions">
-                                <input type="text" class="search-input" id="contactSearch" placeholder="Rechercher...">
+                                <input type="text" class="search-input" id="contactSearch" aria-label="Rechercher un contact" placeholder="Rechercher...">
                                 <button class="btn-action" onclick="refreshContacts()">Actualiser</button>
                             </div>
                         </div>
@@ -898,7 +900,7 @@
                         <div class="data-table-header">
                             <h3 id="veilleCount">Articles</h3>
                             <div class="data-table-actions">
-                                <input type="text" class="search-input" id="veilleSearch" placeholder="Rechercher...">
+                                <input type="text" class="search-input" id="veilleSearch" aria-label="Rechercher un article" placeholder="Rechercher...">
                                 <button class="btn-action success" onclick="openVeilleModal()">+ Nouvel article</button>
                             </div>
                         </div>
@@ -931,7 +933,7 @@
                         <div class="data-table-header">
                             <h3 id="avisCount">Avis</h3>
                             <div class="data-table-actions">
-                                <input type="text" class="search-input" id="avisSearch" placeholder="Rechercher...">
+                                <input type="text" class="search-input" id="avisSearch" aria-label="Rechercher un avis" placeholder="Rechercher...">
                             </div>
                         </div>
                         <div class="table-scroll">
@@ -963,7 +965,7 @@
                         <div class="data-table-header">
                             <h3 id="tchatCount">Messages</h3>
                             <div class="data-table-actions">
-                                <input type="text" class="search-input" id="tchatSearch" placeholder="Rechercher...">
+                                <input type="text" class="search-input" id="tchatSearch" aria-label="Rechercher dans le tchat" placeholder="Rechercher...">
                                 <button class="btn-action" onclick="refreshChat()">Actualiser</button>
                             </div>
                         </div>
@@ -989,7 +991,7 @@
                 <div class="admin-section" id="sec-debats">
                     <div class="section-header">
                         <h2>Debats</h2>
-                        <p>Consultez les debats et arguments de la communaute</p>
+                        <p>Consultez les debats et arguments de la communauté</p>
                     </div>
                     <div class="data-table-wrapper">
                         <div class="data-table-header">
@@ -1056,7 +1058,7 @@
                         <div class="data-table-header">
                             <h3 id="forumCount">Groupes</h3>
                             <div class="data-table-actions">
-                                <input type="text" class="search-input" id="forumSearch" placeholder="Rechercher...">
+                                <input type="text" class="search-input" id="forumSearch" aria-label="Rechercher dans le forum" placeholder="Rechercher...">
                                 <button class="btn-action" onclick="refreshForum()">Actualiser</button>
                             </div>
                         </div>
@@ -1090,7 +1092,7 @@
                         <div class="data-table-header">
                             <h3 id="usersCount">Utilisateurs</h3>
                             <div class="data-table-actions">
-                                <input type="text" class="search-input" id="usersSearch" placeholder="Rechercher un pseudo...">
+                                <input type="text" class="search-input" id="usersSearch" aria-label="Rechercher un utilisateur" placeholder="Rechercher un pseudo...">
                             </div>
                         </div>
                         <div class="table-scroll">

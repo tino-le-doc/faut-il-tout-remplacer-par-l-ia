@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
   <meta name="google-adsense-account" content="ca-pub-8612974241235499">
     <meta name="google-site-verification" content="kueDijqdBruvzy4WhCQoXnfmzw8X964hNdl0rv-jfyE" />
   <!-- Google tag (gtag.js) -->
@@ -12,26 +14,24 @@
     gtag('config', 'G-WML1YG17WW');
   </script>
     <!--
-      Copyright (c) 2025 TLD - Tous droits reserves
+      Copyright (c) 2025 TLD - Tous droits réservés
       Toute copie, reproduction ou reutilisation non autorisee est interdite.
       Licence proprietaire - voir fichier LICENSE
     -->
-    <meta charset="UTF-8">
     <meta http-equiv="content-language" content="fr">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8612974241235499"
          crossorigin="anonymous"></script>
     <meta name="author" content="TLD">
-    <meta name="copyright" content="Copyright 2025 TLD. Tous droits reserves.">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
+    <meta name="copyright" content="Copyright 2025 TLD. Tous droits réservés.">
     <meta name="theme-color" content="#0a0a0f">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="img/1000074494.png">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="img/1000074494.png">
-    <meta name="description" content="Messagerie privee TLD. Envoyez des messages prives aux membres de la communaute.">
+    <meta name="description" content="Messagerie privee TLD. Envoyez des messages prives aux membres de la communauté.">
     <meta property="og:title" content="Messagerie - TLD">
-    <meta property="og:description" content="Envoyez des messages prives aux membres de la communaute TLD.">
+    <meta property="og:description" content="Envoyez des messages prives aux membres de la communauté TLD.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://tino-le-doc.com/messagerie.html">
     <link rel="canonical" href="https://tino-le-doc.com/messagerie.html">
@@ -41,8 +41,10 @@
     <meta name="twitter:site" content="@tino_le_doc">
     <meta name="twitter:image" content="https://tino-le-doc.com/img/1000074494.png">
     <title>Messagerie 💬 TLD</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/common.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="css/common.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="css/common.css"></noscript>
     <style>
         :root {
             --bg: #0a0a0f;
@@ -1879,7 +1881,7 @@
             </div>
 
             <div class="search-box">
-                <input type="text" class="search-input" id="searchInput" placeholder="🔍 Rechercher...">
+                <input type="text" class="search-input" id="searchInput" aria-label="Rechercher une conversation" placeholder="🔍 Rechercher...">
             </div>
 
             <!-- Conversations Tab -->
@@ -1946,7 +1948,7 @@
                     </div>
                     <form class="input-form" id="messageForm">
                         <button type="button" class="emoji-btn" id="emojiToggle" title="Emojis">😊</button>
-                        <input type="text" id="messageInput" placeholder="Écrire un message..." maxlength="500" autocomplete="off">
+                        <input type="text" id="messageInput" aria-label="Écrire un message" placeholder="Écrire un message..." maxlength="500" autocomplete="off">
                         <button type="button" class="voice-btn" id="voiceRecordBtn" onclick="VoiceRecorder.toggle()" title="Message vocal">🎙️</button>
                         <button type="submit">📤</button>
                     </form>
@@ -1972,7 +1974,7 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label>Rechercher par pseudo</label>
-                    <input type="text" id="searchUserInput" placeholder="Entrez un pseudo..." maxlength="20">
+                    <input type="text" id="searchUserInput" aria-label="Rechercher un utilisateur par pseudo" placeholder="Entrez un pseudo..." maxlength="20">
                 </div>
                 <div id="searchResults"></div>
             </div>

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-adsense-account" content="ca-pub-8612974241235499">
     <meta name="google-site-verification" content="kueDijqdBruvzy4WhCQoXnfmzw8X964hNdl0rv-jfyE" />
   <!-- Google tag (gtag.js) -->
@@ -12,17 +14,15 @@
     gtag('config', 'G-WML1YG17WW');
   </script>
     <!--
-      Copyright (c) 2025 TLD - Tous droits reserves
+      Copyright (c) 2025 TLD - Tous droits réservés
       Toute copie, reproduction ou reutilisation non autorisee est interdite.
       Licence proprietaire - voir fichier LICENSE
     -->
-    <meta charset="UTF-8">
     <meta http-equiv="content-language" content="fr">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8612974241235499"
          crossorigin="anonymous"></script>
     <meta name="author" content="TLD">
-    <meta name="copyright" content="Copyright 2025 TLD. Tous droits reserves.">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="copyright" content="Copyright 2025 TLD. Tous droits réservés.">
     <meta name="theme-color" content="#0a0a0f">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -42,8 +42,10 @@
     <meta name="twitter:image" content="https://tino-le-doc.com/img/1000074494.png">
     <title>Mon Compte 👤 TLD</title>
     <script src="https://www.google.com/recaptcha/enterprise.js?render=6Ld1ZXMsAAAAAA21gs6gWSD4jo0dJR_7cEGKaWNJ"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/common.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="css/common.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="css/common.css"></noscript>
     <style>
         :root {
             --bg: #0a0a0f;
@@ -701,12 +703,12 @@
             <form class="auth-form active" id="loginForm" aria-label="Formulaire de connexion">
                 <div class="form-group">
                     <label for="loginEmail">📧 Email</label>
-                    <input type="email" id="loginEmail" placeholder="votre@email.com" required autocomplete="email">
+                    <input type="email" id="loginEmail" aria-label="Adresse email" placeholder="votre@email.com" required autocomplete="email">
                 </div>
                 <div class="form-group">
                     <label for="loginPassword">🔒 Mot de passe</label>
                     <div class="password-toggle">
-                        <input type="password" id="loginPassword" placeholder="••••••••" required autocomplete="current-password">
+                        <input type="password" id="loginPassword" aria-label="Mot de passe" placeholder="••••••••" required autocomplete="current-password">
                         <button type="button" class="toggle-btn" onclick="togglePassword('loginPassword', this)">👁️</button>
                     </div>
                 </div>
@@ -723,7 +725,7 @@
             <form class="auth-form" id="registerForm" aria-label="Formulaire d'inscription">
                 <div class="form-group">
                     <label for="regPseudo">👤 Pseudo</label>
-                    <input type="text" id="regPseudo" placeholder="TonPseudo" required minlength="3" maxlength="20" autocomplete="username">
+                    <input type="text" id="regPseudo" aria-label="Pseudo" placeholder="TonPseudo" required minlength="3" maxlength="20" autocomplete="username">
                     <div class="password-hint">3-20 caractères, lettres, chiffres et _ uniquement</div>
                 </div>
                 <div class="form-group">
