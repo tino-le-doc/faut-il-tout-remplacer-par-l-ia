@@ -30,7 +30,7 @@ img/logo.png  → ~100 KiB (fallback legacy)
                  ~350ms LCP (meilleur!)
 ```
 
-### 2. Implémentation <picture> - Template Universel
+### 2. Implémentation `<picture>` - Template Universel
 
 Toutes les pages mises à jour avec:
 
@@ -180,7 +180,7 @@ git push
 ## 📊 Comparaison Formats
 
 | Format | Support | Compression | Cas d'Usage |
-|--------|---------|------------|------------|
+| ------ | ------- | ----------- | ---------- |
 | **AVIF** | 84% | -30% | Navigateurs modernes |
 | **WebP** | 97% | -25% | Navigateurs intermédiaires |
 | **PNG** | 100% | Baseline | Fallback universel |

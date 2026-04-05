@@ -9,6 +9,7 @@ Le site **tino-le-doc.com** a subi une transformation complète couvrant **3 dom
 ## 📊 Résultats Clés
 
 ### 1️⃣ Sécurité XSS — ✅ Complète
+
 - **38+ instances** de `.innerHTML` sans escaping → corrigées
 - **4 helper functions** centralisées pour manipulation HTML sécurisée
 - **Appliquées** sur **15+ fichiers HTML**

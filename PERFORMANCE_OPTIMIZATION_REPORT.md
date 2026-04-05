@@ -123,16 +123,19 @@ const PRECACHE_URLS = [
 ## 📁 Fichiers Modifiés
 
 ### Core Performance
+
 - **index.html** - Defer GTM/AdSense, resource hints, lazy-loading strategy
 - **sw.js** - Precache v3, optimized cleanup, AVIF/WebP caching
 - **js/firebase-config.js** - XSS helpers (safeSetHTML, etc.)
 
 ### Images Converties (22 fichiers AVIF + WebP)
+
 - 1000074494.png → .avif + .webp
 - tldia.png → .avif + .webp
 - 20 autres images icons/UI → AVIF/WebP
 
 ### 15+ HTML Files with `<picture>` + lazy-loading
+
 - forum.html, quiz.html, premium.html, appareils-connectes.html
 - debat.html, compte.html, sondages.html, tchat.html, boutique.html
 - contact.html, veille-techno.html, avis.html, confidentialite.html, creations.html, admin.html
@@ -142,6 +145,7 @@ const PRECACHE_URLS = [
 ## 🔧 Implémentation Détaillée
 
 ### Defer Third-Party Scripts
+
 ```javascript
 // /index.html (fin du body)
 function loadDeferredScripts() {
@@ -172,6 +176,7 @@ if (window.PerformanceObserver) {
 ```
 
 ### Service Worker Cache Strategy
+
 ```javascript
 // Cache v3 avec AVIF/WebP
 const CACHE_NAME = 'tld-cache-v3';
@@ -203,22 +208,27 @@ const PRECACHE_URLS = [
 ## 🚀 Recommandations Futures
 
 1. **Critical CSS Extraction**
+
    - Extraire CSS critique pour above-the-fold
    - Inline dans `<style>` tag pour éliminer render-blocking
 
 2. **Font Optimization**
+
    - Utiliser `font-display: swap` pour Google Fonts
    - Déjà implémenté avec media="print" pattern
 
 3. **Compression additionnelle**
+
    - Gzip/Brotli pour tous les assets
    - Minifier CSS/JS
 
 4. **Code Splitting**
+
    - Différencier i18n.js et autres scripts critiques
    - Lazy-load analytics
 
 5. **A/B Testing**
+
    - Comparer avec/sans deferral sur Real User Metrics
 
 ---
@@ -226,7 +236,7 @@ const PRECACHE_URLS = [
 ## 📈 Business Impact
 
 | Métrique | Gain |
-|----------|------|
+| -------- | ---- |
 | **Page Load Speed** | +42% |
 | **User Engagement** | +25% (estimation) |
 | **SEO Ranking** | +3-5% (Core Web Vitals) |
