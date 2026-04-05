@@ -17,8 +17,10 @@ const firebaseConfig = {
 let firebaseApp, firebaseAuth, firebaseDb;
 let firebaseAnalytics;
 
-// Promesse de persistance - les pages l'attendront avant d'attacher les listeners
-let persistenceReady = Promise.resolve(); // Par défaut, résolu
+// persistenceReady est toujours résolu : LOCAL est le défaut du SDK Firebase compat v9
+// Ne pas appeler setPersistence() à chaque page - ça interrompt la restauration de session
+// depuis IndexedDB et provoque un onAuthStateChanged(null) avant que l'utilisateur soit rechargé.
+let persistenceReady = Promise.resolve();
 
 try {
     firebaseApp = firebase.initializeApp(firebaseConfig);
@@ -26,19 +28,6 @@ try {
     // Auth n'est pas toujours charge (ex: avis.html)
     if (firebase.auth) {
         firebaseAuth = firebase.auth();
-        // IMPORTANT: Configure la persistence de session entre les pages
-        // LOCAL = persiste dans localStorage (par défaut, mais explicite ici)
-        persistenceReady = firebaseAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-            .then(() => {
-                console.log('✅ Session persistence configurée (LOCAL)');
-                return true;
-            })
-            .catch(error => {
-                // La plupart des erreurs sont dues aux cookies tiers désactivés
-                // On continue sans persistence, Firebase continuera de fonctionner
-                console.warn('⚠️ Persistence non configurée:', error.code);
-                return false;
-            });
     }
     // Analytics n'est pas toujours charge
     if (firebase.analytics) {
@@ -189,17 +178,11 @@ const ModerationSystem = {
 };
 
 /**
- * Protège une page en forçant l'authentification
- * Si l'utilisateur n'est pas connecté, redirige vers compte.html
+ * Protège une page en forçant l'authentification.
+ * Si l'utilisateur n'est pas connecté, redirige vers compte.html.
  * @returns {Promise<boolean>} true si authentifié, false sinon
  */
-async function requireAuth() {
-    await persistenceReady;
-    
-    // Attendre un délai supplémentaire pour que Firebase ait le temps de lire la session
-    // depuis le localStorage/sessionStorage du navigateur
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
+function requireAuth() {
     return new Promise((resolve) => {
         if (!firebaseAuth) {
             console.warn('🔴 Firebase Auth non disponible');
@@ -207,32 +190,27 @@ async function requireAuth() {
             return;
         }
 
-        console.log('🔍 Vérification de l\'authentification Firebase...');
-
-        // Timeout de sécurité pour éviter les boucles infinies
+        // onAuthStateChanged est le seul moyen fiable de connaître l'état auth après
+        // restauration depuis IndexedDB. Ne pas l'appeler après setPersistence()
+        // (ça pouvait intercepter un null transitoire avant que la session soit rechargée).
         const timeout = setTimeout(() => {
             console.warn('⏱️ Timeout Firebase Auth - redirection vers login');
             const currentPage = window.location.pathname.split('/').pop() || 'index.html';
             window.location.href = 'compte.html?redirect=' + encodeURIComponent(currentPage);
             resolve(false);
-        }, 8000);
+        }, 5000);
 
         const unsubscribe = firebaseAuth.onAuthStateChanged((user) => {
             clearTimeout(timeout);
-            unsubscribe(); // Stop listening après la première vérification
-            
+            unsubscribe();
+
             if (user) {
-                // Utilisateur connecté ✅
                 console.log('✅ Authentifié:', user.email);
                 resolve(true);
             } else {
-                // Pas authentifié → rediriger vers login
                 console.log('🔐 Pas authentifié - redirection vers login');
                 const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-                
-                // Éviter les boucles infinies : ne pas rediriger si on est déjà sur compte.html
                 if (!currentPage.includes('compte') && !currentPage.includes('index') && !currentPage.includes('confidentialite') && !currentPage.includes('offline')) {
-                    console.log('📍 Redirection vers:', 'compte.html?redirect=' + currentPage);
                     window.location.href = 'compte.html?redirect=' + encodeURIComponent(currentPage);
                 }
                 resolve(false);
