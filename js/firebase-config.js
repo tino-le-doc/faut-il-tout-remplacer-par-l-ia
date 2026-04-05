@@ -70,6 +70,32 @@ function escapeHtml(text) {
 }
 
 /**
+ * Initialise les select de navigation pour redirection
+ * Remplace les onchange inline (non-CSP-compliant) par des event listeners
+ * Attaché aux selects avec classe 'nav-select'
+ */
+function initNavigationSelects() {
+    const navSelects = document.querySelectorAll('select.nav-select');
+    navSelects.forEach(select => {
+        select.addEventListener('change', function() {
+            if (this.value && this.value.trim()) {
+                window.location.href = this.value;
+            }
+            // Reset to first option
+            this.selectedIndex = 0;
+        });
+    });
+}
+
+// Initialiser les selects au chargement du DOM
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNavigationSelects);
+} else {
+    // DOM déjà chargé (script defer)
+    setTimeout(initNavigationSelects, 0);
+}
+
+/**
  * Fixe le contenu HTML de manière sécurisée (échappe le texte)
  * @param {HTMLElement} element - L'élément à modifier
  * @param {string} html - Le HTML brut à insérer
