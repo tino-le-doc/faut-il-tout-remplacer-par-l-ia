@@ -25,6 +25,12 @@
   <meta name="google-adsense-account" content="ca-pub-8612974241235499">
   <meta name="google-site-verification" content="kueDijqdBruvzy4WhCQoXnfmzw8X964hNdl0rv-jfyE" />
   
+  <!-- Cache Control Guidance for Static Assets -->
+  <!-- Note: Configure in web server (Apache/Nginx) -->
+  <!-- For .avif/.webp/.png: Cache-Control: public, max-age=31536000 (1 year) -->
+  <!-- For .js/.css: Cache-Control: public, max-age=2592000 (30 days) -->
+  <!-- For HTML: Cache-Control: public, max-age=3600 (1 hour) -->
+  
   <!-- DEFER GTM: Charger APRÈS le LCP (après index.html body load) -->
   <!-- Un petitscript pour le charger asynchronement à la fin -->
   <!-- GTM réel sera chargé en bas du body -->
@@ -214,6 +220,8 @@
             display: flex;
             justify-content: center;
             margin-bottom: 10px;
+            min-height: 48px;           /* Reserve space for button (prevent layout shift) */
+            align-items: center;
         }
 
         .user-btn {
@@ -221,6 +229,7 @@
             align-items: center;
             gap: 10px;
             padding: 10px 25px;
+            min-height: 40px;           /* Reserve minimum button height */
             background: linear-gradient(135deg, var(--accent-magenta), var(--accent-cyan));
             border: none;
             border-radius: 30px;
@@ -231,6 +240,7 @@
             text-decoration: none;
             cursor: pointer;
             transition: all 0.3s;
+            white-space: nowrap;        /* Prevent text wrapping that causes shift */
         }
 
         .user-btn:hover {
@@ -254,6 +264,7 @@
             font-weight: 800;
             font-size: 0.9rem;
             color: var(--bg-dark);
+            flex-shrink: 0;             /* Prevent avatar from shrinking */
         }
 
         /* Hero section */
@@ -1154,7 +1165,8 @@
         <div class="logo-container logo-top">
             <picture>
             <source srcset="img/logo.avif" type="image/avif">
-            <img src="img/logo.webp" alt="TLD" class="logo-img" loading="eager" fetchpriority="high" width="200" height="200">
+            <source srcset="img/logo.webp" type="image/webp">
+            <img src="img/logo.webp" alt="TLD" class="logo-img" loading="eager" fetchpriority="high" width="200" height="200" decoding="async">
             </picture>
         </div>
 
@@ -1164,7 +1176,7 @@
             <h1 data-i18n="index.h1">Faut-il TOUT remplacer par l'IA ?</h1>
             <p class="subtitle" data-i18n="index.subtitle">J'ai posé la question directement à une intelligence artificielle. Voici sa réponse.</p>
             <div class="hero-video-wrapper">
-                <video controls preload="none" playsinline poster="img/tldia.webp" width="800" height="533">
+                <video controls preload="metadata" playsinline poster="img/tldia.webp" width="800" height="533" decoding="async">
                     <source src="img/tld.ia.mp4" type="video/mp4">
                     Votre navigateur ne supporte pas la lecture vidéo.
                 </video>
@@ -1339,7 +1351,8 @@
         <div class="logo-container logo-bottom">
             <picture>
             <source srcset="img/logo.avif" type="image/avif">
-            <img src="img/logo.webp" alt="TLD" class="logo-img large" loading="lazy" width="250" height="250">
+            <source srcset="img/logo.webp" type="image/webp">
+            <img src="img/logo.webp" alt="TLD" class="logo-img large" loading="lazy" width="250" height="250" decoding="async">
             </picture>
         </div>
 
