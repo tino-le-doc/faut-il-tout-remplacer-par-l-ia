@@ -248,7 +248,7 @@
     </section>
 
     <!-- Forum content (hidden until auth) -->
-    <div id="forumContent" style="display:none">
+    <div id="forumContent" class="d-none">
 
         <!-- Groups list view -->
         <div id="groupsListView">
@@ -267,7 +267,7 @@
                 </div>
                 <button class="create-btn" id="createGroupBtn">+ Creer un groupe</button>
                 <button class="create-btn invites-btn" id="invitesBtn" style="background:rgba(255,255,255,0.1)">
-                    📩 Invitations <span class="invites-badge" id="invitesBadge" style="display:none">0</span>
+                    📩 Invitations <span class="invites-badge d-none" id="invitesBadge">0</span>
                 </button>
             </div>
 
@@ -275,7 +275,7 @@
                 <div class="empty-state" id="emptyGroups">
                     <div class="icon">🏛️</div>
                     <p>Aucun groupe pour le moment</p>
-                    <p style="font-size:0.85rem">Soyez le premier a creer un groupe !</p>
+                    <p class="text-small">Soyez le premier a creer un groupe !</p>
                 </div>
             </div>
         </div>
@@ -349,7 +349,7 @@
     <div class="modal-overlay" id="invitesModal">
         <div class="modal">
             <h2>📩 Invitations</h2>
-            <div id="invitesList" style="margin-top:10px">
+            <div id="invitesList" class="mt-1">
                 <p style="color:var(--text-secondary);text-align:center;padding:20px">Aucune invitation</p>
             </div>
             <div class="modal-actions">
