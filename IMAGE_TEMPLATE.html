@@ -1,0 +1,110 @@
+<!-- 
+🖼️ TEMPLATE D'OPTIMISATION D'IMAGES - Best Practices
+
+Utiliser ce template pour TOUS les logos et images importantes
+-->
+
+<!-- ✅ LOGO (Element LCP - Chargement Prioritaire) -->
+<!-- Utiliser sur la page d'accueil ou première image importante -->
+<picture>
+  <source srcset="img/logo.avif" type="image/avif">
+  <source srcset="img/logo.webp" type="image/webp">
+  <img 
+    src="img/logo.png" 
+    alt="TLD" 
+    class="logo-img"
+    width="200" 
+    height="200"
+    loading="eager"
+    fetchpriority="high"
+  >
+</picture>
+
+<!-- ✅ LOGO (Element NON-LCP - Lazy Loading) -->
+<!-- Utiliser sur les autres pages et après scroll -->
+<picture>
+  <source srcset="img/logo.avif" type="image/avif">
+  <source srcset="img/logo.webp" type="image/webp">
+  <img 
+    src="img/logo.png" 
+    alt="TLD" 
+    class="logo-img"
+    width="200" 
+    height="200"
+    loading="lazy"
+  >
+</picture>
+
+<!-- ✅ IMAGES RESPONSIVES (desktop + mobile) -->
+<picture>
+  <!-- Very High Resolution (2x) -->
+  <source 
+    srcset="img/logo.avif 2x, img/logo-small.avif 1x" 
+    type="image/avif"
+    media="(max-width: 640px)"
+  >
+  <source 
+    srcset="img/logo.webp 2x, img/logo-small.webp 1x" 
+    type="image/webp"
+    media="(max-width: 640px)"
+  >
+  <source 
+    srcset="img/logo.avif"
+    type="image/avif"
+    media="(min-width: 641px)"
+  >
+  <source 
+    srcset="img/logo.webp"
+    type="image/webp"
+  >
+  <img 
+    src="img/logo.png"
+    alt="TLD"
+    width="200"
+    height="200"
+    loading="lazy"
+  >
+</picture>
+
+<!-- ✅ CONTENU UTILISATEUR (images de Firebase, etc.) -->
+<img 
+  src="https://firebaseurl.com/image.jpg"
+  alt="Description"
+  width="400"
+  height="300"
+  loading="lazy"
+  decoding="async"
+  style="width: 100%; height: auto;"
+>
+
+<!-- ✅ IMAGE AVEC OPTIMISATION DE PERFORMANCE -->
+<img 
+  src="img/logo.webp"
+  alt="TLD"
+  width="200"
+  height="200"
+  loading="lazy"
+  decoding="async"          <!-- Defer rendering, avoid jank -->
+  importance="low"          <!-- Baixa prioridade de fetch -->
+  style="content-visibility: auto;" <!-- Stop rendering content not in viewport -->
+>
+
+<!--
+NOTES:
+- loading="eager" UNIQUEMENT pour LCP (logo hero, image critique)
+- loading="lazy" pour tout le reste
+- TOUJOURS ajouter width/height pour éviter CLS (Cumulative Layout Shift)
+- TOUJOURS utiliser <picture> pour fallbacks de format
+- decoding="async" pour ne pas bloquer le rendu
+- Préférer srcset pour images responsives plutôt que CSS media queries
+-->
+
+<!-- ❌ À ÉVITER -->
+<!-- PNG brut (trop lourd) -->
+<img src="img/logo.png" alt="TLD">
+
+<!-- Pas de dimensions (causes CLS) -->
+<img src="img/logo.webp" alt="TLD" loading="lazy">
+
+<!-- Trop de sources (ralentit le parsing) -->
+<srcset src1.avif 100w, src1.webp 100w, src1.png 100w, src2.avif 200w, ..." />
