@@ -494,7 +494,7 @@ function renderGroups(snap) {
                     <div class="group-category">${catLabel}</div>
                 </div>
             </div>`;
-    }).join('');
+    }).join(''));
 }
 
 // Search & filter
@@ -663,7 +663,7 @@ function appendMessage(m) {
             <div class="name">${escapeHtml(m.userName || '?')}</div>
             <div class="text">${escapeHtml(m.text || '')}</div>
             <div class="time">${time}</div>
-        </div>`;
+        </div>`);
 
     container.appendChild(div);
     container.scrollTop = container.scrollHeight;
@@ -820,7 +820,7 @@ document.getElementById('invitesBtn').addEventListener('click', async () => {
                 <div style="display:flex;gap:6px">
                     <button class="invite-accept-btn" style="padding:6px 12px;background:var(--green);color:var(--bg);border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:0.8rem">Accepter</button>
                     <button class="invite-decline-btn" style="padding:6px 12px;background:rgba(255,255,255,0.1);color:var(--text);border:none;border-radius:8px;cursor:pointer;font-size:0.8rem">Refuser</button>
-                </div>`;
+                </div>`);
 
             row.querySelector('.invite-accept-btn').addEventListener('click', () => acceptInvite(invKey, groupId));
             row.querySelector('.invite-decline-btn').addEventListener('click', () => declineInvite(invKey));
