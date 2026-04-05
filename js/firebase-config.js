@@ -203,7 +203,16 @@ async function requireAuth() {
             return;
         }
 
+        // Timeout de sécurité pour éviter les boucles infinies
+        const timeout = setTimeout(() => {
+            console.warn('⏱️ Timeout Firebase Auth - redirection vers login');
+            const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+            window.location.href = 'compte.html?redirect=' + encodeURIComponent(currentPage);
+            resolve(false);
+        }, 5000);
+
         const unsubscribe = firebaseAuth.onAuthStateChanged((user) => {
+            clearTimeout(timeout);
             unsubscribe(); // Stop listening après la première vérification
             
             if (user) {
@@ -214,7 +223,11 @@ async function requireAuth() {
                 // Pas authentifié → rediriger vers login
                 console.log('🔐 Redirection vers login requise');
                 const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-                window.location.href = 'compte.html?redirect=' + encodeURIComponent(currentPage);
+                
+                // Éviter les boucles infinies : ne pas rediriger si on est déjà sur compte.html
+                if (!currentPage.includes('compte') && !currentPage.includes('index') && !currentPage.includes('confidentialite') && !currentPage.includes('offline')) {
+                    window.location.href = 'compte.html?redirect=' + encodeURIComponent(currentPage);
+                }
                 resolve(false);
             }
         });
