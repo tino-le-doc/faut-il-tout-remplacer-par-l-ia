@@ -195,7 +195,7 @@ Le site **tino-le-doc.com** a subi une transformation complète couvrant **3 dom
    - Script se chargera post-LCP automatiquement
 
 3. **Lighthouse Audit**
-   - Exécuter: https://pagespeed.web.dev/
+   - Exécuter: [pagespeed.web.dev](https://pagespeed.web.dev/)
    - Comparer avant/après
    - Vérifier Core Web Vitals improvements
 
@@ -273,7 +273,7 @@ fbc746c 🔒 Implémentation système sécurisé HTML
    - Script se chargera post-LCP automatiquement
 
 3. **Lighthouse Audit**
-   - Exécuter: https://pagespeed.web.dev/
+   - Exécuter: [pagespeed.web.dev](https://pagespeed.web.dev/)
    - Comparer avant/après
    - Vérifier Core Web Vitals improvements
 

@@ -23,6 +23,7 @@ Your application has been fully optimized. The remaining step is deploying cache
 **If your server uses Apache with mod_rewrite enabled:**
 
 1. **Upload .htaccess**
+
    ```bash
    # From your local machine
    scp .htaccess user@tino-le-doc.com:/var/www/tino-le-doc.com/
@@ -32,6 +33,7 @@ Your application has been fully optimized. The remaining step is deploying cache
    ```
 
 2. **Enable required modules** (if not already enabled)
+
    ```bash
    sudo a2enmod rewrite
    sudo a2enmod deflate
@@ -40,12 +42,14 @@ Your application has been fully optimized. The remaining step is deploying cache
    ```
 
 3. **Verify configuration**
+
    ```bash
    sudo apache2ctl configtest
    # Should output: "Syntax OK"
    ```
 
 4. **Test cache headers**
+
    ```bash
    curl -i https://tino-le-doc.com/img/logo.avif | grep -i cache-control
    # Expected: Cache-Control: public, max-age=31536000, immutable
@@ -61,6 +65,7 @@ Your application has been fully optimized. The remaining step is deploying cache
 **If your server uses Nginx:**
 
 1. **Copy configuration**
+
    ```bash
    # Backup existing config
    sudo cp /etc/nginx/sites-available/tino-le-doc.com \
@@ -71,6 +76,7 @@ Your application has been fully optimized. The remaining step is deploying cache
    ```
 
 2. **Update domain names and paths**
+
    ```bash
    sudo nano /etc/nginx/sites-available/tino-le-doc.com
    
@@ -81,17 +87,20 @@ Your application has been fully optimized. The remaining step is deploying cache
    ```
 
 3. **Verify syntax**
+
    ```bash
    sudo nginx -t
    # Expected: "successful"
    ```
 
 4. **Reload Nginx**
+
    ```bash
    sudo systemctl reload nginx
    ```
 
 5. **Test cache headers**
+
    ```bash
    curl -i https://tino-le-doc.com/img/logo.avif | grep -i cache-control
    # Expected: Cache-Control: public, max-age=31536000, immutable
@@ -121,6 +130,7 @@ Your application has been fully optimized. The remaining step is deploying cache
 ## 🔍 Verification Tests
 
 ### Desktop Test
+
 ```bash
 # Test all critical resources
 for resource in logo.avif logo.webp common.css firebase-config.js index.html sw.js; do
@@ -130,15 +140,17 @@ done
 ```
 
 ### Chrome DevTools Test
+
 1. Open DevTools → Network tab
 2. Hard refresh (Cmd+Shift+R or Ctrl+Shift+R)
 3. Click on assets → check Response Headers
 4. Verify Cache-Control matches expected values
-4. Reload page → verify 304 responses (cache hits)
+5. Reload page → verify 304 responses (cache hits)
 
 ### Google PageSpeed Insights Test
-1. Go to https://pagespeed.web.dev/
-2. Enter: https://tino-le-doc.com
+
+1. Go to [pagespeed.web.dev](https://pagespeed.web.dev/)
+2. Enter: [tino-le-doc.com](https://tino-le-doc.com)
 3. Check "Utiliser des durées de mise en cache efficaces"
 4. Should now show: ✅ PASSED (4,459 KiB eliminated)
 
@@ -147,11 +159,13 @@ done
 ## 📊 Expected Results After Deployment
 
 ### Before Cache Headers
+
 - **Warning:** "Économies estimés: 4,459 KiB"
 - **Lighthouse Score:** ~70-75
 - **Repeat visit load:** 5-8 seconds
 
-### After Cache Headers  
+### After Cache Headers
+
 - **Warning:** ✅ Eliminated (4,459 KiB saved)
 - **Lighthouse Score:** +5-8 points improvement
 - **Repeat visit load:** 1-2 seconds (75% improvement)
@@ -201,7 +215,7 @@ Build tools like Webpack/Vite do this automatically.
 The configuration includes these security headers:
 
 | Header | Purpose | Value |
-|--------|---------|-------|
+| --- | --- | --- |
 | X-Content-Type-Options | Prevent MIME sniffing | nosniff |
 | X-Frame-Options | Prevent clickjacking | SAMEORIGIN |
 | Content-Security-Policy | Prevent XSS/CSRF/malware | Restrictive policy |

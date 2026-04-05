@@ -226,6 +226,7 @@ Already implemented via media="print" trick:
 ```css
 /* Current approach is efficient, no changes needed */
 ```
+
 👉 No action required
 
 ### 2. **JavaScript Code Splitting**
@@ -244,6 +245,7 @@ Confirm all below-fold images have `loading="lazy"`:
 ```html
 <img src="..." loading="lazy" width="100" height="100">
 ```
+
 ✅ Already implemented
 
 ### 4. **Service Worker Enhancement**
