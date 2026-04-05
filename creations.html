@@ -856,9 +856,9 @@
 
         safeSetText(feed, '');
         if (filtered.length === 0) {
-            feedEmpty.style.display = 'block';
+            feedEmpty.classList.remove('d-none');
         } else {
-            feedEmpty.style.display = 'none';
+            feedEmpty.classList.add('d-none');
             filtered.forEach(creation => {
                 feed.appendChild(buildCard(creation));
             });

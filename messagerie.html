@@ -1853,7 +1853,7 @@
     </div>
 
     <!-- Main App -->
-    <div class="app-container" id="main-content" class="d-none">
+    <div class="app-container d-none" id="main-content">
         <!-- Overlay sidebar mobile -->
         <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
@@ -2118,7 +2118,7 @@
                         
                         if (currentUserProfile && currentUserProfile.pseudo) {
                             document.getElementById('loginRequired').style.display = 'none';
-                            document.getElementById('main-content').style.display = 'flex';
+                            document.getElementById('main-content').classList.remove('d-none');
                             initApp();
                         } else {
                             // Profil incomplet ou inexistant, rediriger vers la page compte
@@ -2130,8 +2130,8 @@
                     }
                 } else {
                     document.getElementById('loginRequired').style.display = 'flex';
-                    document.getElementById('main-content').style.display = 'none';
-                    
+                    document.getElementById('main-content').classList.add('d-none');
+
                     // Rediriger après 1 seconde si pas authentifié
                     authCheckTimeout = setTimeout(() => {
                         console.warn('Utilisateur non authentifie, redirection vers login...');
@@ -2143,7 +2143,7 @@
             console.error('Persistence init error:', err);
             auth.onAuthStateChanged(async user => {
                 if (authCheckTimeout) clearTimeout(authCheckTimeout);
-                
+
                 if (user) {
                     currentUser = user;
                     try {
@@ -2151,7 +2151,7 @@
                         currentUserProfile = snapshot.val();
                         if (currentUserProfile && currentUserProfile.pseudo) {
                             document.getElementById('loginRequired').style.display = 'none';
-                            document.getElementById('main-content').style.display = 'flex';
+                            document.getElementById('main-content').classList.remove('d-none');
                             initApp();
                         } else {
                             window.location.href = 'compte.html';
@@ -2162,7 +2162,7 @@
                     }
                 } else {
                     document.getElementById('loginRequired').style.display = 'flex';
-                    document.getElementById('main-content').style.display = 'none';
+                    document.getElementById('main-content').classList.add('d-none');
                 }
             });
         });
@@ -2701,7 +2701,7 @@
             currentChat = id;
 
             document.getElementById('noChat').style.display = 'none';
-            document.getElementById('activeChat').style.display = 'flex';
+            document.getElementById('activeChat').classList.remove('d-none');
             document.getElementById('activeChat').style.flexDirection = 'column';
 
             const messagesContainer = document.getElementById('messagesContainer');
@@ -3079,7 +3079,7 @@
             currentChat = null;
             currentChatType = null;
             document.getElementById('noChat').style.display = 'flex';
-            document.getElementById('activeChat').style.display = 'none';
+            document.getElementById('activeChat').classList.add('d-none');
         }
 
         // ==================== MODALS ====================

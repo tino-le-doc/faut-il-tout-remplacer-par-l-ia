@@ -439,14 +439,14 @@ function setupAuthListener() {
                     currentUserName = user.email ? user.email.split('@')[0] : 'Utilisateur';
                 }
                 document.getElementById('authSection').style.display = 'none';
-                document.getElementById('forumContent').style.display = 'block';
+                document.getElementById('forumContent').classList.remove('d-none');
                 loadGroups();
                 loadInvites();
             } else {
                 currentUser = null;
                 document.getElementById('authSection').style.display = 'block';
-                document.getElementById('forumContent').style.display = 'none';
-                
+                document.getElementById('forumContent').classList.add('d-none');
+
                 // Rediriger vers login après 1 seconde si pas authentifié
                 authCheckTimeout = setTimeout(() => {
                     console.warn('Utilisateur non authentifie, redirection vers login...');
@@ -461,7 +461,7 @@ function setupAuthListener() {
         // Fallback
         auth.onAuthStateChanged(async user => {
             if (authCheckTimeout) clearTimeout(authCheckTimeout);
-            
+
             if (user && !user.isAnonymous) {
                 currentUser = user;
                 try {
@@ -472,13 +472,13 @@ function setupAuthListener() {
                     currentUserName = user.email ? user.email.split('@')[0] : 'Utilisateur';
                 }
                 document.getElementById('authSection').style.display = 'none';
-                document.getElementById('forumContent').style.display = 'block';
+                document.getElementById('forumContent').classList.remove('d-none');
                 loadGroups();
                 loadInvites();
             } else {
                 currentUser = null;
                 document.getElementById('authSection').style.display = 'block';
-                document.getElementById('forumContent').style.display = 'none';
+                document.getElementById('forumContent').classList.add('d-none');
             }
         });
     });

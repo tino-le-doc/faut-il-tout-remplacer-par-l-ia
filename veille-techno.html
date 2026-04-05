@@ -1020,7 +1020,9 @@
                     currentUser = user;
                     isAdminUser = isAdmin(user);
                     // Afficher/cacher la section admin
-                    document.getElementById('adminSection').style.display = isAdminUser ? 'block' : 'none';
+                    const adminSection = document.getElementById('adminSection');
+                    if (isAdminUser) adminSection.classList.remove('d-none');
+                    else adminSection.classList.add('d-none');
                     // Re-render pour afficher les boutons admin
                     if (allArticles.length > 0) renderArticles();
                 });
@@ -1029,7 +1031,9 @@
                 auth.onAuthStateChanged(user => {
                     currentUser = user;
                     isAdminUser = isAdmin(user);
-                    document.getElementById('adminSection').style.display = isAdminUser ? 'block' : 'none';
+                    const adminSection = document.getElementById('adminSection');
+                    if (isAdminUser) adminSection.classList.remove('d-none');
+                    else adminSection.classList.add('d-none');
                     if (allArticles.length > 0) renderArticles();
                 });
             });
@@ -1155,7 +1159,7 @@
 
             if (toShow.length === 0) {
                 container.innerHTML = '<div class="empty-state"><div class="icon">📡</div><p>Aucun article pour le moment.<br>Sois le premier a en proposer un !</p></div>';
-                document.getElementById('loadMoreContainer').style.display = 'none';
+                document.getElementById('loadMoreContainer').classList.add('d-none');
                 return;
             }
 
@@ -1187,7 +1191,9 @@
                 '</div>';
             }).join('');
 
-            document.getElementById('loadMoreContainer').style.display = filtered.length > displayCount ? 'flex' : 'none';
+            const lmc = document.getElementById('loadMoreContainer');
+            if (filtered.length > displayCount) lmc.classList.remove('d-none');
+            else lmc.classList.add('d-none');
         }
 
         function formatDate(ts) {
