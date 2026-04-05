@@ -1363,7 +1363,7 @@
         </div>
 
         <footer role="contentinfo">
-            <span data-i18n="footer.created">Créé avec ❤️ par</span> <strong>TLD</strong> | <span data-i18n="footer.powered">Propulsé par</span> <a href="https://claude.ai" target="_blank">Claude AI</a>
+            <span data-i18n="footer.created">Créé avec ❤️ par</span> <strong>TLD</strong> | <span data-i18n="footer.powered">Propulsé par</span> <a href="https://claude.ai" target="_blank" rel="noopener noreferrer">Claude AI</a>
             <nav aria-label="Navigation principale">
             <div class="footer-links">
                 <a href="quiz.html">🧠 Quiz</a>
@@ -1636,11 +1636,11 @@
     // Load scripts after LCP (detect via PerformanceObserver or timeout)
     if (window.PerformanceObserver) {
         try {
-            var observer = new PerformanceObserver(function(list) {
+            var performanceObserver = new PerformanceObserver(function(list) {
                 // Wait 100ms after LCP to load third-party scripts
                 setTimeout(loadDeferredScripts, 100);
             });
-            observer.observe({entryTypes: ['paint', 'largest-contentful-paint']});
+            performanceObserver.observe({entryTypes: ['paint', 'largest-contentful-paint']});
         } catch(e) {
             // Fallback: load after 2 seconds
             setTimeout(loadDeferredScripts, 2000);
