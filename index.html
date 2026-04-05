@@ -295,11 +295,12 @@
             color: var(--accent-cyan);
             margin-bottom: 30px;
             animation: pulse 3s ease-in-out infinite;
+            will-change: opacity, transform;
         }
 
         @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 20px rgba(0, 245, 255, 0.2); }
-            50% { box-shadow: 0 0 40px rgba(0, 245, 255, 0.4); }
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
         }
 
         h1 {
@@ -611,8 +612,8 @@
         }
 
         @keyframes livePulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.8); }
+            0%, 100% { opacity: 1; transform: scale(1) translateY(0); }
+            50% { opacity: 0.5; transform: scale(0.8) translateY(-2px); }
         }
 
         .share-btn:hover {
@@ -634,12 +635,13 @@
             border: 2px solid rgba(0, 245, 255, 0.4);
             box-shadow: 0 0 25px rgba(0, 245, 255, 0.3), 0 0 60px rgba(0, 255, 136, 0.15);
             overflow: hidden;
+            will-change: opacity, transform;
         }
 
         @keyframes featuredGradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% { opacity: 0.9; }
+            50% { opacity: 1; }
+            100% { opacity: 0.9; }
         }
 
         .btn-featured:hover {
@@ -663,8 +665,8 @@
         }
 
         @keyframes badgePulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.98); }
         }
 
         .btn-featured-glow {
@@ -676,11 +678,13 @@
             background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
             animation: featuredSweep 4s linear infinite;
             pointer-events: none;
+            will-change: transform;
         }
 
         @keyframes featuredSweep {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.05); }
+            100% { transform: rotate(360deg) scale(1); }
         }
 
         /* Social Share Buttons */
@@ -865,11 +869,13 @@
             height: 3px;
             background: linear-gradient(90deg, var(--accent-orange), var(--accent-yellow), var(--accent-orange));
             animation: adShimmer 3s linear infinite;
+            will-change: opacity;
         }
 
         @keyframes adShimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
         }
 
         .ad-badge {
