@@ -61,15 +61,20 @@ function isAdmin(user) {
 /**
  * Verifie que l'utilisateur est authentifie
  * Redirige vers compte.html si pas connecte
+ * Utilise onAuthStateChanged pour attendre la restauration de session
  * @param {string} redirectPage - Page actuelle (pour revenir apres connexion)
  * @returns {Promise} Resolu si authentifie, rejete sinon
  */
 function requireAuth(redirectPage = null) {
     return persistenceReady.then(() => {
         return new Promise((resolve, reject) => {
-            // Attendre un peu pour que le listener auth soit pret
-            setTimeout(() => {
-                const user = firebaseAuth.currentUser;
+            let unsubscribe;
+            
+            // Utiliser onAuthStateChanged pour attendre l'etat d'authentification final
+            unsubscribe = firebaseAuth.onAuthStateChanged((user) => {
+                // Arreter d'ecouter apres la premiere reponse
+                if (unsubscribe) unsubscribe();
+                
                 if (user) {
                     console.log('✅ Utilisateur authentifie:', user.email);
                     resolve(user);
@@ -81,7 +86,13 @@ function requireAuth(redirectPage = null) {
                     window.location.href = loginUrl;
                     reject(new Error('Utilisateur non authentifie'));
                 }
-            }, 100);
+            }, (error) => {
+                // Erreur d'authentification
+                console.error('Erreur verification authentification:', error);
+                if (unsubscribe) unsubscribe();
+                window.location.href = `compte.html?redirect=${encodeURIComponent(window.location.pathname.split('/').pop() || 'index.html')}`;
+                reject(error);
+            });
         });
     }).catch(err => {
         console.error('Erreur verification authentification:', err);
