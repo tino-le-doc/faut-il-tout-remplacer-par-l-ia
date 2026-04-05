@@ -447,10 +447,7 @@
     }
 
     // ==================== ACCESS CONTROL ====================
-    // Cette page est protegee - verifier l'authentification
-    requireAuth('premium.html').catch(err => {
-        console.error('Acces refuse:', err.message);
-    });
+    // Cette page est protegee - sera geree par setupAuthListener
 
     if (typeof persistenceReady !== 'undefined') {
         setupAuthListener();

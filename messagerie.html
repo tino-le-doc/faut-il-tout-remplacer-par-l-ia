@@ -2101,14 +2101,14 @@
         let messageListeners = {};
 
         // ==================== ACCESS CONTROL ====================
-        // Cette page est protegee - verifier l'authentification
-        requireAuth('messagerie.html').catch(err => {
-            console.error('Acces refuse:', err.message);
-        });
+        // Cette page est protegee - sera geree par le listener auth
+        let authCheckTimeout = null;
 
         // ==================== AUTH STATE ====================
         persistenceReady.then(() => {
             auth.onAuthStateChanged(async user => {
+                if (authCheckTimeout) clearTimeout(authCheckTimeout);
+                
                 if (user) {
                     currentUser = user;
                     try {
@@ -2130,11 +2130,19 @@
                 } else {
                     document.getElementById('loginRequired').style.display = 'flex';
                     document.getElementById('main-content').style.display = 'none';
+                    
+                    // Rediriger après 1 seconde si pas authentifié
+                    authCheckTimeout = setTimeout(() => {
+                        console.warn('Utilisateur non authentifie, redirection vers login...');
+                        window.location.href = 'compte.html?redirect=messagerie.html';
+                    }, 1000);
                 }
             });
         }).catch(err => {
             console.error('Persistence init error:', err);
             auth.onAuthStateChanged(async user => {
+                if (authCheckTimeout) clearTimeout(authCheckTimeout);
+                
                 if (user) {
                     currentUser = user;
                     try {

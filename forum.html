@@ -407,16 +407,19 @@ const CATEGORIES = {
 };
 
 // ==================== ACCESS CONTROL ====================
-// Cette page est protegee - verifier l'authentification
-requireAuth('forum.html').catch(err => {
-    console.error('Acces refuse:', err.message);
-});
+// Cette page est protegee - sera geree par setupAuthListener
+let authCheckTimeout = null;
 
 // ==================== AUTH ====================
 // Attendre que persistenceReady soit défini (sortie de firebase-config.js)
 function setupAuthListener() {
     persistenceReady.then(() => {
         auth.onAuthStateChanged(async user => {
+            // Annuler le timeout de redirection si l'utilisateur est authentifié
+            if (user && !user.isAnonymous) {
+                if (authCheckTimeout) clearTimeout(authCheckTimeout);
+            }
+            
             if (user && !user.isAnonymous) {
                 currentUser = user;
                 try {
@@ -434,12 +437,22 @@ function setupAuthListener() {
                 currentUser = null;
                 document.getElementById('authSection').style.display = 'block';
                 document.getElementById('forumContent').style.display = 'none';
+                
+                // Rediriger vers login après 1 seconde si pas authentifié
+                authCheckTimeout = setTimeout(() => {
+                    console.warn('Utilisateur non authentifie, redirection vers login...');
+                    const currentPage = 'forum.html';
+                    const loginUrl = `compte.html?redirect=${encodeURIComponent(currentPage)}`;
+                    window.location.href = loginUrl;
+                }, 1000);
             }
         });
     }).catch(err => {
         console.error('Persistence init error, loading forum anyway:', err);
         // Fallback
         auth.onAuthStateChanged(async user => {
+            if (authCheckTimeout) clearTimeout(authCheckTimeout);
+            
             if (user && !user.isAnonymous) {
                 currentUser = user;
                 try {
