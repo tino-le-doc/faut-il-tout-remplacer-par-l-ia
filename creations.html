@@ -126,7 +126,7 @@
         /* Category radio buttons */
         .cat-radios { display:flex; gap:10px; flex-wrap:wrap; }
         .cat-radio { display:none; }
-        .cat-label { padding:8px 16px; background:var(--glass); border:1px solid var(--glass-border); border-radius:20px; font-size:0.85rem; cursor:pointer; transition:all 0.2s; user-select:none; }
+        .cat-label { padding:8px 16px; background:var(--glass); border:1px solid var(--glass-border); border-radius:20px; font-size:0.85rem; cursor:pointer; transition:all 0.2s; -webkit-user-select:none; user-select:none; }
         .cat-radio:checked + .cat-label { background:rgba(0,245,255,0.15); border-color:var(--cyan); color:var(--cyan); }
         .cat-radio[value="musique"]:checked + .cat-label { background:rgba(255,0,170,0.15); border-color:var(--magenta); color:var(--magenta); }
         .cat-radio[value="idees"]:checked + .cat-label { background:rgba(245,255,0,0.15); border-color:var(--yellow); color:var(--yellow); }
@@ -204,7 +204,7 @@
         .card-time { font-size:0.75rem; color:var(--text-secondary); margin-top:2px; }
         .card-title { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; margin-bottom:8px; line-height:1.3; word-break:break-word; }
         .card-desc { color:var(--text-secondary); font-size:0.88rem; line-height:1.5; margin-bottom:14px; white-space:pre-wrap; word-break:break-word; }
-        .card-desc.collapsed { display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+        .card-desc.collapsed { display:-webkit-box; display:block; -webkit-line-clamp:3; line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
         .card-read-more { color:var(--cyan); font-size:0.8rem; cursor:pointer; background:none; border:none; font-family:inherit; padding:0; margin-bottom:14px; }
 
         /* Card actions */

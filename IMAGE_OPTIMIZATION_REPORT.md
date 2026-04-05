@@ -33,6 +33,7 @@ img/logo.png  → ~100 KiB (fallback legacy)
 ### 2. Implémentation <picture> - Template Universel
 
 Toutes les pages mises à jour avec:
+
 ```html
 <picture>
   <!-- Navigateurs modernes: AVIF ultra-compact -->
@@ -47,7 +48,7 @@ Toutes les pages mises à jour avec:
 ### 3. Pages Mises à Jour (15 fichiers)
 
 | Page | Logo | Lazy Loading | Dimensions |
-|------|------|--------------|------------|
+| ---- | ---- | ------------ | ---------- |
 | index.html | ✅ AVIF+WebP | eager LCP | ✅ 200×200 |
 | forum.html | ✅ AVIF+WebP | lazy | ✅ 150×150 |
 | quiz.html | ✅ AVIF+WebP | lazy | ✅ 150×150 |
@@ -92,7 +93,7 @@ Toutes les pages mises à jour avec:
 ### Web Vitals Avant → Après
 
 | Métrique | Avant | Après | Amélioration |
-|----------|-------|-------|--------------|
+| -------- | ----- | ----- | ------------ |
 | **LCP** | 640ms | ~350ms | ⚡ 45% plus rapide |
 | **CLS** | 0.2+ | 0.0 | ✅ Zéro shift |
 | **FCP** | 330ms | ~280ms | 15% |
