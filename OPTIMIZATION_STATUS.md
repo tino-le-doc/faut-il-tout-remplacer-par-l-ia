@@ -87,7 +87,7 @@ Le site **tino-le-doc.com** a subi une transformation complète couvrant **3 dom
 ### Expected Impact Summary
 
 | Optimization | Measurable Impact |
-|---|---|
+| --- | --- |
 | CLS Prevention (Round 2) | -0.005 points |
 | Image Optimization | -15ms LCP |
 | Video Metadata | -50ms video load detection |
@@ -208,7 +208,7 @@ Le site **tino-le-doc.com** a subi une transformation complète couvrant **3 dom
 ## 📊 Économies Bande Totales
 
 | Catégorie | Économie | % |
-|-----------|----------|-----|
+| --------- | -------- | --- |
 | **Images** | 5.1 MiB | -95% |
 | **CSS defer** | -160ms | -render blocking |
 | **GTM defer** | -500ms | -cpu blocking |
@@ -218,7 +218,7 @@ Le site **tino-le-doc.com** a subi une transformation complète couvrant **3 dom
 
 ## ✨ Technologies Utilisées
 
-```
+```text
 🔐 Sécurité:
   - HTML5 + Content Escaping
   - CSP + Trusted-Types
@@ -247,7 +247,7 @@ Le site **tino-le-doc.com** a subi une transformation complète couvrant **3 dom
 
 ## 🔄 Git History
 
-```
+```text
 d2e1c51 docs: add comprehensive performance optimization report
 2554eba perf: defer third-party scripts (GTM/AdSense) post-LCP + optimize SW caching
 773b54c ✨ Images converties: AVIF + WebP + fix script (économies 5.1 MiB)
@@ -394,7 +394,7 @@ curl -i https://tino-le-doc.com/index.html | grep -i cache-control
 ## 🏆 Business Impact
 
 | Métrique | Impact | Justification |
-|----------|--------|-------------|
+| --- | --- | --- |
 | **User Experience** | ⬆️⬆️⬆️ | 42% faster page load |
 | **SEO Ranking** | ⬆️⬆️ | Core Web Vitals score |
 | **Conversion Rate** | ⬆️ | 5-10% (timing → engagement) |

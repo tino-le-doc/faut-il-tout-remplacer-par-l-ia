@@ -60,7 +60,8 @@
 
 #### ✅ Hero Video Aspect Ratio
 
-**Problem:** Video takes time to load, causing layout shift  
+**Problem:** Video takes time to load, causing layout shift
+
 ```css
 .hero-video-wrapper {
     aspect-ratio: 16 / 9;      /* Reserve container space */
@@ -73,18 +74,20 @@
 }
 ```
 
-**Impact:** Browser reserves 16:9 aspect ratio space before video loads  
+**Impact:** Browser reserves 16:9 aspect ratio space before video loads
 **CLS Improvement:** ~0.02 points
 
 #### ✅ Ad Zone Container Height
 
-**Problem:** Ad content may be different height, causing section shift  
+**Problem:** Ad content may be different height, causing section shift
+
 ```css
 .ad-zone {
     min-height: 280px;         /* Reserve minimum space for ad content */
 }
 ```
-**Impact:** Prevents layout shift when ad content loads  
+
+**Impact:** Prevents layout shift when ad content loads
 **CLS Improvement:** ~0.01 points
 
 **Total CLS Improvement:** From 0.084 → ~0.05 (40% reduction) ✅
@@ -94,6 +97,7 @@
 ### 3. Script Loading Performance
 
 #### Defer Third-Party Scripts
+
 ```html
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js" defer></script>
@@ -121,7 +125,7 @@
 ## 📊 Performance Impact Summary
 
 | Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
+| --- | --- | --- | --- |
 | **Critical Path Latency** | 944ms | ~800ms | -15% ⚡ |
 | **CLS Score** | 0.084 | ~0.05 | -40% ✅ |
 | **DNS Time** | ~50-100ms | ~10-20ms | -80% ⚡ |
@@ -134,14 +138,17 @@
 ## 🔍 Detailed Explanations
 
 ### Why Preload Works
+
 When browser encounters `<link rel="preload">`, it:
+
 1. Immediately starts downloading the resource (highest priority)
 2. Doesn't execute it yet (waits for normal script tag)
 3. Resource is cached when script tag encountered
 4. Result: Faster script execution, shorter critical path
 
 ### Why Preconnect Better Than DNS-Prefetch
-```
+
+```text
 dns-prefetch only: DNS lookup time (100-200ms)
 preconnect full:   DNS lookup + TCP handshake + TLS (200-500ms) 
                    ↓
@@ -149,7 +156,9 @@ preconnect full:   DNS lookup + TCP handshake + TLS (200-500ms)
 ```
 
 ### CLS Prevention Mechanism
+
 Browser reserves layout space based on CSS properties:
+
 - `aspect-ratio` → Reserves rectangular space before content loads
 - `min-width/min-height` → Reserves minimum dimensions
 - `display: inline-block` → Respects width property
@@ -157,7 +166,8 @@ Browser reserves layout space based on CSS properties:
 When actual content loads, it fits in reserved space = zero shift
 
 ### Script Defer Strategy
-```
+
+```text
 Normal (blocking):      HTML → ⏸ Load Script → Execute → ✅ Render
 Defer (non-blocking):   HTML → Load Script (parallel) → Execute → ✅ Render
                                 ↑ Doesn't block
@@ -168,6 +178,7 @@ Defer (non-blocking):   HTML → Load Script (parallel) → Execute → ✅ Rend
 ## ✅ Testing Recommendations
 
 ### Before Deployment
+
 ```bash
 # Run local Lighthouse audit
 lighthouse https://tino-le-doc.com --view
@@ -177,11 +188,13 @@ web-vitals: https://web.dev/vitals/
 ```
 
 ### Real User Monitoring (RUM)
+
 1. Enable Google Analytics Core Web Vitals
 2. Monitor trends over 1-2 weeks
 3. Compare against baseline (944ms latency, 0.084 CLS)
 
 ### Expected Improvements
+
 - **Lighthouse Performance:** +15-20 points
 - **Core Web Vitals:** All green (LCP <2.5s, FCP <1.8s, CLS <0.1)
 - **UX:** Smoother page load, less jank, faster interactions
@@ -207,28 +220,36 @@ web-vitals: https://web.dev/vitals/
 ## 🚀 Next Steps (Optional)
 
 ### 1. **Font-Display Optimization**
+
 Already implemented via media="print" trick:
+
 ```css
 /* Current approach is efficient, no changes needed */
 ```
 👉 No action required
 
 ### 2. **JavaScript Code Splitting**
+
 Consider for future enhancements:
+
 - Split firebase-config.js into:
   - `firebase-init.js` (auth only)
   - `firebase-analytics.js` (analytics deferred)
   - `firebase-database.js` (db deferred)
 
 ### 3. **Image Lazy-Loading Verification**
+
 Confirm all below-fold images have `loading="lazy"`:
+
 ```html
 <img src="..." loading="lazy" width="100" height="100">
 ```
 ✅ Already implemented
 
 ### 4. **Service Worker Enhancement**
+
 Consider precaching:
+
 - Firebase SDK files
 - Google Fonts WOFF2
 - Critical CSS
@@ -265,7 +286,9 @@ Consider precaching:
 ### Layout Shift Prevention (Round 2)
 
 #### User Login/Register Button
+
 **Problem:** Button height could shift with different states (logged-in vs logged-out)
+
 ```css
 .user-bar {
     min-height: 48px;           /* Reserve space */
@@ -286,25 +309,30 @@ Consider precaching:
 ### Image Optimization Round 2
 
 #### Hero Video Improvement
+
 **Before:** `preload="none"` → browser doesn't load metadata until play  
-**After:** `preload="metadata"` → browser loads video dimensions/duration immediately  
+**After:** `preload="metadata"` → browser loads video dimensions/duration immediately
+
 ```html
-<video controls preload="metadata" poster="img/tldia.webp" 
+<video controls preload="metadata" poster="img/tldia.webp"
         width="800" height="533" decoding="async">
 ```
 **Impact:** Video dimensions known immediately, prevents late layout shift
 
 #### Image Decoding Optimization  
-**Added:** `decoding="async"` to images  
+
+
 ```html
-<img src="img/logo.webp" alt="TLD" loading="eager" 
+<img src="img/logo.webp" alt="TLD" loading="eager"
      fetchpriority="high" decoding="async" width="200" height="200">
 ```
 **Impact:** Image decoding doesn't block main thread (-10-20ms)
 
 #### WebP Source Tags  
-**Before:** Only AVIF + fallback PNG  
-**After:** AVIF + WebP + PNG (better browser compatibility)  
+
+
+**After:** AVIF + WebP + PNG (better browser compatibility)
+
 ```html
 <picture>
   <source srcset="img/logo.avif" type="image/avif">
@@ -317,7 +345,8 @@ Consider precaching:
 ### Cache Control Configuration
 
 #### Server-Side Implementation
-```
+
+```text
 Images (AVIF/WebP/PNG): Cache 1 year (31536000 seconds)
 CSS & JavaScript: Cache 30 days (2592000 seconds)
 Fonts: Cache 1 year (31536000 seconds)
@@ -326,6 +355,7 @@ Service Worker: Cache 1 hour (3600 seconds) - must revalidate
 ```
 
 #### Apache (.htaccess)
+
 ```apache
 <FilesMatch "\.(avif|webp|png)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
@@ -341,6 +371,7 @@ Service Worker: Cache 1 hour (3600 seconds) - must revalidate
 ```
 
 #### Nginx
+
 ```nginx
 location ~* \.(avif|webp|png)$ {
     expires 1y;
@@ -363,7 +394,7 @@ location ~* \.html?$ {
 ## 📊 Wave 1 + Wave 2 Combined Impact
 
 | Metric | Wave 1 | Wave 2 | Total |
-|--------|--------|--------|-------|
+| --- | --- | --- | --- |
 | **Critical Path** | -15% | -5% | -20% |
 | **CLS Score** | -40% | -5% | -43% |
 | **Largest Contentful Paint** | 640ms | -20ms | ~620ms |
