@@ -16,12 +16,14 @@ Le site **tino-le-doc.com** a subi une transformation complète couvrant **3 dom
 - **Technologie:** Escaping HTML + `textContent` vs `innerHTML` discrimination
 
 ### 2️⃣ Optimisation Images — ✅ Complète (5.1 MiB économies!)
+
 - **22 fichiers convertis** PNG → AVIF + WebP + PNG fallback
 - **Compression moyenne:** -90% WebP, -86% AVIF
 - **Exemple:** logo 2.1 MiB → 203 KiB (-90%)
 - **Implémentation:** `<picture>` elements avec fallback, width/height attrs, lazy-loading LCP-aware
 
 ### 3️⃣ Performance LCP/CLS — ✅ Complète (42% gain projection)
+
 - **GTM Script:** Déféré post-LCP via PerformanceObserver (-500ms GTM blocking)
 - **AdSense Script:** Déféré post-LCP (commenté, à activer avec tracking ID)
 - **CSS:** Media="print" + onload pattern (-160ms render blocking)
@@ -39,19 +41,22 @@ Le site **tino-le-doc.com** a subi une transformation complète couvrant **3 dom
 
 ### New Recommendations Implemented
 
-**1. Layout Shift Prevention - Round 2**
+#### 1. Layout Shift Prevention - Round 2
+
 - ✅ User button container: min-height 48px (prevent state change shift)
 - ✅ User button: min-height 40px + white-space: nowrap (prevent wrapping)
 - ✅ User avatar: flex-shrink: 0 (prevent squishing)
 - **Impact:** Additional -0.005 CLS points
 
-**2. Image Optimization - Round 2**
+#### 2. Image Optimization - Round 2
+
 - ✅ Added `<source srcset="...webp">` tags (better browser support)
 - ✅ Added `decoding="async"` to all images (non-blocking decode)
 - ✅ Improved video: preload="metadata" (load dimensions immediately)
 - **Impact:** -10-20ms main thread blocking, -5-10% bandwidth
 
-**3. Cache Control Headers**
+#### 3. Cache Control Headers
+
 - ✅ Added guidance comments in HTML head
 - ⏳ Configure in server (.htaccess/nginx.conf):
   - Images: max-age=31536000 (1 year, immutable)
@@ -61,7 +66,8 @@ Le site **tino-le-doc.com** a subi une transformation complète couvrant **3 dom
 - **Expected Impact:** -244 KiB savings on repeat visits
 
 ### Files Modified
-```
+
+```text
 ✅ index.html
    - .user-bar: min-height 48px, align-items center
    - .user-btn: min-height 40px, white-space nowrap
@@ -93,7 +99,8 @@ Le site **tino-le-doc.com** a subi une transformation complète couvrant **3 dom
 ## �🔧 Changements Déployés
 
 ### Core Files
-```
+
+```javascript
 ✅ index.html
    - GTM/AdSense deferral script (PerformanceObserver LCP detection)
    - Resource hints (preload, dns-prefetch)
@@ -112,7 +119,8 @@ Le site **tino-le-doc.com** a subi une transformation complète couvrant **3 dom
 ```
 
 ### 15+ HTML Files with Image Optimization
-```
+
+```text
 ✅ forum.html, quiz.html, premium.html, appareils-connectes.html
 ✅ debat.html, compte.html, index.html, sondages.html, tchat.html
 ✅ boutique.html, contact.html, veille-techno.html, avis.html
@@ -120,6 +128,7 @@ Le site **tino-le-doc.com** a subi une transformation complète couvrant **3 dom
 ```
 
 ### 22 Image Files (AVIF + WebP)
+
 - 1000074494.png (logo) → 2.1MB → 203KB WebP (-90%) + 304KB AVIF (-86%)
 - tldia.png (hero) → 2.7MB → 204KB WebP (-92%) + 387KB AVIF (-86%)
 - 20 icon files → 225KB → 28KB WebP + 40KB AVIF (-85%)
@@ -127,6 +136,7 @@ Le site **tino-le-doc.com** a subi une transformation complète couvrant **3 dom
 ---
 
 ## 🚀 Assets Pré-cachés pour PWA
+
 ```javascript
 // Service Worker PRECACHE_URLS (v3)
 '/',
@@ -147,6 +157,7 @@ Le site **tino-le-doc.com** a subi une transformation complète couvrant **3 dom
 ## 📋 Checklist Production
 
 ### Performance
+
 - [x] GTM différé (post-LCP via PerformanceObserver)
 - [x] AdSense différé (post-LCP, commenté - ajouter ID de suivi)
 - [x] CSS defer pattern (media="print" + onload)
@@ -157,12 +168,14 @@ Le site **tino-le-doc.com** a subi une transformation complète couvrant **3 dom
 - [x] Service Worker optimization (v3 cache, precache AVIF/WebP)
 
 ### Sécurité
+
 - [x] XSS prevention (safeSetHTML helpers)
 - [x] CSP headers strict (no unsafe-eval)
 - [x] Trusted-Types enabled
 - [x] 15+ files using safe helpers
 
 ### Documentation
+
 - [x] PERFORMANCE_OPTIMIZATION_REPORT.md
 - [x] Git commits with detailed messages
 - [x] Code comments explaining deferral strategy
@@ -172,6 +185,7 @@ Le site **tino-le-doc.com** a subi une transformation complète couvrant **3 dom
 ## 🎯 Prochaines Étapes (Optionnel)
 
 1. **Activer Google Analytics**
+
    - Remplacer `UA-XXXXXXXX-X` par votre Google Analytics ID dans index.html
    - Script GTM/GA se chargera post-LCP automatiquement
 
