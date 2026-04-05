@@ -457,11 +457,11 @@ function renderGroups(snap) {
     });
 
     if (filtered.length === 0) {
-        container.innerHTML = '<div class="empty-state"><div class="icon">🏛️</div><p>Aucun groupe trouve</p></div>';
+        safeSetHTML(container, '<div class="empty-state"><div class="icon">🏛️</div><p>Aucun groupe trouve</p></div>');
         return;
     }
 
-    container.innerHTML = filtered.map(g => {
+    safeSetHTML(container, filtered.map(g => {
         const catLabel = CATEGORIES[g.category] || g.category || '';
         const isPublic = g.isPublic !== false;
         const memberCount = g.memberCount || 0;
@@ -608,7 +608,7 @@ document.getElementById('backToList').addEventListener('click', () => {
 // ==================== MESSAGES ====================
 function loadMessages(groupId) {
     const container = document.getElementById('messagesList');
-    container.innerHTML = '<div class="msg-empty"><div class="icon">💬</div><p>Chargement...</p></div>';
+    safeSetHTML(container, '<div class="msg-empty"><div class="icon">💬</div><p>Chargement...</p></div>');
 
     if (messagesListener) {
         db.ref('forumMessages/' + currentGroupId).off('child_added', messagesListener);
@@ -617,7 +617,7 @@ function loadMessages(groupId) {
     let first = true;
     messagesListener = db.ref('forumMessages/' + groupId).orderByChild('timestamp').limitToLast(100).on('child_added', snap => {
         if (first) {
-            container.innerHTML = '';
+            safeSetText(container, '');
             first = false;
         }
         const m = snap.val();
@@ -627,7 +627,7 @@ function loadMessages(groupId) {
 
     setTimeout(() => {
         if (first) {
-            container.innerHTML = '<div class="msg-empty"><div class="icon">💬</div><p>Aucun message. Lancez la conversation !</p></div>';
+            safeSetHTML(container, '<div class="msg-empty"><div class="icon">💬</div><p>Aucun message. Lancez la conversation !</p></div>');
             first = false;
         }
     }, 2000);
@@ -645,7 +645,7 @@ function appendMessage(m) {
     const initial = (m.userName || '?').charAt(0).toUpperCase();
     const time = m.timestamp ? new Date(m.timestamp).toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'}) : '';
 
-    div.innerHTML = `
+    safeSetHTML(div, `
         <div class="msg-avatar">${initial}</div>
         <div class="msg-bubble">
             ${m.isPinned ? '<div class="pin-label">📌 Message epingle</div>' : ''}
@@ -720,7 +720,7 @@ document.getElementById('membersBtn').addEventListener('click', async () => {
     try {
         const snap = await db.ref('forumMembers/' + currentGroupId).once('value');
         if (!snap.exists()) {
-            container.innerHTML = '<p style="text-align:center;color:var(--text-secondary)">Aucun membre</p>';
+            safeSetHTML(container, '<p style="text-align:center;color:var(--text-secondary)">Aucun membre</p>');
             return;
         }
         let html = '';
@@ -735,7 +735,7 @@ document.getElementById('membersBtn').addEventListener('click', async () => {
                     <span class="member-role">${roleLabel}</span>
                 </div>`;
         });
-        container.innerHTML = html;
+        safeSetHTML(container, html);
     } catch(e) {
         container.innerHTML = '<p style="color:var(--red)">Erreur de chargement</p>';
     }
@@ -786,10 +786,10 @@ document.getElementById('invitesBtn').addEventListener('click', async () => {
     try {
         const snap = await db.ref('forumInvites/' + currentUser.uid).once('value');
         if (!snap.exists() || snap.numChildren() === 0) {
-            container.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:20px">Aucune invitation</p>';
+            safeSetHTML(container, '<p style="color:var(--text-secondary);text-align:center;padding:20px">Aucune invitation</p>');
             return;
         }
-        container.innerHTML = '';
+        safeSetText(container, '');
         snap.forEach(child => {
             const inv = child.val();
             const invKey = child.key;
@@ -798,7 +798,7 @@ document.getElementById('invitesBtn').addEventListener('click', async () => {
             const row = document.createElement('div');
             row.className = 'member-item';
             row.style.justifyContent = 'space-between';
-            row.innerHTML = `
+            safeSetHTML(row, `
                 <div style="display:flex;align-items:center;gap:10px">
                     <span>📩</span>
                     <div>

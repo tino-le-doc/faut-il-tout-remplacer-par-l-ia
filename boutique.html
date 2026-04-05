@@ -1053,7 +1053,7 @@
             filtered = filtered.filter(p => p.price === 0);
         }
 
-        grid.innerHTML = filtered.map(product => `
+        safeSetHTML(grid, filtered.map(product => `
             <div class="product-card" data-category="${product.category}">
                 ${product.badge ? `<span class="product-badge ${product.badge}">${getBadgeText(product.badge)}</span>` : ''}
                 <div class="product-image">${product.icon}</div>

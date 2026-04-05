@@ -810,7 +810,7 @@
             // Update content
             const contentDiv = document.getElementById('questionContent');
             if (q.type === 'text') {
-                contentDiv.innerHTML = `<div class="question-text">"${q.content}"</div>`;
+                safeSetHTML(contentDiv, `<div class="question-text">"${q.content}"</div>`);
             } else {
                 contentDiv.innerHTML = `
                     <img src="${q.content}" alt="Question" class="question-image" loading="lazy">
@@ -931,7 +931,7 @@
             scores.reverse();
 
             const listDiv = document.getElementById('leaderboardList');
-            listDiv.innerHTML = scores.map((s, i) => `
+            safeSetHTML(listDiv, scores.map((s, i) => `
                 <div class="leaderboard-item">
                     <div class="leaderboard-rank ${i === 0 ? 'first' : i === 1 ? 'second' : i === 2 ? 'third' : ''}">${i + 1}</div>
                     <div class="leaderboard-name">${escapeHtml(s.pseudo)}</div>

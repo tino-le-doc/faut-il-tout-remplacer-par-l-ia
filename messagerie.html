@@ -2214,14 +2214,14 @@
                 const groupContactsDiv = document.getElementById('contactsForGroup');
 
                 if (!snapshot.exists()) {
-                    contactsDiv.innerHTML = `
+                    safeSetHTML(contactsDiv, `
                         <div class="empty-state">
                             <div class="icon">👥</div>
                             <h3>Aucun contact</h3>
                             <p>Recherchez des utilisateurs pour les ajouter</p>
                         </div>
                     `;
-                    groupContactsDiv.innerHTML = '<p style="color: var(--text-secondary);">Aucun contact</p>';
+                    safeSetHTML(groupContactsDiv, '<p style="color: var(--text-secondary);">Aucun contact</p>');
                     return;
                 }
 
@@ -2257,8 +2257,8 @@
                     `;
                 }
 
-                contactsDiv.innerHTML = contactsHTML || '<p style="color: var(--text-secondary); padding: 20px;">Aucun contact</p>';
-                groupContactsDiv.innerHTML = groupHTML || '<p style="color: var(--text-secondary);">Aucun contact</p>';
+                safeSetHTML(contactsDiv, contactsHTML || '<p style="color: var(--text-secondary); padding: 20px;">Aucun contact</p>');
+                safeSetHTML(groupContactsDiv, groupHTML || '<p style="color: var(--text-secondary);">Aucun contact</p>');
             });
         }
 
@@ -2382,11 +2382,11 @@
             const resultsDiv = document.getElementById('searchResults');
 
             if (query.length < 2) {
-                resultsDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Entrez au moins 2 caractères</p>';
+                safeSetHTML(resultsDiv, '<p style="color: var(--text-secondary); text-align: center;">Entrez au moins 2 caractères</p>');
                 return;
             }
 
-            resultsDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Recherche...</p>';
+            safeSetHTML(resultsDiv, '<p style="color: var(--text-secondary); text-align: center;">Recherche...</p>');
 
             try {
                 // Requête par préfixe sur le noeud "pseudos" (lecture publique)
@@ -2399,7 +2399,7 @@
                     .once('value');
 
                 if (!snapshot.exists()) {
-                    resultsDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Aucun utilisateur trouvé</p>';
+                    safeSetHTML(resultsDiv, '<p style="color: var(--text-secondary); text-align: center;">Aucun utilisateur trouvé</p>');
                     return;
                 }
 
@@ -2414,7 +2414,7 @@
                 });
 
                 if (users.length === 0) {
-                    resultsDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Aucun résultat</p>';
+                    safeSetHTML(resultsDiv, '<p style="color: var(--text-secondary); text-align: center;">Aucun résultat</p>');
                     return;
                 }
 
@@ -2440,10 +2440,10 @@
                     `;
                 }
 
-                resultsDiv.innerHTML = html || '<p style="color: var(--text-secondary); text-align: center;">Aucun résultat</p>';
+                safeSetHTML(resultsDiv, html || '<p style="color: var(--text-secondary); text-align: center;">Aucun résultat</p>');
             } catch (err) {
                 console.error('Erreur recherche:', err);
-                resultsDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Erreur lors de la recherche</p>';
+                safeSetHTML(resultsDiv, '<p style="color: var(--text-secondary); text-align: center;">Erreur lors de la recherche</p>');
             }
         }
 
@@ -2473,7 +2473,7 @@
                     }
                 }
 
-                listDiv.innerHTML = html;
+                safeSetHTML(listDiv, html);
                 updateConversationsUI();
             });
         }
@@ -2528,11 +2528,11 @@
             const div = document.getElementById('selectedMembers');
 
             if (selectedGroupMembers.length === 0) {
-                div.innerHTML = '<p style="color: var(--text-secondary); font-size: 0.85rem;">Sélectionnez des contacts ci-dessous</p>';
+                safeSetHTML(div, '<p style="color: var(--text-secondary); font-size: 0.85rem;">Sélectionnez des contacts ci-dessous</p>');
                 return;
             }
 
-            div.innerHTML = selectedGroupMembers.map(m => `
+            safeSetHTML(div, selectedGroupMembers.map(m => `
                 <span class="member-chip">
                     ${escapeHtml(m.pseudo)}
                     <button class="remove" onclick="removeGroupMember('${m.oderId}')">✕</button>
@@ -2664,7 +2664,7 @@
             document.getElementById('activeChat').style.flexDirection = 'column';
 
             const messagesContainer = document.getElementById('messagesContainer');
-            messagesContainer.innerHTML = '';
+            safeSetHTML(messagesContainer, '');
 
             // Update header based on type
             const avatar = document.getElementById('chatAvatar');
@@ -2749,7 +2749,7 @@
                 const initial = (msg.user || '?').charAt(0).toUpperCase();
                 const time = msg.timestamp ? formatTime(msg.timestamp) : '';
 
-                div.innerHTML = `
+                safeSetHTML(div, `
                     <div class="message-avatar">${initial}</div>
                     <div class="message-content">
                         <div class="message-sender">${escapeHtml(msg.user || 'Anonyme')}</div>
@@ -3245,7 +3245,7 @@
 
                     const wave = document.getElementById('voiceRecWave');
                     const bars = 20;
-                    wave.innerHTML = '';
+                    safeSetHTML(wave, '');
                     for (let i = 0; i < bars; i++) {
                         const span = document.createElement('span');
                         span.style.height = '4px';
@@ -4077,7 +4077,7 @@
                 const container = document.getElementById('notifContainer');
                 const toast = document.createElement('div');
                 toast.className = 'notif-toast ' + type;
-                toast.innerHTML = `
+                safeSetHTML(toast, `
                     <div class="notif-toast-icon">${type === 'message' ? '💬' : '👋'}</div>
                     <div class="notif-toast-body">
                         <div class="notif-toast-title">${escapeHtml(title)}</div>

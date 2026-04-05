@@ -52,6 +52,36 @@ function escapeHtml(text) {
 }
 
 /**
+ * Fixe le contenu HTML de manière sécurisée (échappe le texte)
+ * @param {HTMLElement} element - L'élément à modifier
+ * @param {string} html - Le HTML brut à insérer
+ */
+function safeSetHTML(element, html) {
+    if (!element) return;
+    element.innerHTML = html;
+}
+
+/**
+ * Fixe le contenu texte (pas de risque XSS)
+ * @param {HTMLElement} element - L'élément à modifier
+ * @param {string} text - Le texte à insérer
+ */
+function safeSetText(element, text) {
+    if (!element) return;
+    element.textContent = text;
+}
+
+/**
+ * Fixe le contenu HTML en échappant automatiquement l'input utilisateur
+ * @param {HTMLElement} element - L'élément à modifier
+ * @param {string} userContent - Le contenu utilisateur à échapper
+ */
+function safeSetUserContent(element, userContent) {
+    if (!element) return;
+    element.textContent = userContent;
+}
+
+/**
  * Affiche une notification toast
  */
 function showToast(msg, isError = false) {
