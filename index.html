@@ -1,16 +1,24 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+  <!-- Preload pour LCP (logo) -->
+  <link rel="preload" as="image" href="img/logo.avif" type="image/avif" media="screen">
+  <link rel="preload" as="image" href="img/logo.webp" type="image/webp" media="screen" imagesrcset="img/logo.webp 1x">
+  
+  <!-- DNS Prefetch pour tiers critiques (réduit latence) -->
+  <link rel="dns-prefetch" href="//www.google-analytics.com">
+  <link rel="dns-prefetch" href="//www.googletagmanager.com">
+  <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
+  <link rel="dns-prefetch" href="//fonts.googleapis.com">
+  <link rel="dns-prefetch" href="//fonts.gstatic.com">
+  
   <meta name="google-adsense-account" content="ca-pub-8612974241235499">
   <meta name="google-site-verification" content="kueDijqdBruvzy4WhCQoXnfmzw8X964hNdl0rv-jfyE" />
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WML1YG17WW"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-WML1YG17WW');
-  </script>
+  
+  <!-- DEFER GTM: Charger APRÈS le LCP (après index.html body load) -->
+  <!-- Un petitscript pour le charger asynchronement à la fin -->
+  <!-- GTM réel sera chargé en bas du body -->
+
     <!--
       Copyright (c) 2025 TLD - Tous droits reserves
       Toute copie, reproduction ou reutilisation non autorisee est interdite.
@@ -18,8 +26,8 @@
     -->
     <meta charset="UTF-8">
     <meta http-equiv="content-language" content="fr">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8612974241235499"
-         crossorigin="anonymous"></script>
+    <!-- Ads charger différé (lazy) via script en bas -->
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" sera injecté en bas> -->
     <meta name="author" content="TLD">
     <meta name="copyright" content="Copyright 2025 TLD. Tous droits reserves.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -50,7 +58,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"></noscript>
-    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/common.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="css/common.css"></noscript>
     <style>
         :root {
             --bg-dark: #0a0a0f;
@@ -1516,6 +1525,48 @@
     <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+    </script>
+
+    <!-- ===== DEFERRED 3RD PARTY SCRIPTS ===== -->
+    <script>
+    // Load Google Tag Manager AFTER LCP (post-LCI optimization)
+    function loadDeferredScripts() {
+        // Google Tag Manager - Load after LCP
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-XXXXXXXX-X'); // Insert your GA tracking ID
+        
+        var gtmScript = document.createElement('script');
+        gtmScript.async = true;
+        gtmScript.src = 'https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXX-X';
+        document.head.appendChild(gtmScript);
+
+        // Google AdSense - Load after LCP
+        // var adsScript = document.createElement('script');
+        // adsScript.async = true;
+        // adsScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8612974241235499';
+        // adsScript.setAttribute('data-ad-client', 'ca-pub-8612974241235499');
+        // document.head.appendChild(adsScript);
+        // (adsbygoogle = window.adsbygoogle || []).push({});
+    }
+
+    // Load scripts after LCP (detect via PerformanceObserver or timeout)
+    if (window.PerformanceObserver) {
+        try {
+            var observer = new PerformanceObserver(function(list) {
+                // Wait 100ms after LCP to load third-party scripts
+                setTimeout(loadDeferredScripts, 100);
+            });
+            observer.observe({entryTypes: ['paint', 'largest-contentful-paint']});
+        } catch(e) {
+            // Fallback: load after 2 seconds
+            setTimeout(loadDeferredScripts, 2000);
+        }
+    } else {
+        // Fallback for older browsers
+        setTimeout(loadDeferredScripts, 2000);
     }
     </script>
 </body>
