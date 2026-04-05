@@ -900,51 +900,94 @@
     }
 
     // ==================== AUTH STATE ====================
-    auth.onAuthStateChanged(async (user) => {
-        console.log('👤 Auth state changed:', user ? user.email : 'non connecté');
-        loading.classList.remove('active');
+    // IMPORTANT: Attendre que la persistence soit configurée avant d'attacher le listener
+    persistenceReady.then(() => {
+        console.log('🔐 Persistence ready, attaching auth state listener...');
+        
+        auth.onAuthStateChanged(async (user) => {
+            console.log('👤 Auth state changed:', user ? user.email : 'non connecté');
+            loading.classList.remove('active');
 
-        if (user) {
-            // User is logged in
-            authContainer.style.display = 'none';
-            profileContainer.classList.add('active');
+            if (user) {
+                // User is logged in
+                authContainer.style.display = 'none';
+                profileContainer.classList.add('active');
 
-            // Show admin dashboard link for admin users
-            if (typeof isAdmin === 'function' && isAdmin(user)) {
-                document.getElementById('adminDashboardLink').style.display = 'block';
-            }
+                // Show admin dashboard link for admin users
+                if (typeof isAdmin === 'function' && isAdmin(user)) {
+                    document.getElementById('adminDashboardLink').style.display = 'block';
+                }
 
-            try {
-                const snapshot = await db.ref('users/' + user.uid).once('value');
-                const profile = snapshot.val();
+                try {
+                    const snapshot = await db.ref('users/' + user.uid).once('value');
+                    const profile = snapshot.val();
 
-                if (profile) {
-                    document.getElementById('profileAvatar').textContent = profile.pseudo ? profile.pseudo.charAt(0).toUpperCase() : '?';
-                    document.getElementById('profileName').textContent = profile.pseudo || 'Utilisateur';
-                    document.getElementById('profileEmail').textContent = user.email;
-                    document.getElementById('userMessages').textContent = profile.messagesCount || 0;
-                    document.getElementById('userAvis').textContent = profile.avisCount || 0;
+                    if (profile) {
+                        document.getElementById('profileAvatar').textContent = profile.pseudo ? profile.pseudo.charAt(0).toUpperCase() : '?';
+                        document.getElementById('profileName').textContent = profile.pseudo || 'Utilisateur';
+                        document.getElementById('profileEmail').textContent = user.email;
+                        document.getElementById('userMessages').textContent = profile.messagesCount || 0;
+                        document.getElementById('userAvis').textContent = profile.avisCount || 0;
 
-                    // Calculate days since registration
-                    if (profile.createdAt) {
-                        const days = Math.floor((Date.now() - profile.createdAt) / (1000 * 60 * 60 * 24));
-                        document.getElementById('userDays').textContent = days;
+                        // Calculate days since registration
+                        if (profile.createdAt) {
+                            const days = Math.floor((Date.now() - profile.createdAt) / (1000 * 60 * 60 * 24));
+                            document.getElementById('userDays').textContent = days;
+                        }
+
+                        // Charger les préférences de notifications
+                        loadNotificationPrefs(user.uid);
+                    } else {
+                        document.getElementById('profileName').textContent = user.email;
                     }
-
-                    // Charger les préférences de notifications
-                    loadNotificationPrefs(user.uid);
-                } else {
+                } catch (error) {
+                    console.error('Erreur chargement profil:', error);
                     document.getElementById('profileName').textContent = user.email;
                 }
-            } catch (error) {
-                console.error('Erreur chargement profil:', error);
-                document.getElementById('profileName').textContent = user.email;
+            } else {
+                // User is not logged in
+                authContainer.style.display = 'block';
+                profileContainer.classList.remove('active');
             }
-        } else {
-            // User is not logged in
-            authContainer.style.display = 'block';
-            profileContainer.classList.remove('active');
-        }
+        });
+    }).catch(err => {
+        console.error('Erreur persistence:', err);
+        // Fallback: attacher le listener même si persistence échoue
+        auth.onAuthStateChanged(async (user) => {
+            console.log('👤 Auth state changed (fallback):', user ? user.email : 'non connecté');
+            loading.classList.remove('active');
+            if (user) {
+                authContainer.style.display = 'none';
+                profileContainer.classList.add('active');
+                if (typeof isAdmin === 'function' && isAdmin(user)) {
+                    document.getElementById('adminDashboardLink').style.display = 'block';
+                }
+                try {
+                    const snapshot = await db.ref('users/' + user.uid).once('value');
+                    const profile = snapshot.val();
+                    if (profile) {
+                        document.getElementById('profileAvatar').textContent = profile.pseudo ? profile.pseudo.charAt(0).toUpperCase() : '?';
+                        document.getElementById('profileName').textContent = profile.pseudo || 'Utilisateur';
+                        document.getElementById('profileEmail').textContent = user.email;
+                        document.getElementById('userMessages').textContent = profile.messagesCount || 0;
+                        document.getElementById('userAvis').textContent = profile.avisCount || 0;
+                        if (profile.createdAt) {
+                            const days = Math.floor((Date.now() - profile.createdAt) / (1000 * 60 * 60 * 24));
+                            document.getElementById('userDays').textContent = days;
+                        }
+                        loadNotificationPrefs(user.uid);
+                    } else {
+                        document.getElementById('profileName').textContent = user.email;
+                    }
+                } catch (error) {
+                    console.error('Erreur chargement profil:', error);
+                    document.getElementById('profileName').textContent = user.email;
+                }
+            } else {
+                authContainer.style.display = 'block';
+                profileContainer.classList.remove('active');
+            }
+        });
     });
 
     // ==================== TABS ====================

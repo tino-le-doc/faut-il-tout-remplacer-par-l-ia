@@ -15,8 +15,10 @@ const firebaseConfig = {
 
 // Initialisation Firebase
 let firebaseApp, firebaseAuth, firebaseDb;
-
 let firebaseAnalytics;
+
+// Promesse de persistance - les pages l'attendront avant d'attacher les listeners
+let persistenceReady = Promise.resolve(); // Par défaut, résolu
 
 try {
     firebaseApp = firebase.initializeApp(firebaseConfig);
@@ -26,15 +28,16 @@ try {
         firebaseAuth = firebase.auth();
         // IMPORTANT: Configure la persistence de session entre les pages
         // LOCAL = persiste dans localStorage (par défaut, mais explicite ici)
-        // Cette promesse est attendue avant que les listeners auth ne soient ajoutés
-        firebaseAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        persistenceReady = firebaseAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
             .then(() => {
                 console.log('✅ Session persistence configurée (LOCAL)');
+                return true;
             })
             .catch(error => {
                 // La plupart des erreurs sont dues aux cookies tiers désactivés
                 // On continue sans persistence, Firebase continuera de fonctionner
                 console.warn('⚠️ Persistence non configurée:', error.code);
+                return false;
             });
     }
     // Analytics n'est pas toujours charge
