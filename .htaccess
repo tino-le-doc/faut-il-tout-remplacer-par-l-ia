@@ -1,0 +1,168 @@
+# =============================================================================
+# Apache HTTP Server Configuration for tino-le-doc.com
+# =============================================================================
+# Cache Control, Security, Compression, and Performance Optimizations
+# Deploy to: /var/www/tino-le-doc.com/.htaccess
+# =============================================================================
+
+# =============================================================================
+# 1. COMPRESSION - Enable GZIP for faster content delivery
+# =============================================================================
+<IfModule mod_deflate.c>
+    # Compress HTML, CSS, JavaScript, JSON
+    AddOutputFilterByType DEFLATE text/html text/xml text/plain text/css
+    AddOutputFilterByType DEFLATE text/javascript application/javascript application/json
+    AddOutputFilterByType DEFLATE application/xml+rss
+    AddOutputFilterByType DEFLATE image/svg+xml
+    
+    # Prevent compression of already-compressed files
+    SetEnvIfNoCase Request_URI "\.(?:zip|gz|gzip|bzip2|br)$" no-gzip
+    
+    # Add Vary header for compatibility
+    Header append Vary Accept-Encoding env=!no_gzip
+</IfModule>
+
+# =============================================================================
+# 2. CACHE CONTROL - Browser caching for static assets
+# =============================================================================
+
+# IMAGES (AVIF, WebP, PNG, GIF, JPG) - Cache 1 year (immutable)
+# These files should use content hash for cache busting
+<FilesMatch "\.(avif|webp|png|gif|jpg|jpeg|svg|ico)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+    Header set Expires "Wed, 04 Apr 2027 07:28:00 GMT"
+</FilesMatch>
+
+# VIDEO FILES (MP4, WebM, OGV) - Cache 30 days
+# Videos can be updated occasionally
+<FilesMatch "\.(mp4|webm|ogv|mov|avi)$">
+    Header set Cache-Control "public, max-age=2592000"
+    Header set Expires "Fri, 04 May 2026 07:28:00 GMT"
+</FilesMatch>
+
+# CSS & JAVASCRIPT - Cache 30 days
+# Update version in filename when you change code
+<FilesMatch "\.(css|js)$">
+    Header set Cache-Control "public, max-age=2592000"
+    Header set Expires "Fri, 04 May 2026 07:28:00 GMT"
+</FilesMatch>
+
+# FONTS (Google Fonts, local fonts) - Cache 1 year (immutable)
+<FilesMatch "\.(woff|woff2|ttf|otf|eot)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+    Header set Expires "Wed, 04 Apr 2027 07:28:00 GMT"
+    AddType font/woff2 .woff2
+</FilesMatch>
+
+# MANIFESTS & DATA FILES - Cache 30 days
+<FilesMatch "\.(json|xml|webmanifest)$">
+    Header set Cache-Control "public, max-age=2592000"
+    Header set Expires "Fri, 04 May 2026 07:28:00 GMT"
+</FilesMatch>
+
+# HTML FILES - Cache 1 hour (must revalidate to check for updates)
+<FilesMatch "\.html?$">
+    Header set Cache-Control "public, max-age=3600, must-revalidate"
+    Header set Expires "Sun, 05 Apr 2026 08:28:00 GMT"
+</FilesMatch>
+
+# SERVICE WORKER - Cache 1 hour (must revalidate for updates)
+<FilesMatch "^sw\.js$">
+    Header set Cache-Control "public, max-age=3600, must-revalidate"
+    Header unset Last-Modified
+</FilesMatch>
+
+# DATABASE RULES & CONFIG - No caching
+<FilesMatch "\.(rules|json)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+</FilesMatch>
+
+# =============================================================================
+# 3. SECURITY HEADERS
+# =============================================================================
+
+# X-Content-Type-Options: Prevent MIME type sniffing
+Header set X-Content-Type-Options "nosniff"
+
+# X-Frame-Options: Prevent clickjacking
+Header set X-Frame-Options "SAMEORIGIN"
+
+# X-XSS-Protection: Enable XSS filter (older browsers)
+Header set X-XSS-Protection "1; mode=block"
+
+# Referrer-Policy: Control referrer information
+Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+# Permissions-Policy: Restrict dangerous features
+Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+
+# Content-Security-Policy: Prevent XSS, CSRF, malware injection
+Header set Content-Security-Policy "default-src 'self'; \
+    script-src 'self' https://www.googletagmanager.com https://www.gstatic.com https://fonts.googleapis.com https://pagead2.googlesyndication.com 'unsafe-inline' 'unsafe-eval'; \
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; \
+    font-src 'self' https://fonts.gstatic.com; \
+    img-src 'self' data: https: blob:; \
+    connect-src 'self' https://firebase.google.com https://www.google-analytics.com https://www.googletagmanager.com wss:; \
+    frame-src 'none'; \
+    object-src 'none'; \
+    base-uri 'self'; \
+    form-action 'self'"
+
+# =============================================================================
+# 4. ETAG & ENTITY TAGS
+# =============================================================================
+
+# Enable ETags for cache validation
+FileETag All
+
+# =============================================================================
+# 5. DIRECTORY PROTECTION
+# =============================================================================
+
+# Disable directory listing
+Options -Indexes
+
+# Block access to sensitive files
+<FilesMatch "^(\.|\.htaccess|\.env|\.git|firebase\.json|database\.rules\.json|storage\.rules|README|LICENSE|package\.json)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# =============================================================================
+# 6. URL REWRITING (Optional - uncomment if needed)
+# =============================================================================
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Remove .html extension (optional)
+    # RewriteCond %{REQUEST_FILENAME} !-f
+    # RewriteCond %{REQUEST_FILENAME} !-d
+    # RewriteRule ^([^\.]+)$ $1.html [NC,L]
+    
+    # Redirect HTTP to HTTPS (uncomment when HTTPS available)
+    # RewriteCond %{HTTPS} off
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    
+    # Redirect www to non-www (optional)
+    # RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+    # RewriteRule ^(.*)$ https://%1%{REQUEST_URI} [R=301,L]
+</IfModule>
+
+# =============================================================================
+# 7. PERFORMANCE OPTIMIZATION
+# =============================================================================
+
+# Keep-Alive for connection reuse
+<IfModule mod_headers.c>
+    Header set Connection keep-alive
+</IfModule>
+
+# Enable HTTP/2 Server Push (if available)
+<IfModule mod_http2.c>
+    H2PushResource /css/common.css
+    H2PushResource /js/firebase-config.js
+    H2PushResource /img/logo.avif
+</IfModule>
