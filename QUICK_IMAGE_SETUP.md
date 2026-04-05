@@ -1,6 +1,7 @@
 # ⚡ GUIDE D'ACTION RAPIDE - Optimisation Images
 
 ## 📌 État Actuel
+
 - ✅ HTML renovated avec `<picture>` sur 15+ pages
 - ✅ Lazy loading correct (eager pour LCP, lazy pour le reste)
 - ✅ Dimensions width/height ajoutées
@@ -12,7 +13,8 @@
 
 ### Commande 1: Installer les outils (si besoin)
 
-**Option A - ImageMagick (Recommandé, plus simple)**
+#### Option A - ImageMagick (Recommandé, plus simple)
+
 ```bash
 # macOS (vous l'avez probablement)
 brew install imagemagick
@@ -24,7 +26,8 @@ sudo apt-get install imagemagick
 choco install imagemagick
 ```
 
-**Option B - ffmpeg (Plus contrôlé pour AVIF)**
+#### Option B - ffmpeg (Plus contrôlé pour AVIF)
+
 ```bash
 # macOS
 brew install ffmpeg
@@ -38,7 +41,8 @@ choco install ffmpeg
 
 ### Commande 2: Convertir les images
 
-**PLUS SIMPLE - Python Script (Recommandé)**
+#### PLUS SIMPLE - Python Script (Recommandé)
+
 ```bash
 cd /Users/martialfabrice/faut-il-tout-remplacer-par-l-ia
 python3 scripts/optimize_images.py
@@ -46,7 +50,8 @@ python3 scripts/optimize_images.py
 
 ou
 
-**MANUEL - ImageMagick**
+#### MANUEL - ImageMagick
+
 ```bash
 cd /Users/martialfabrice/faut-il-tout-remplacer-par-l-ia/img
 
@@ -59,7 +64,8 @@ convert 1000074494.png -define heic:quality=90 logo.avif
 
 ou
 
-**MANUEL - ffmpeg (meilleure qualité AVIF)**
+#### MANUEL - ffmpeg (meilleure qualité AVIF)
+
 ```bash
 cd /Users/martialfabrice/faut-il-tout-remplacer-par-l-ia/img
 
@@ -78,7 +84,8 @@ ls -lh logo.*
 file logo.{webp,avif,png}
 ```
 
-**Résultats attendus:**
+### Résultats attendus
+
 ```
 -rw-r--r--  1 user  staff  100K Apr  5 14:00 1000074494.png
 -rw-r--r--  1 user  staff   30K Apr  5 14:05 logo.webp      ← 70% plus petit!
@@ -97,6 +104,7 @@ python3 -m http.server 8000
 ```
 
 Puis:
+
 1. **Ouvrir DevTools** (F12)
 2. **Onglet Network**
 3. **Recharger la page**
@@ -115,6 +123,7 @@ Puis:
 ```
 
 Vous devriez voir:
+
 - ✅ "Avez fourni des versions WebP/AVIF de vos images"
 - ✅ "Cumulative Layout Shift: 0"
 - ✅ "LCP < 2.5s"
@@ -137,11 +146,11 @@ Après avoir créé les images:
 
 ## 🔒 Vérification de Sécurité
 
-✅ Pas de XSS - images contrôlées localement
-✅ Alt text présent sur toutes les images
-✅ Dimensions explicites - pas de layout shifts
-✅ Fallbacks PNG pour vieux navigateurs
-✅ Lazy loading correct
+- ✅ Pas de XSS - images contrôlées localement
+- ✅ Alt text présent sur toutes les images
+- ✅ Dimensions explicites - pas de layout shifts
+- ✅ Fallbacks PNG pour vieux navigateurs
+- ✅ Lazy loading correct
 
 ---
 
@@ -156,7 +165,8 @@ Après avoir créé les images:
 
 ## 💡 Astuces
 
-### Si les images ne s'affichent pas:
+### Si les images ne s'affichent pas
+
 ```bash
 # Vérifier que les fichiers existent
 ls -la /Users/martialfabrice/faut-il-tout-remplacer-par-l-ia/img/logo.*
@@ -165,14 +175,16 @@ ls -la /Users/martialfabrice/faut-il-tout-remplacer-par-l-ia/img/logo.*
 # Chrome: Ctrl+Shift+Delete → Cache/Data
 ```
 
-### Si la convertissure est lente:
+### Si la conversion est lente
+
 ```bash
 # Utiliser ffmpeg en parallèle (plus rapide)
 # Ou réduire la qualité
 ffmpeg -i 1000074494.png -q:v 70 logo.webp  # Moins lourd
 ```
 
-### Pour comparer les qualités visuellement:
+### Pour comparer les qualités visuellement
+
 ```bash
 # Ouvrir côte à côte
 open img/1000074494.png img/logo.webp img/logo.avif
@@ -185,6 +197,7 @@ open img/1000074494.png img/logo.webp img/logo.avif
 ## ✨ Résultat Final
 
 Après ces étapes:
+
 - **LCP amélioré de 40%** (640ms → 350ms)
 - **133+ KiB d'économies** sur logo
 - **Support 100% des navigateurs** (fallback PNG)
@@ -196,11 +209,13 @@ Après ces étapes:
 ## ❓ Questions?
 
 Consultez:
+
 - `IMAGE_OPTIMIZATION.md` - Guide théorique
 - `IMAGE_TEMPLATE.html` - Exemples HTML
 - `scripts/optimize_images.py` - Code du script
 
 Ou relancez le script:
+
 ```bash
 python3 scripts/optimize_images.py --dry-run
 ```

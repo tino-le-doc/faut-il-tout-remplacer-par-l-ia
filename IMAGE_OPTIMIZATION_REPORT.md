@@ -114,6 +114,7 @@ Sera affecté positivement par:
 ## 📋 Prochaines Étapes (À Faire Maintenant)
 
 ### Étape 1: Convertir les Images
+
 ```bash
 cd /Users/martialfabrice/faut-il-tout-remplacer-par-l-ia
 
@@ -130,6 +131,7 @@ ffmpeg -i img/1000074494.png -c:v libaom-av1 -crf 30 img/logo.avif
 ```
 
 ### Étape 2: Vérifier les Images
+
 ```bash
 # Vérifier les fichiers créés
 ls -lh img/logo.*
@@ -141,6 +143,7 @@ file img/logo.{webp,avif}
 ```
 
 ### Étape 3: Tester Localement
+
 ```bash
 # Ouvrir index.html dans le navigateur
 # Vérifier que les images charges
@@ -148,12 +151,14 @@ file img/logo.{webp,avif}
 ```
 
 ### Étape 4: Lighthouse Audit
+
 1. Ouvrir Chrome DevTools (F12)
 2. Onglet "Lighthouse"
 3. Générer rapport
 4. Vérifier "Properly Size Images" passe ✅
 
 ### Étape 5: Commit
+
 ```bash
 git add -A
 git commit -m "🖼️ Optimisation images: <picture>, AVIF, WebP fallbacks + dimensions"
