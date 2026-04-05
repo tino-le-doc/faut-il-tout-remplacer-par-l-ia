@@ -86,7 +86,7 @@ file logo.{webp,avif,png}
 
 ### Résultats attendus
 
-```
+```text
 -rw-r--r--  1 user  staff  100K Apr  5 14:00 1000074494.png
 -rw-r--r--  1 user  staff   30K Apr  5 14:05 logo.webp      ← 70% plus petit!
 -rw-r--r--  1 user  staff   24K Apr  5 14:05 logo.avif      ← 76% plus petit! ⭐

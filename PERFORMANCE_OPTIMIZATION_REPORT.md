@@ -8,45 +8,55 @@
 
 ## 🎯 Objectifs Réalisés
 
-### Phase 1: Sécurité XSS ✅ 
+### Phase 1: Sécurité XSS ✅
+
 - **Problème:** 38+ instances de `.innerHTML` sans escaping
 - **Solution:** Créé 4 helper functions (`safeSetHTML`, `safeSetText`, `safeSetUserContent`, `escapeHtml`)
 - **Fichiers modifiés:** 15+ HTML files
 - **Status:** ✅ Production-ready
 
-### Phase 2: Optimisation Images 📸 ✅ 
+### Phase 2: Optimisation Images 📸 ✅
+
 - **Problème:** 133+ KiB gaspillés en PNG non-optimisé
 - **Solution:** Conversion batch PNG → AVIF/WebP avec fallback PNG
 - **Résultats:**
+
   - **1000074494.png:** 2.1 MiB → 203 KiB WebP (-90%), 304 KiB AVIF (-86%)
   - **tldia.png:** 2.7 MiB → 204 KiB WebP (-92%), 387 KiB AVIF (-86%)
   - **Tous les icons (225 KiB):** → 28 KiB WebP, 40 KiB AVIF (-85%)
   - **TOTAL SAVINGS:** 5.1 MiB (95% réduction!)
+
 - **Status:** ✅ Déployé sur 15+ HTML files
 
-### Phase 3: Performance (LCP & CLS) 📈 ✅ 
+### Phase 3: Performance (LCP & CLS) 📈 ✅
+
 **Implémenté:**
 
-#### 1. **Defer Third-Party Scripts** 
+#### 1. **Defer Third-Party Scripts**
+
 ```javascript
 // Google Tag Manager + AdSense chargés APRÈS le LCP
 // PerformanceObserver détecte Largest Contentful Paint
 // Fallback à 2 secondes pour navigateurs anciens
 ```
+
 - **Impact:** -500ms render-blocking (GTM)
 - **LCP Improvement:** 640ms → ~350ms (projection: -45%)
 
 #### 2. **CSS Render-Blocking Optimization**
+
 ```html
 <!-- Critical CSS inline, non-critical deferred via media="print" -->
 <link rel="stylesheet" href="css/common.css" 
       media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="css/common.css"></noscript>
 ```
+
 - **Impact:** -160ms initial paint
 - **Technique:** Media query trick + onload callback
 
 #### 3. **Image Lazy-Loading Strategy**
+
 ```html
 <!-- LCP image → loading="eager" -->
 <picture>
@@ -58,9 +68,11 @@
 <!-- Autres images → loading="lazy" -->
 <img src="img/icon.avif" loading="lazy" width="100" height="100">
 ```
+
 - **Impact:** Évite le jank, améliore CLS
 
 #### 4. **Service Worker Optimization**
+
 ```javascript
 const PRECACHE_URLS = [
   '/', '/index.html', '/offline.html',
@@ -69,16 +81,19 @@ const PRECACHE_URLS = [
   '/img/tldia.webp', '/manifest.json'
 ];
 ```
+
 - **Cache Version:** v2 → v3 (ancien cache invalidé)
 - **Impact:** PWA offline-first + faster repeat visits
 
 #### 5. **Resource Hints**
+
 ```html
 <link rel="preload" as="image" href="img/logo.avif" type="image/avif">
 <link rel="dns-prefetch" href="//www.googletagmanager.com">
 <link rel="dns-prefetch" href="//www.google-analytics.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 ```
+
 - **Impact:** -50-100ms DNS/TCP handshake
 
 ---
@@ -86,16 +101,18 @@ const PRECACHE_URLS = [
 ## 📊 Gains de Performance Mesurés
 
 ### Lighthouse Score (Projection)
+
 | Métrique | Avant | Après | Gain |
-|----------|-------|-------|------|
+| -------- | ----- | ----- | ---- |
 | **LCP** | 640ms | ~350ms | -45% ⚡ |
 | **FCP** | 520ms | ~300ms | -42% ⚡ |
 | **CLS** | 0.084 | ~0.02 | -75% ✅ |
 | **TTI** | 2.8s | ~1.5s | -46% ⚡ |
 
 ### Économies de Bande
+
 | Catégorie | Économie |
-|-----------|----------|
+| --------- | -------- |
 | **Images** | 5.1 MiB (-95%) |
 | **CSS** | -160ms (defer) |
 | **JavaScript** | -500ms (GTM defer) |

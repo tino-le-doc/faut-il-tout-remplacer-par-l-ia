@@ -14,7 +14,7 @@
 
 ### 1. Architecture Optimisée des Images
 
-```
+```text
 AVANT:
 img/1000074494.png → ~100 KiB (PNG lourd)
                       ↓ utilisé partout
@@ -103,6 +103,7 @@ Toutes les pages mises à jour avec:
 ### Lighthouse Scoring
 
 Sera affecté positivement par:
+
 - Format WebP/AVIF (meilleur score image)
 - Pas de CLS (meilleur score UX)
 - LCP plus rapide (meilleur score performance)
