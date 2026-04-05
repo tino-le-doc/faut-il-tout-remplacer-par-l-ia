@@ -407,51 +407,75 @@ const CATEGORIES = {
 };
 
 // ==================== AUTH ====================
-persistenceReady.then(() => {
-    auth.onAuthStateChanged(async user => {
-        if (user && !user.isAnonymous) {
-            currentUser = user;
-            try {
-                const snap = await db.ref('users/' + user.uid).once('value');
-                const profile = snap.val();
-                currentUserName = (profile && profile.pseudo) || user.displayName || user.email.split('@')[0];
-            } catch(e) {
-                currentUserName = user.email ? user.email.split('@')[0] : 'Utilisateur';
+// Attendre que persistenceReady soit défini (sortie de firebase-config.js)
+function setupAuthListener() {
+    persistenceReady.then(() => {
+        auth.onAuthStateChanged(async user => {
+            if (user && !user.isAnonymous) {
+                currentUser = user;
+                try {
+                    const snap = await db.ref('users/' + user.uid).once('value');
+                    const profile = snap.val();
+                    currentUserName = (profile && profile.pseudo) || user.displayName || user.email.split('@')[0];
+                } catch(e) {
+                    currentUserName = user.email ? user.email.split('@')[0] : 'Utilisateur';
+                }
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('forumContent').style.display = 'block';
+                loadGroups();
+                loadInvites();
+            } else {
+                currentUser = null;
+                document.getElementById('authSection').style.display = 'block';
+                document.getElementById('forumContent').style.display = 'none';
             }
-            document.getElementById('authSection').style.display = 'none';
-            document.getElementById('forumContent').style.display = 'block';
-            loadGroups();
-            loadInvites();
+        });
+    }).catch(err => {
+        console.error('Persistence init error, loading forum anyway:', err);
+        // Fallback
+        auth.onAuthStateChanged(async user => {
+            if (user && !user.isAnonymous) {
+                currentUser = user;
+                try {
+                    const snap = await db.ref('users/' + user.uid).once('value');
+                    const profile = snap.val();
+                    currentUserName = (profile && profile.pseudo) || user.displayName || user.email.split('@')[0];
+                } catch(e) {
+                    currentUserName = user.email ? user.email.split('@')[0] : 'Utilisateur';
+                }
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('forumContent').style.display = 'block';
+                loadGroups();
+                loadInvites();
+            } else {
+                currentUser = null;
+                document.getElementById('authSection').style.display = 'block';
+                document.getElementById('forumContent').style.display = 'none';
+            }
+        });
+    });
+}
+
+// Attendre que firebase-config.js soit chargé
+if (typeof persistenceReady !== 'undefined') {
+    setupAuthListener();
+} else {
+    // Fallback: attendre que le DOM soit prêt, puis setupAuthListener
+    document.addEventListener('DOMContentLoaded', () => {
+        if (typeof persistenceReady !== 'undefined') {
+            setupAuthListener();
         } else {
-            currentUser = null;
-            document.getElementById('authSection').style.display = 'block';
-            document.getElementById('forumContent').style.display = 'none';
+            // Double fallback: attendre un peu et réessayer
+            setTimeout(() => {
+                if (typeof persistenceReady !== 'undefined') {
+                    setupAuthListener();
+                } else {
+                    console.error('persistenceReady not defined after 2s timeout');
+                }
+            }, 2000);
         }
     });
-}).catch(err => {
-    console.error('Persistence init error, loading forum anyway:', err);
-    // Fallback
-    auth.onAuthStateChanged(async user => {
-        if (user && !user.isAnonymous) {
-            currentUser = user;
-            try {
-                const snap = await db.ref('users/' + user.uid).once('value');
-                const profile = snap.val();
-                currentUserName = (profile && profile.pseudo) || user.displayName || user.email.split('@')[0];
-            } catch(e) {
-                currentUserName = user.email ? user.email.split('@')[0] : 'Utilisateur';
-            }
-            document.getElementById('authSection').style.display = 'none';
-            document.getElementById('forumContent').style.display = 'block';
-            loadGroups();
-            loadInvites();
-        } else {
-            currentUser = null;
-            document.getElementById('authSection').style.display = 'block';
-            document.getElementById('forumContent').style.display = 'none';
-        }
-    });
-});
+}
 
 // ==================== GROUPS ====================
 function loadGroups() {

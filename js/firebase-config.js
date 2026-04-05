@@ -51,6 +51,9 @@ try {
 /* UID Admin du site - seul compte autorise a gerer la veille techno */
 const ADMIN_EMAIL = 'martialfabrice@tino-le-doc.com';
 
+// Expose persistenceReady globally for all pages
+window.persistenceReady = persistenceReady;
+
 function isAdmin(user) {
     return user && user.email === ADMIN_EMAIL;
 }
