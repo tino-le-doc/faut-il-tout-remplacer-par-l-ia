@@ -23,7 +23,6 @@
          crossorigin="anonymous"></script>
     <meta name="author" content="TLD">
     <meta name="copyright" content="Copyright 2025 TLD. Tous droits réservés.">
-    <meta name="theme-color" content="#0a0a0f">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="img/1000074494.png">
@@ -2265,7 +2264,7 @@
                             <h3>Aucun contact</h3>
                             <p>Recherchez des utilisateurs pour les ajouter</p>
                         </div>
-                    `;
+                    `);
                     safeSetHTML(groupContactsDiv, '<p style="color: var(--text-secondary);">Aucun contact</p>');
                     return;
                 }
@@ -2590,7 +2589,7 @@
                     ${escapeHtml(m.pseudo)}
                     <button class="remove" onclick="removeGroupMember('${m.oderId}')">✕</button>
                 </span>
-            `).join('');
+            `).join(''));
         }
 
         function removeGroupMember(oderId) {
@@ -2809,7 +2808,7 @@
                         <div class="message-text">${formatMessageText(msg)}</div>
                         <div class="message-time">${time}</div>
                     </div>
-                `;
+                `);
             }
 
             container.appendChild(div);
@@ -4151,7 +4150,7 @@
                         <div class="notif-toast-text">${escapeHtml(text)}</div>
                     </div>
                     <button class="notif-toast-close" onclick="event.stopPropagation();this.parentElement.remove();">✕</button>
-                `;
+                `);
 
                 if (onClick) {
                     toast.addEventListener('click', () => {

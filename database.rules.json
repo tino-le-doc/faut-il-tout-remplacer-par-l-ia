@@ -1,12 +1,9 @@
 {
   "rules": {
 
-    // ==================== REGLE PAR DEFAUT ====================
-    // Tout ce qui n'est pas explicitement autorise est interdit
     ".read": false,
     ".write": false,
 
-    // ==================== UTILISATEURS ====================
     "users": {
       ".read": "auth != null && auth.token.email === 'martialfabrice@tino-le-doc.com'",
       "$uid": {
@@ -25,7 +22,6 @@
       }
     },
 
-    // ==================== COMPTEURS ====================
     "counters": {
       "visits": {
         ".read": true,

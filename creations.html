@@ -23,7 +23,6 @@
          crossorigin="anonymous"></script>
     <meta name="author" content="TLD">
     <meta name="copyright" content="Copyright 2025 TLD. Tous droits réservés.">
-    <meta name="theme-color" content="#0a0a0f">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="img/1000074494.png">
@@ -940,7 +939,7 @@
                         <button class="comment-submit" onclick="submitComment('${creation.id}')" title="Envoyer">➤</button>
                     </div>
                 </div>
-            </div>`;
+            </div>`);
 
         // Load like state
         loadLikeState(creation.id);
@@ -1019,7 +1018,7 @@
                             <span class="comment-time">${c.timestamp ? timeAgo(c.timestamp) : ''}</span>
                         </div>
                         <div class="comment-text">${escapeHtml(c.text)}</div>
-                    </div>`;
+                    </div>`);
                 list.appendChild(div);
             });
             list.scrollTop = list.scrollHeight;
