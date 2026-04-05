@@ -11,24 +11,29 @@
 ### 1. Critical Resource Chain Latency Reduction (-944ms baseline)
 
 #### Preload Critical Scripts
+
 ```html
 <link rel="preload" as="script" href="js/firebase-config.js">
 <link rel="preload" as="script" href="js/i18n.js">
 ```
+
 **Impact:** Tells browser to prioritize downloading critical JS early, reducing chain latency  
 **Baseline:** 944ms max chain latency → Expected ~800ms after optimization
 
 #### DNS/TCP Optimization with Preconnect
+
 ```html
 <!-- Preconnect establishes full DNS + TCP connection (faster than dns-prefetch) -->
 <link rel="preconnect" href="https://www.google-analytics.com" crossorigin>
 <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
 <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
 ```
+
 **Impact:** Reduces DNS resolution + TCP handshake time for third-party services  
 **Savings:** ~50-100ms per critical third-party domain
 
 #### DNS Prefetch Fallback
+
 ```html
 <!-- For additional services and browser compatibility -->
 <link rel="dns-prefetch" href="//gstatic.com">
@@ -39,7 +44,9 @@
 ### 2. Cumulative Layout Shift (CLS) Prevention
 
 #### ✅ Counter Display Stability
-**Problem:** Stats bar counters shift when "--" (placeholder) changes to actual numbers  
+
+**Problem:** Stats bar counters shift when "--" (placeholder) changes to actual numbers
+
 ```css
 .stat-value {
     min-width: 40px;           /* Reserve space for largest number */
@@ -47,10 +54,12 @@
     line-height: 1;            /* Consistent height */
 }
 ```
+
 **Impact:** Eliminates counter value shift on page load  
 **CLS Improvement:** ~0.01 points
 
 #### ✅ Hero Video Aspect Ratio
+
 **Problem:** Video takes time to load, causing layout shift  
 ```css
 .hero-video-wrapper {
@@ -63,10 +72,12 @@
     object-fit: cover;         /* Cover container without distortion */
 }
 ```
+
 **Impact:** Browser reserves 16:9 aspect ratio space before video loads  
 **CLS Improvement:** ~0.02 points
 
 #### ✅ Ad Zone Container Height
+
 **Problem:** Ad content may be different height, causing section shift  
 ```css
 .ad-zone {
@@ -93,12 +104,14 @@
 ```
 
 **Benefits:**
+
 1. **HTML Parser not blocked** - Downloads happen in parallel
 2. **Execution in order** - Scripts run in correct dependency order
 3. **LCP not impacted** - Main content visible before scripts run
 4. **Better time-to-interactive (TTI)** - User can interact sooner
 
-**Impact:** 
+**Impact:**
+
 - LCP: No change (scripts already deferred post-LCP)
 - TTI: -200-300ms improvement
 - Thread main blocking: -50ms from parallelized downloads
