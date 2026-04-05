@@ -1189,17 +1189,52 @@
         let currentContactEmail = '';
 
         // ==================== AUTH ====================
-        auth.onAuthStateChanged(function(user) {
-            if (user && isAdmin(user)) {
-                document.getElementById('adminGate').style.display = 'none';
-                document.getElementById('adminWrapper').style.display = 'block';
-                document.getElementById('adminEmail').textContent = user.email;
-                loadDashboard();
-            } else {
-                document.getElementById('adminGate').style.display = 'flex';
-                document.getElementById('adminWrapper').style.display = 'none';
-            }
-        });
+        function setupAuthListener() {
+            persistenceReady.then(() => {
+                auth.onAuthStateChanged(function(user) {
+                    if (user && isAdmin(user)) {
+                        document.getElementById('adminGate').style.display = 'none';
+                        document.getElementById('adminWrapper').style.display = 'block';
+                        document.getElementById('adminEmail').textContent = user.email;
+                        loadDashboard();
+                    } else {
+                        document.getElementById('adminGate').style.display = 'flex';
+                        document.getElementById('adminWrapper').style.display = 'none';
+                    }
+                });
+            }).catch(err => {
+                console.error('Persistence init error:', err);
+                auth.onAuthStateChanged(function(user) {
+                    if (user && isAdmin(user)) {
+                        document.getElementById('adminGate').style.display = 'none';
+                        document.getElementById('adminWrapper').style.display = 'block';
+                        document.getElementById('adminEmail').textContent = user.email;
+                        loadDashboard();
+                    } else {
+                        document.getElementById('adminGate').style.display = 'flex';
+                        document.getElementById('adminWrapper').style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        if (typeof persistenceReady !== 'undefined') {
+            setupAuthListener();
+        } else {
+            document.addEventListener('DOMContentLoaded', () => {
+                if (typeof persistenceReady !== 'undefined') {
+                    setupAuthListener();
+                } else {
+                    setTimeout(() => {
+                        if (typeof persistenceReady !== 'undefined') {
+                            setupAuthListener();
+                        } else {
+                            console.error('persistenceReady not defined after 2s timeout on admin.html');
+                        }
+                    }, 2000);
+                }
+            });
+        }
 
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();

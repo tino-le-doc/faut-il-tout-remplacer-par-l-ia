@@ -484,24 +484,65 @@
     const lightboxImg = document.getElementById('lightboxImg');
 
     // ---- Auth ----
-    firebaseAuth.onAuthStateChanged(async user => {
-        currentUser = user;
-        if (user) {
-            authGate.style.display = 'none';
-            mainContent.classList.add('active');
-            // Load pseudo from DB
-            try {
-                const snap = await firebaseDb.ref('users/' + user.uid + '/pseudo').once('value');
-                currentPseudo = snap.val() || user.displayName || user.email.split('@')[0];
-            } catch(e) {
-                currentPseudo = user.displayName || user.email.split('@')[0];
+    function setupAuthListener() {
+        persistenceReady.then(() => {
+            firebaseAuth.onAuthStateChanged(async user => {
+                currentUser = user;
+                if (user) {
+                    authGate.style.display = 'none';
+                    mainContent.classList.add('active');
+                    // Load pseudo from DB
+                    try {
+                        const snap = await firebaseDb.ref('users/' + user.uid + '/pseudo').once('value');
+                        currentPseudo = snap.val() || user.displayName || user.email.split('@')[0];
+                    } catch(e) {
+                        currentPseudo = user.displayName || user.email.split('@')[0];
+                    }
+                    initFeed();
+                } else {
+                    authGate.style.display = 'block';
+                    mainContent.classList.remove('active');
+                }
+            });
+        }).catch(err => {
+            console.error('Persistence init error:', err);
+            firebaseAuth.onAuthStateChanged(async user => {
+                currentUser = user;
+                if (user) {
+                    authGate.style.display = 'none';
+                    mainContent.classList.add('active');
+                    try {
+                        const snap = await firebaseDb.ref('users/' + user.uid + '/pseudo').once('value');
+                        currentPseudo = snap.val() || user.displayName || user.email.split('@')[0];
+                    } catch(e) {
+                        currentPseudo = user.displayName || user.email.split('@')[0];
+                    }
+                    initFeed();
+                } else {
+                    authGate.style.display = 'block';
+                    mainContent.classList.remove('active');
+                }
+            });
+        });
+    }
+
+    if (typeof persistenceReady !== 'undefined') {
+        setupAuthListener();
+    } else {
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof persistenceReady !== 'undefined') {
+                setupAuthListener();
+            } else {
+                setTimeout(() => {
+                    if (typeof persistenceReady !== 'undefined') {
+                        setupAuthListener();
+                    } else {
+                        console.error('persistenceReady not defined after 2s timeout on creations.html');
+                    }
+                }, 2000);
             }
-            initFeed();
-        } else {
-            authGate.style.display = 'block';
-            mainContent.classList.remove('active');
-        }
-    });
+        });
+    }
 
     // ---- Character counters ----
     titleInput.addEventListener('input', () => {

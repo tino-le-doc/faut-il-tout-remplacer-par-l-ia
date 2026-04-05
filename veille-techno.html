@@ -1005,14 +1005,44 @@
         // ==================== AUTH ====================
         let isAdminUser = false;
 
-        auth.onAuthStateChanged(user => {
-            currentUser = user;
-            isAdminUser = isAdmin(user);
-            // Afficher/cacher la section admin
-            document.getElementById('adminSection').style.display = isAdminUser ? 'block' : 'none';
-            // Re-render pour afficher les boutons admin
-            if (allArticles.length > 0) renderArticles();
-        });
+        function setupAuthListener1() {
+            persistenceReady.then(() => {
+                auth.onAuthStateChanged(user => {
+                    currentUser = user;
+                    isAdminUser = isAdmin(user);
+                    // Afficher/cacher la section admin
+                    document.getElementById('adminSection').style.display = isAdminUser ? 'block' : 'none';
+                    // Re-render pour afficher les boutons admin
+                    if (allArticles.length > 0) renderArticles();
+                });
+            }).catch(err => {
+                console.error('Persistence init error (listener 1):', err);
+                auth.onAuthStateChanged(user => {
+                    currentUser = user;
+                    isAdminUser = isAdmin(user);
+                    document.getElementById('adminSection').style.display = isAdminUser ? 'block' : 'none';
+                    if (allArticles.length > 0) renderArticles();
+                });
+            });
+        }
+
+        if (typeof persistenceReady !== 'undefined') {
+            setupAuthListener1();
+        } else {
+            document.addEventListener('DOMContentLoaded', () => {
+                if (typeof persistenceReady !== 'undefined') {
+                    setupAuthListener1();
+                } else {
+                    setTimeout(() => {
+                        if (typeof persistenceReady !== 'undefined') {
+                            setupAuthListener1();
+                        } else {
+                            console.error('persistenceReady not defined after 2s timeout on veille-techno.html (listener 1)');
+                        }
+                    }, 2000);
+                }
+            });
+        }
 
         // ==================== PERSISTANCE LIKES (localStorage) ====================
         const LIKES_STORAGE_KEY = 'veilleLikes';
@@ -1400,9 +1430,36 @@
         loadTrending();
 
         // Quand l'admin se connecte, tenter de synchroniser les articles dans Firebase
-        auth.onAuthStateChanged(user => {
-            if (isAdmin(user)) seedArticles();
-        });
+        function setupAuthListener2() {
+            persistenceReady.then(() => {
+                auth.onAuthStateChanged(user => {
+                    if (isAdmin(user)) seedArticles();
+                });
+            }).catch(err => {
+                console.error('Persistence init error (listener 2):', err);
+                auth.onAuthStateChanged(user => {
+                    if (isAdmin(user)) seedArticles();
+                });
+            });
+        }
+
+        if (typeof persistenceReady !== 'undefined') {
+            setupAuthListener2();
+        } else {
+            document.addEventListener('DOMContentLoaded', () => {
+                if (typeof persistenceReady !== 'undefined') {
+                    setupAuthListener2();
+                } else {
+                    setTimeout(() => {
+                        if (typeof persistenceReady !== 'undefined') {
+                            setupAuthListener2();
+                        } else {
+                            console.error('persistenceReady not defined after 2s timeout on veille-techno.html (listener 2)');
+                        }
+                    }, 2000);
+                }
+            });
+        }
     </script>
 
     <!-- Bouton Partager Flottant -->

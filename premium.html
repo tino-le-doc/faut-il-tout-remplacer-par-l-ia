@@ -377,37 +377,92 @@
     }
 
     // Auth
-    auth.onAuthStateChanged(async (user) => {
-        currentUser = user;
-        const statusEl = document.getElementById('userStatus');
-        const premiumEl = document.getElementById('alreadyPremium');
-        const pricingEl = document.getElementById('pricingSection');
+    function setupAuthListener() {
+        persistenceReady.then(() => {
+            auth.onAuthStateChanged(async (user) => {
+                currentUser = user;
+                const statusEl = document.getElementById('userStatus');
+                const premiumEl = document.getElementById('alreadyPremium');
+                const pricingEl = document.getElementById('pricingSection');
 
-        if (user) {
-            statusEl.classList.add('active');
-            try {
-                const snapshot = await db.ref('users/' + user.uid).once('value');
-                userProfile = snapshot.val() || {};
-                document.getElementById('userAvatar').textContent = userProfile.pseudo ? userProfile.pseudo.charAt(0).toUpperCase() : '?';
-                document.getElementById('userName').textContent = userProfile.pseudo || 'Utilisateur';
+                if (user) {
+                    statusEl.classList.add('active');
+                    try {
+                        const snapshot = await db.ref('users/' + user.uid).once('value');
+                        userProfile = snapshot.val() || {};
+                        document.getElementById('userAvatar').textContent = userProfile.pseudo ? userProfile.pseudo.charAt(0).toUpperCase() : '?';
+                        document.getElementById('userName').textContent = userProfile.pseudo || 'Utilisateur';
 
-                if (isAdmin(user)) {
-                    document.getElementById('adminConfigBtn').style.display = 'inline-block';
+                        if (isAdmin(user)) {
+                            document.getElementById('adminConfigBtn').style.display = 'inline-block';
+                        }
+
+                        if (userProfile.premium && userProfile.premiumExpiry > Date.now()) {
+                            document.getElementById('userPlan').textContent = '✨ Premium';
+                            document.getElementById('userPlan').classList.add('premium');
+                            premiumEl.classList.add('active');
+                            pricingEl.style.display = 'none';
+                            document.getElementById('premiumExpires').textContent = 'Expire le ' + new Date(userProfile.premiumExpiry).toLocaleDateString('fr-FR');
+                        } else {
+                            document.getElementById('userPlan').textContent = 'Plan Gratuit';
+                        }
+                    } catch (e) { console.error(e); }
                 }
+                setTimeout(checkUrlParams, 500);
+            });
+        }).catch(err => {
+            console.error('Persistence init error:', err);
+            auth.onAuthStateChanged(async (user) => {
+                currentUser = user;
+                const statusEl = document.getElementById('userStatus');
+                const premiumEl = document.getElementById('alreadyPremium');
+                const pricingEl = document.getElementById('pricingSection');
 
-                if (userProfile.premium && userProfile.premiumExpiry > Date.now()) {
-                    document.getElementById('userPlan').textContent = '✨ Premium';
-                    document.getElementById('userPlan').classList.add('premium');
-                    premiumEl.classList.add('active');
-                    pricingEl.style.display = 'none';
-                    document.getElementById('premiumExpires').textContent = 'Expire le ' + new Date(userProfile.premiumExpiry).toLocaleDateString('fr-FR');
-                } else {
-                    document.getElementById('userPlan').textContent = 'Plan Gratuit';
+                if (user) {
+                    statusEl.classList.add('active');
+                    try {
+                        const snapshot = await db.ref('users/' + user.uid).once('value');
+                        userProfile = snapshot.val() || {};
+                        document.getElementById('userAvatar').textContent = userProfile.pseudo ? userProfile.pseudo.charAt(0).toUpperCase() : '?';
+                        document.getElementById('userName').textContent = userProfile.pseudo || 'Utilisateur';
+
+                        if (isAdmin(user)) {
+                            document.getElementById('adminConfigBtn').style.display = 'inline-block';
+                        }
+
+                        if (userProfile.premium && userProfile.premiumExpiry > Date.now()) {
+                            document.getElementById('userPlan').textContent = '✨ Premium';
+                            document.getElementById('userPlan').classList.add('premium');
+                            premiumEl.classList.add('active');
+                            pricingEl.style.display = 'none';
+                            document.getElementById('premiumExpires').textContent = 'Expire le ' + new Date(userProfile.premiumExpiry).toLocaleDateString('fr-FR');
+                        } else {
+                            document.getElementById('userPlan').textContent = 'Plan Gratuit';
+                        }
+                    } catch (e) { console.error(e); }
                 }
-            } catch (e) { console.error(e); }
-        }
-        setTimeout(checkUrlParams, 500);
-    });
+                setTimeout(checkUrlParams, 500);
+            });
+        });
+    }
+
+    if (typeof persistenceReady !== 'undefined') {
+        setupAuthListener();
+    } else {
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof persistenceReady !== 'undefined') {
+                setupAuthListener();
+            } else {
+                setTimeout(() => {
+                    if (typeof persistenceReady !== 'undefined') {
+                        setupAuthListener();
+                    } else {
+                        console.error('persistenceReady not defined after 2s timeout on premium.html');
+                    }
+                }, 2000);
+            }
+        });
+    }
 
     // Subscribe
     async function subscribe(plan) {

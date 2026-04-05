@@ -1423,29 +1423,74 @@
 
         // ==================== USER STATE ====================
         
-        auth.onAuthStateChanged(async user => {
-            const userBtn = document.getElementById('userBtn');
-            
-            if (user) {
-                try {
-                    const snapshot = await db.ref('users/' + user.uid).once('value');
-                    const profile = snapshot.val();
+        function setupAuthListener() {
+            persistenceReady.then(() => {
+                auth.onAuthStateChanged(async user => {
+                    const userBtn = document.getElementById('userBtn');
                     
-                    if (profile && profile.pseudo) {
-                        userBtn.classList.add('logged-in');
-                        userBtn.innerHTML = `
-                            <div class="user-avatar">${profile.pseudo.charAt(0).toUpperCase()}</div>
-                            <span>${profile.pseudo}</span>
-                        `;
+                    if (user) {
+                        try {
+                            const snapshot = await db.ref('users/' + user.uid).once('value');
+                            const profile = snapshot.val();
+                            
+                            if (profile && profile.pseudo) {
+                                userBtn.classList.add('logged-in');
+                                userBtn.innerHTML = `
+                                    <div class="user-avatar">${profile.pseudo.charAt(0).toUpperCase()}</div>
+                                    <span>${profile.pseudo}</span>
+                                `;
+                            }
+                        } catch (e) {
+                            console.log('Erreur profil:', e);
+                        }
+                    } else {
+                        userBtn.classList.remove('logged-in');
+                        userBtn.innerHTML = `<span>👤</span><span>Connexion / Inscription</span>`;
                     }
-                } catch (e) {
-                    console.log('Erreur profil:', e);
+                });
+            }).catch(err => {
+                console.error('Persistence init error:', err);
+                auth.onAuthStateChanged(async user => {
+                    const userBtn = document.getElementById('userBtn');
+                    if (user) {
+                        try {
+                            const snapshot = await db.ref('users/' + user.uid).once('value');
+                            const profile = snapshot.val();
+                            if (profile && profile.pseudo) {
+                                userBtn.classList.add('logged-in');
+                                userBtn.innerHTML = `
+                                    <div class="user-avatar">${profile.pseudo.charAt(0).toUpperCase()}</div>
+                                    <span>${profile.pseudo}</span>
+                                `;
+                            }
+                        } catch (e) {
+                            console.log('Erreur profil:', e);
+                        }
+                    } else {
+                        userBtn.classList.remove('logged-in');
+                        userBtn.innerHTML = `<span>👤</span><span>Connexion / Inscription</span>`;
+                    }
+                });
+            });
+        }
+
+        if (typeof persistenceReady !== 'undefined') {
+            setupAuthListener();
+        } else {
+            document.addEventListener('DOMContentLoaded', () => {
+                if (typeof persistenceReady !== 'undefined') {
+                    setupAuthListener();
+                } else {
+                    setTimeout(() => {
+                        if (typeof persistenceReady !== 'undefined') {
+                            setupAuthListener();
+                        } else {
+                            console.error('persistenceReady not defined after 2s timeout on index.html');
+                        }
+                    }, 2000);
                 }
-            } else {
-                userBtn.classList.remove('logged-in');
-                userBtn.innerHTML = `<span>👤</span><span>Connexion / Inscription</span>`;
-            }
-        });
+            });
+        }
 
         // ==================== PARTAGE RÉSEAUX SOCIAUX ====================
 
