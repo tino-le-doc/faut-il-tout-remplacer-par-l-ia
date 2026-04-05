@@ -388,6 +388,13 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script src="js/firebase-config.js"></script>
+
+    <!-- Protéger cette page - exige une authentification -->
+    <script>
+        (async function() {
+            await requireAuth();
+        })();
+    </script>
 <script>
 // ==================== INIT ====================
 const auth = firebaseAuth;
@@ -412,6 +419,13 @@ let authCheckTimeout = null;
 
 // ==================== AUTH ====================
 // Attendre que persistenceReady soit défini (sortie de firebase-config.js)
+
+    <!-- Protéger cette page - exige une authentification -->
+    <script>
+        (async function() {
+            await requireAuth();
+        })();
+    </script>
 function setupAuthListener() {
     persistenceReady.then(() => {
         auth.onAuthStateChanged(async user => {
@@ -476,6 +490,13 @@ function setupAuthListener() {
 }
 
 // Attendre que firebase-config.js soit chargé
+
+    <!-- Protéger cette page - exige une authentification -->
+    <script>
+        (async function() {
+            await requireAuth();
+        })();
+    </script>
 if (typeof persistenceReady !== 'undefined') {
     setupAuthListener();
 } else {

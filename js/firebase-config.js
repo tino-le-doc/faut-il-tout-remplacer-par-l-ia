@@ -187,3 +187,36 @@ const ModerationSystem = {
         return this.errorMessages[Math.floor(Math.random() * this.errorMessages.length)];
     }
 };
+
+/**
+ * Protège une page en forçant l'authentification
+ * Si l'utilisateur n'est pas connecté, redirige vers compte.html
+ * @returns {Promise<boolean>} true si authentifié, false sinon
+ */
+async function requireAuth() {
+    await persistenceReady;
+    
+    return new Promise((resolve) => {
+        if (!firebaseAuth) {
+            console.warn('Firebase Auth non disponible');
+            resolve(false);
+            return;
+        }
+
+        const unsubscribe = firebaseAuth.onAuthStateChanged((user) => {
+            unsubscribe(); // Stop listening après la première vérification
+            
+            if (user) {
+                // Utilisateur connecté ✅
+                console.log('✅ Authentifié:', user.email);
+                resolve(true);
+            } else {
+                // Pas authentifié → rediriger vers login
+                console.log('🔐 Redirection vers login requise');
+                const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+                window.location.href = 'compte.html?redirect=' + encodeURIComponent(currentPage);
+                resolve(false);
+            }
+        });
+    });
+}
