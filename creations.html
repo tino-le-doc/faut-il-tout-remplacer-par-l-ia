@@ -882,7 +882,7 @@
         } else if (creation.mediaType === 'video-upload' && creation.mediaUrl) {
             mediaHtml = `<div class="card-media">
                 <span class="card-cat-badge ${escapeHtml(creation.category)}">${catLabel}</span>
-                <video src="${escapeHtml(creation.mediaUrl)}" controls playsinline preload="metadata" style="width:100%;max-height:420px;display:block;background:#000;border-radius:0;" title="${escapeHtml(creation.title)}"></video>
+                <video src="${escapeHtml(creation.mediaUrl)}" controls preload="metadata" style="width:100%;max-height:420px;display:block;background:#000;border-radius:0;" title="${escapeHtml(creation.title)}"></video>
             </div>`;
         } else if (creation.mediaType === 'video' && creation.mediaUrl) {
             mediaHtml = `<div class="card-media">
