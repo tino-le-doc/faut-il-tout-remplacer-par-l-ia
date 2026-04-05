@@ -1,4 +1,4 @@
-name: 🚀 Deploy to Firebase Hosting
+name: 🚀 Deploy to Firebase
 
 on:
   push:
@@ -19,3 +19,10 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TINO_LE_DOC_COM }}
           channelId: live
           projectId: tino-le-doc
+
+      - name: Deploy Database Rules
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only database
+        env:
+          GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TINO_LE_DOC_COM }}
