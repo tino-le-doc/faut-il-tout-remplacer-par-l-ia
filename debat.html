@@ -893,15 +893,9 @@
             await requireAuth();
         })();
     </script>
+
     <script>
         // Config Firebase chargee depuis js/firebase-config.js
-
-    <!-- Protéger cette page - exige une authentification -->
-    <script>
-        (async function() {
-            await requireAuth();
-        })();
-    </script>
         const db = firebaseDb;
         const auth = firebaseAuth;
 

@@ -353,13 +353,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="js/firebase-config.js"></script>
-
-    <!-- Protéger cette page - exige une authentification -->
-    <script>
-        (async function() {
-            await requireAuth();
-        })();
-    </script>
 <script>
 // ==================== SÉCURITÉ ====================
 
@@ -443,13 +436,6 @@ const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/
 let user = null, oderId = null, msgsRef, usersRef, typeRef;
 
 // Config Firebase chargee depuis js/firebase-config.js
-
-    <!-- Protéger cette page - exige une authentification -->
-    <script>
-        (async function() {
-            await requireAuth();
-        })();
-    </script>
 const auth = firebaseAuth;
 const db = firebaseDb;
 try {
