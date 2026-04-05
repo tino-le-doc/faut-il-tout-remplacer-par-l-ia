@@ -349,7 +349,7 @@
                         <div class="upload-filename" id="uploadFilename"></div>
                     </div>
                     <div class="upload-progress" id="uploadProgress">
-                        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+                        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
                         <div class="progress-text" id="progressText">Téléversement en cours...</div>
                     </div>
                 </div>
@@ -358,7 +358,7 @@
 
                 <!-- Video upload (max 1mn) -->
                 <div class="form-row">
-                    <label>Vidéo directe <small style="color:var(--orange)">⏱️ 5s min — 1mn max</small></label>
+                    <label>Vidéo directe <small class="text-orange">⏱️ 5s min — 1mn max</small></label>
                     <div class="upload-zone" id="videoUploadZone">
                         <input type="file" id="videoFileInput" accept="video/mp4,video/webm,video/quicktime,video/ogg,video/*">
                         <div class="upload-zone-icon">🎬</div>
@@ -368,7 +368,7 @@
                         <div id="videoDurationBadge"></div>
                     </div>
                     <div class="upload-progress" id="videoUploadProgress">
-                        <div class="progress-bar"><div class="progress-fill" id="videoProgressFill" style="width:0%"></div></div>
+                        <div class="progress-bar"><div class="progress-fill" id="videoProgressFill"></div></div>
                         <div class="progress-text" id="videoProgressText">Téléversement vidéo en cours...</div>
                     </div>
                 </div>
@@ -402,10 +402,10 @@
                 <div>Chargement des créations...</div>
             </div>
             <div class="feed" id="feed"></div>
-            <div class="feed-empty" id="feedEmpty" style="display:none">
+            <div class="feed-empty d-none" id="feedEmpty">
                 <div class="icon">🎨</div>
                 <p>Aucune création dans cette catégorie.</p>
-                <p style="font-size:0.85rem;margin-top:8px;">Soyez le premier à partager !</p>
+                <p class="text-small">Soyez le premier à partager !</p>
             </div>
         </div>
 
