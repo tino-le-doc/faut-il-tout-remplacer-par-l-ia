@@ -1169,9 +1169,11 @@
         <!-- Logo Top -->
         <div class="logo-container logo-top">
             <picture>
-            <source srcset="img/logo.avif" type="image/avif">
-            <source srcset="img/logo.webp" type="image/webp">
-            <img src="img/logo.webp" alt="TLD" class="logo-img" loading="eager" width="200" height="200" decoding="async">
+                <source srcset="img/logo.avif" type="image/avif">
+                <img src="img/logo-280.webp"
+                     srcset="img/logo-160.webp 160w, img/logo-280.webp 280w, img/logo-350.webp 350w"
+                     sizes="(max-width: 480px) 160px, (max-width: 768px) 280px, 350px"
+                     alt="TLD" class="logo-img" loading="eager" fetchpriority="high" width="280" height="280" decoding="async">
             </picture>
         </div>
 
@@ -1356,8 +1358,10 @@
         <div class="logo-container logo-bottom">
             <picture>
             <source srcset="img/logo.avif" type="image/avif">
-            <source srcset="img/logo.webp" type="image/webp">
-            <img src="img/logo.webp" alt="TLD" class="logo-img large" loading="lazy" width="250" height="250" decoding="async">
+            <img src="img/logo-280.webp"
+                 srcset="img/logo-160.webp 160w, img/logo-280.webp 280w, img/logo-350.webp 350w"
+                 sizes="(max-width: 480px) 160px, (max-width: 768px) 280px, 350px"
+                 alt="TLD" class="logo-img large" loading="lazy" width="280" height="280" decoding="async">
             </picture>
         </div>
 

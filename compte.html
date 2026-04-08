@@ -40,7 +40,7 @@
     <meta name="twitter:site" content="@tino_le_doc">
     <meta name="twitter:image" content="https://tino-le-doc.com/img/1000074494.png">
     <title>Mon Compte 👤 TLD</title>
-    <script src="https://www.google.com/recaptcha/enterprise.js?render=6Ld1ZXMsAAAAAA21gs6gWSD4jo0dJR_7cEGKaWNJ"></script>
+    <script defer src="https://www.google.com/recaptcha/enterprise.js?render=6Ld1ZXMsAAAAAA21gs6gWSD4jo0dJR_7cEGKaWNJ"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"></noscript>
     <link rel="stylesheet" href="css/common.css">
@@ -682,13 +682,13 @@
         </div>
 
         <!-- Loading -->
-        <div class="loading" id="loading">
+        <div class="loading active" id="loading">
             <div class="spinner"></div>
-            <p>Chargement...</p>
+            <p>Vérification en cours...</p>
         </div>
 
         <!-- Auth Forms -->
-        <div class="auth-container" id="authContainer">
+        <div class="auth-container" id="authContainer" style="display:none">
             <div class="auth-tabs">
                 <button class="auth-tab active" data-tab="login">🔑 Connexion</button>
                 <button class="auth-tab" data-tab="register">✨ Inscription</button>
@@ -853,9 +853,9 @@
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
     <script src="js/firebase-config.js"></script>
 
     <script>
@@ -902,10 +902,17 @@
     // ==================== AUTH STATE ====================
     // IMPORTANT: Attendre que la persistence soit configurée avant d'attacher le listener
     function setupAuthListener() {
+        // Timeout de sécurité : si Firebase ne répond pas en 5s, afficher le formulaire
+        const authTimeout = setTimeout(() => {
+            loading.classList.remove('active');
+            authContainer.style.display = 'block';
+        }, 5000);
+
         persistenceReady.then(() => {
             console.log('🔐 Persistence ready, attaching auth state listener...');
-            
+
             auth.onAuthStateChanged(async (user) => {
+                clearTimeout(authTimeout);
                 console.log('👤 Auth state changed:', user ? user.email : 'non connecté');
                 loading.classList.remove('active');
 
@@ -955,6 +962,7 @@
             console.error('Erreur persistence:', err);
             // Fallback: attacher le listener même si persistence échoue
             auth.onAuthStateChanged(async (user) => {
+                clearTimeout(authTimeout);
                 console.log('👤 Auth state changed (fallback):', user ? user.email : 'non connecté');
                 loading.classList.remove('active');
                 if (user) {
