@@ -1612,10 +1612,13 @@
     }
     </script>
 
+    <script src="js/consent.js"></script>
+
     <!-- ===== DEFERRED 3RD PARTY SCRIPTS ===== -->
     <script>
-    // Load Google Tag Manager AFTER LCP (post-LCI optimization)
-    function loadDeferredScripts() {
+    // Load Google Tag Manager only if analytics consent is given
+    window.TLDLoadAnalytics = function loadDeferredScripts() {
+        if (!window.TLDConsent || !window.TLDConsent.hasAnalytics()) return;
         // Google Tag Manager - Load after LCP
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
@@ -1636,21 +1639,20 @@
         // (adsbygoogle = window.adsbygoogle || []).push({});
     }
 
-    // Load scripts after LCP (detect via PerformanceObserver or timeout)
-    if (window.PerformanceObserver) {
-        try {
-            var performanceObserver = new PerformanceObserver(function(list) {
-                // Wait 100ms after LCP to load third-party scripts
-                setTimeout(loadDeferredScripts, 100);
-            });
-            performanceObserver.observe({entryTypes: ['paint', 'largest-contentful-paint']});
-        } catch(e) {
-            // Fallback: load after 2 seconds
-            setTimeout(loadDeferredScripts, 2000);
+    // Load analytics after LCP only if consent was already given
+    if (window.TLDConsent && window.TLDConsent.hasAnalytics()) {
+        if (window.PerformanceObserver) {
+            try {
+                var performanceObserver = new PerformanceObserver(function(list) {
+                    setTimeout(window.TLDLoadAnalytics, 100);
+                });
+                performanceObserver.observe({entryTypes: ['paint', 'largest-contentful-paint']});
+            } catch(e) {
+                setTimeout(window.TLDLoadAnalytics, 2000);
+            }
+        } else {
+            setTimeout(window.TLDLoadAnalytics, 2000);
         }
-    } else {
-        // Fallback for older browsers
-        setTimeout(loadDeferredScripts, 2000);
     }
     </script>
 </body>
