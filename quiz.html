@@ -5,13 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-adsense-account" content="ca-pub-8612974241235499">
     <meta name="google-site-verification" content="kueDijqdBruvzy4WhCQoXnfmzw8X964hNdl0rv-jfyE" />
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WML1YG17WW"></script>
+  <script src="js/consent.js"></script>
+  <!-- Google Analytics + AdSense: chargés uniquement après consentement RGPD -->
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-WML1YG17WW');
+    window.TLDLoadAnalytics = function() {
+        if (!window.TLDConsent || !window.TLDConsent.hasAnalytics()) return;
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-WML1YG17WW';
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-WML1YG17WW');
+    };
+    if (window.TLDConsent && window.TLDConsent.hasAnalytics()) {
+        window.TLDLoadAnalytics();
+    }
   </script>
     <!--
       Copyright (c) 2025 TLD - Tous droits réservés
@@ -19,8 +30,15 @@
       Licence proprietaire - voir fichier LICENSE
     -->
     <meta http-equiv="content-language" content="fr">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8612974241235499"
-         crossorigin="anonymous"></script>
+    <script>
+    if (window.TLDConsent && window.TLDConsent.hasAnalytics()) {
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8612974241235499';
+        s.setAttribute('crossorigin', 'anonymous');
+        document.head.appendChild(s);
+    }
+    </script>
     <meta name="author" content="TLD">
     <meta name="copyright" content="Copyright 2025 TLD. Tous droits réservés.">
     <meta name="apple-mobile-web-app-capable" content="yes">
