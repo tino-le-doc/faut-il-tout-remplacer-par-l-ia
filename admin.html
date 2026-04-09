@@ -1955,7 +1955,7 @@
 
         // ==================== UTILISATEURS ====================
         function loadUsers() {
-            db.ref('pseudos').once('value', function(snap) {
+            db.ref('pseudos').on('value', function(snap) {
                 var data = snap.val() || {};
                 var tbody = document.getElementById('usersList');
                 var entries = Object.entries(data);
