@@ -29,7 +29,9 @@ try {
     if (firebase.auth) {
         firebaseAuth = firebase.auth();
     }
-    // Analytics n'est pas toujours charge
+    // Analytics: seulement si consentement donné (RGPD)
+    // Le Consent Mode v2 (gtag 'consent' default 'denied') gère le cas
+    // où l'utilisateur n'a pas encore décidé ou a refusé.
     if (firebase.analytics) {
         firebaseAnalytics = firebase.analytics();
     }
