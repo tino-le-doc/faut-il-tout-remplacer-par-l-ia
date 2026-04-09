@@ -1612,25 +1612,29 @@
     }
     </script>
 
+    <!-- Consent Mode v2: GA chargé toujours, données collectées seulement après accord -->
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', {
+        analytics_storage: 'denied',
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        wait_for_update: 500
+    });
+    </script>
     <script src="js/consent.js"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WML1YG17WW"></script>
+    <script>
+    gtag('js', new Date());
+    gtag('config', 'G-WML1YG17WW');
+    </script>
 
     <!-- ===== DEFERRED 3RD PARTY SCRIPTS ===== -->
     <script>
-    // Load Google Tag Manager only if analytics consent is given
-    window.TLDLoadAnalytics = function loadDeferredScripts() {
-        if (!window.TLDConsent || !window.TLDConsent.hasAnalytics()) return;
-        // Google Tag Manager - Load after LCP
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'UA-XXXXXXXX-X'); // Insert your GA tracking ID
-        
-        var gtmScript = document.createElement('script');
-        gtmScript.async = true;
-        gtmScript.src = 'https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXX-X';
-        document.head.appendChild(gtmScript);
-
-        // Google AdSense - Load after LCP
+    function loadDeferredScripts() {
+        // Google AdSense - Load after LCP (seulement si consentement)
         // var adsScript = document.createElement('script');
         // adsScript.async = true;
         // adsScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8612974241235499';
@@ -1639,21 +1643,8 @@
         // (adsbygoogle = window.adsbygoogle || []).push({});
     }
 
-    // Load analytics after LCP only if consent was already given
-    if (window.TLDConsent && window.TLDConsent.hasAnalytics()) {
-        if (window.PerformanceObserver) {
-            try {
-                var performanceObserver = new PerformanceObserver(function(list) {
-                    setTimeout(window.TLDLoadAnalytics, 100);
-                });
-                performanceObserver.observe({entryTypes: ['paint', 'largest-contentful-paint']});
-            } catch(e) {
-                setTimeout(window.TLDLoadAnalytics, 2000);
-            }
-        } else {
-            setTimeout(window.TLDLoadAnalytics, 2000);
-        }
     }
+    setTimeout(loadDeferredScripts, 2000);
     </script>
 </body>
 </html>
