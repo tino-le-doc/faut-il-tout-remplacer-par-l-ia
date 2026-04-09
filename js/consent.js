@@ -1,7 +1,11 @@
 /**
- * TLD - Bannière de consentement cookies (RGPD)
+ * TLD - Bannière de consentement cookies (RGPD / Google Consent Mode v2)
  * Stockage: localStorage['tld_consent'] = { v, choice: 'all'|'none', ts }
  * API globale: window.TLDConsent.hasAnalytics()
+ *
+ * Le script GA doit être chargé AVANT ce fichier avec les defaults:
+ *   gtag('consent', 'default', { analytics_storage: 'denied', ... })
+ * Ce fichier appelle gtag('consent', 'update', ...) quand l'utilisateur accepte.
  */
 (function () {
     var KEY = 'tld_consent';
@@ -15,13 +19,41 @@
         localStorage.setItem(KEY, JSON.stringify({ v: VERSION, choice: choice, ts: Date.now() }));
     }
 
+    function grantAnalytics() {
+        if (typeof window.gtag === 'function') {
+            window.gtag('consent', 'update', {
+                analytics_storage: 'granted',
+                ad_storage: 'granted',
+                ad_user_data: 'granted',
+                ad_personalization: 'granted'
+            });
+        }
+    }
+
+    function denyAnalytics() {
+        if (typeof window.gtag === 'function') {
+            window.gtag('consent', 'update', {
+                analytics_storage: 'denied',
+                ad_storage: 'denied',
+                ad_user_data: 'denied',
+                ad_personalization: 'denied'
+            });
+        }
+    }
+
     window.TLDConsent = {
         hasConsented: function () { var c = getRaw(); return !!(c && c.v === VERSION); },
         hasAnalytics: function () { var c = getRaw(); return !!(c && c.v === VERSION && c.choice === 'all'); },
         reset: function () { localStorage.removeItem(KEY); }
     };
 
-    // Déjà décidé → pas de bannière
+    // Si déjà accepté → activer Analytics immédiatement (avant le DOMContentLoaded)
+    if (window.TLDConsent.hasAnalytics()) {
+        grantAnalytics();
+        return; // pas de bannière
+    }
+
+    // Si déjà refusé → pas de bannière, consent reste denied
     if (window.TLDConsent.hasConsented()) return;
 
     /* ---------- HTML + CSS de la bannière ---------- */
@@ -37,14 +69,16 @@
 
     function dismiss(choice) {
         setConsent(choice);
+        if (choice === 'all') {
+            grantAnalytics();
+        } else {
+            denyAnalytics();
+        }
         banner.style.animation = 'none';
         banner.style.transition = 'transform .3s ease-in, opacity .3s ease-in';
         banner.style.transform = 'translateY(100%)';
         banner.style.opacity = '0';
         setTimeout(function () { banner.remove(); style.remove(); }, 320);
-        if (choice === 'all' && typeof window.TLDLoadAnalytics === 'function') {
-            window.TLDLoadAnalytics();
-        }
     }
 
     document.addEventListener('DOMContentLoaded', function () {
