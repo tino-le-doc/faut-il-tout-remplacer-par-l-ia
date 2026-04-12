@@ -38,6 +38,10 @@
     <link rel="apple-touch-icon" href="img/1000074494.png">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="img/1000074494.png">
+    <!-- Préchargement Firebase pour accélérer l'auth -->
+    <link rel="preload" href="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js" as="script" crossorigin>
+    <link rel="preload" href="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js" as="script" crossorigin>
+    <link rel="preload" href="js/firebase-config.js" as="script">
     <meta name="description" content="Gerez votre compte TLD. Accedez a votre profil, vos statistiques et vos parametres.">
     <meta property="og:title" content="Mon Compte - TLD">
     <meta property="og:description" content="Gerez votre compte et accedez a votre profil TLD.">
@@ -691,14 +695,14 @@
             </div>
         </div>
 
-        <!-- Loading -->
-        <div class="loading active" id="loading">
+        <!-- Loading (masqué par défaut - formulaire montré en premier) -->
+        <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p>Vérification en cours...</p>
+            <p>Chargement du profil...</p>
         </div>
 
-        <!-- Auth Forms -->
-        <div class="auth-container" id="authContainer" style="display:none">
+        <!-- Auth Forms (visible par défaut) -->
+        <div class="auth-container" id="authContainer">
             <div class="auth-tabs">
                 <button class="auth-tab active" data-tab="login">🔑 Connexion</button>
                 <button class="auth-tab" data-tab="register">✨ Inscription</button>
@@ -910,24 +914,12 @@
     }
 
     // ==================== AUTH STATE ====================
-    // IMPORTANT: Attendre que la persistence soit configurée avant d'attacher le listener
+    // Formulaire visible par défaut → on cache quand l'utilisateur est connecté
     function setupAuthListener() {
-        // Timeout de sécurité : si Firebase ne répond pas en 5s, afficher le formulaire
-        const authTimeout = setTimeout(() => {
-            loading.classList.remove('active');
-            authContainer.style.display = 'block';
-        }, 5000);
-
         persistenceReady.then(() => {
-            console.log('🔐 Persistence ready, attaching auth state listener...');
-
             auth.onAuthStateChanged(async (user) => {
-                clearTimeout(authTimeout);
-                console.log('👤 Auth state changed:', user ? user.email : 'non connecté');
-                loading.classList.remove('active');
-
                 if (user) {
-                    // User is logged in
+                    // Utilisateur connecté : cacher le formulaire, montrer le profil
                     authContainer.style.display = 'none';
                     profileContainer.classList.add('active');
 
@@ -974,18 +966,14 @@
                         document.getElementById('profileName').textContent = user.email;
                     }
                 } else {
-                    // User is not logged in
-                    authContainer.style.display = 'block';
+                    // Pas connecté : formulaire déjà visible, rien à faire
                     profileContainer.classList.remove('active');
                 }
             });
         }).catch(err => {
             console.error('Erreur persistence:', err);
-            // Fallback: attacher le listener même si persistence échoue
+            // Fallback si persistence échoue
             auth.onAuthStateChanged(async (user) => {
-                clearTimeout(authTimeout);
-                console.log('👤 Auth state changed (fallback):', user ? user.email : 'non connecté');
-                loading.classList.remove('active');
                 if (user) {
                     authContainer.style.display = 'none';
                     profileContainer.classList.add('active');
@@ -1024,7 +1012,7 @@
                         document.getElementById('profileName').textContent = user.email;
                     }
                 } else {
-                    authContainer.style.display = 'block';
+                    // Pas connecté : formulaire déjà visible
                     profileContainer.classList.remove('active');
                 }
             });
