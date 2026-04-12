@@ -29,8 +29,7 @@
       Licence proprietaire - voir fichier LICENSE
     -->
     <meta http-equiv="content-language" content="fr">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8612974241235499"
-         crossorigin="anonymous"></script>
+    <!-- AdSense retiré sur la page de connexion (inutile + overhead CPU) -->
     <meta name="author" content="TLD">
     <meta name="copyright" content="Copyright 2025 TLD. Tous droits réservés.">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -38,6 +37,12 @@
     <link rel="apple-touch-icon" href="img/1000074494.png">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="img/1000074494.png">
+    <!-- Preconnect Firebase Auth : réduit la latence DNS+TCP avant la 1ère requête auth -->
+    <link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://securetoken.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="//identitytoolkit.googleapis.com">
+    <link rel="dns-prefetch" href="//securetoken.googleapis.com">
     <!-- Préchargement Firebase pour accélérer l'auth -->
     <link rel="preload" href="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js" as="script" crossorigin>
     <link rel="preload" href="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js" as="script" crossorigin>
@@ -1101,9 +1106,22 @@
     // ==================== RECAPTCHA ====================
     const RECAPTCHA_SITE_KEY = '6Ld1ZXMsAAAAAA21gs6gWSD4jo0dJR_7cEGKaWNJ';
 
+    // Pré-initialiser reCAPTCHA dès que le script est disponible (pas au submit)
+    // → quand l'utilisateur clique "Connexion", grecaptcha est déjà prêt
+    var _recaptchaReady = new Promise(function(resolve) {
+        function waitForRecaptcha() {
+            if (window.grecaptcha && window.grecaptcha.enterprise) {
+                grecaptcha.enterprise.ready(resolve);
+            } else {
+                setTimeout(waitForRecaptcha, 100);
+            }
+        }
+        waitForRecaptcha();
+    });
+
     async function getRecaptchaToken(action) {
         try {
-            await new Promise(resolve => grecaptcha.enterprise.ready(resolve));
+            await _recaptchaReady;
             const token = await grecaptcha.enterprise.execute(RECAPTCHA_SITE_KEY, { action });
             return token;
         } catch (error) {
