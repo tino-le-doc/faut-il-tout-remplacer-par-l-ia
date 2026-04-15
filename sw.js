@@ -1,5 +1,5 @@
 // Service Worker - TLD PWA
-const CACHE_NAME = 'tld-cache-v3';
+const CACHE_NAME = 'tld-cache-v4';
 const OFFLINE_URL = '/offline.html';
 
 // Ressources essentielles a mettre en cache lors de l'installation
@@ -9,7 +9,8 @@ const PRECACHE_URLS = [
   '/index.html',
   '/offline.html',
   '/css/common.css',
-  '/js/firebase-config.js',
+  '/js/firebase-config.js?v=2',
+  '/js/consent.js?v=1',
   '/js/i18n.js',
   '/img/1000074494.avif',
   '/img/1000074494.webp',
@@ -29,13 +30,13 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activation : nettoyage des anciens caches
+// Activation : nettoyage des anciens caches (toutes versions sauf la courante)
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames
-          .filter((name) => !name.startsWith('tld-cache'))
+          .filter((name) => name !== CACHE_NAME)
           .map((name) => caches.delete(name))
       );
     }).then(() => {
