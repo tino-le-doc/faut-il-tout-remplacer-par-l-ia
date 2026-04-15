@@ -1265,6 +1265,14 @@
                 height: calc(100dvh - 60px);
             }
 
+            /* Icônes seules sur petits smartphones : décalage réduit */
+            @media (max-width: 480px) {
+                .app-container {
+                    margin-top: 56px;
+                    height: calc(100dvh - 56px);
+                }
+            }
+
             /* Sidebar en overlay plein ecran */
             .sidebar {
                 position: fixed;
