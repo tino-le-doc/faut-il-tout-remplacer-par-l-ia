@@ -8,7 +8,7 @@ const PRECACHE_URLS = [
   '/',
   '/index.html',
   '/offline.html',
-  '/css/common.css',
+  '/css/common.css?v=1',
   '/js/firebase-config.js?v=2',
   '/js/consent.js?v=1',
   '/js/i18n.js',
