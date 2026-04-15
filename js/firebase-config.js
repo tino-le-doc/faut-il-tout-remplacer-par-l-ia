@@ -246,6 +246,9 @@ function initUserBadge() {
     // Ne pas créer deux fois
     if (document.getElementById('globalUserBadge')) return;
     if (!firebaseAuth || !firebaseDb) return;
+    // index.html possède son propre user-bar : pas de badge global
+    const _page = window.location.pathname.split('/').pop() || 'index.html';
+    if (_page === '' || _page === 'index.html') return;
 
     const badge = document.createElement('a');
     badge.id = 'globalUserBadge';
