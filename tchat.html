@@ -238,6 +238,15 @@
             .messages{max-height:none}
             .picker{max-height:130px}
         }
+
+        /* ===== JITSI VIDEO MODAL ===== */
+        .jitsi-modal{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.93);flex-direction:column;align-items:center;justify-content:center;padding:10px}
+        .jitsi-modal.active{display:flex}
+        .jitsi-header{width:100%;max-width:920px;display:flex;align-items:center;justify-content:space-between;padding:0 4px 10px}
+        .jitsi-title{font-family:'Syne',sans-serif;color:var(--cyan);font-size:1rem}
+        .jitsi-close{background:rgba(255,68,68,0.2);border:1px solid var(--red);color:var(--red);border-radius:10px;padding:8px 14px;cursor:pointer;font-size:0.9rem;transition:background 0.2s}
+        .jitsi-close:hover{background:rgba(255,68,68,0.4)}
+        .jitsi-frame{width:100%;max-width:920px;height:calc(100dvh - 80px);border:none;border-radius:16px}
     </style>
     <script type="application/ld+json">
     {
@@ -319,6 +328,7 @@
                 <div class="toolbar">
                     <button class="tool-btn" id="emojiBtnT" type="button">😀</button>
                     <button class="tool-btn" id="gifBtnT" type="button">GIF</button>
+                    <button class="tool-btn" id="videoBtnT" type="button" title="Visioconférence">📹</button>
                 </div>
 
                 <div class="picker" id="emojiPick">
@@ -357,6 +367,18 @@
         </div>
 
     <footer role="contentinfo"><strong>TLD</strong> | <a href="avis.html">Avis</a> | <a href="index.html">Débat</a></footer>
+</div>
+
+<!-- Modal Visioconférence Jitsi -->
+<div class="jitsi-modal" id="jitsiModal" role="dialog" aria-modal="true" aria-label="Visioconférence">
+    <div class="jitsi-header">
+        <span class="jitsi-title">📹 Visioconférence TLD du jour</span>
+        <button class="jitsi-close" id="jitsiClose" type="button">✕ Fermer</button>
+    </div>
+    <iframe class="jitsi-frame" id="jitsiFrame" src=""
+        allow="camera; microphone; fullscreen; display-capture; autoplay"
+        sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-downloads"
+        title="Visioconférence TLD"></iframe>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -886,6 +908,41 @@ if (isMobile) {
         document.getElementById('gifPick').classList.remove('active');
     });
 }
+
+// ==================== JITSI VIDEO ====================
+(function() {
+    function getJitsiRoom() {
+        const d = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        return 'TLDchat-' + d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+    }
+
+    document.getElementById('videoBtnT').addEventListener('click', function() {
+        const modal = document.getElementById('jitsiModal');
+        const frame = document.getElementById('jitsiFrame');
+        if (!frame.src || !frame.src.includes('meet.jit.si')) {
+            frame.src = 'https://meet.jit.si/' + getJitsiRoom();
+        }
+        modal.classList.add('active');
+    });
+
+    document.getElementById('jitsiClose').addEventListener('click', function() {
+        const modal = document.getElementById('jitsiModal');
+        const frame = document.getElementById('jitsiFrame');
+        modal.classList.remove('active');
+        frame.src = ''; // Libérer la caméra
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('jitsiModal');
+            if (modal.classList.contains('active')) {
+                modal.classList.remove('active');
+                document.getElementById('jitsiFrame').src = '';
+            }
+        }
+    });
+})();
 
 // Init
 renderEmojis('faces');
