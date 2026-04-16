@@ -261,6 +261,12 @@
           ".validate": "newData.hasChildren(['text', 'authorId', 'authorPseudo', 'timestamp']) && newData.child('text').isString() && newData.child('text').val().length >= 1 && newData.child('text').val().length <= 500"
         }
       }
+    },
+    "settings": {
+      "stripeConfig": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.token.email === 'martialfabrice@tino-le-doc.com'"
+      }
     }
   }
 }

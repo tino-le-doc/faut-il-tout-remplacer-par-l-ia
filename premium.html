@@ -344,13 +344,14 @@
     let currentUser = null;
     let userProfile = null;
 
-    // Load config
-    function loadConfig() {
+    // Load config from Firebase DB (partagé entre tous les appareils)
+    async function loadConfig() {
         try {
-            const saved = localStorage.getItem('tinoStripeConfig');
-            if (saved) stripeConfig = JSON.parse(saved);
+            const snap = await db.ref('settings/stripeConfig').once('value');
+            const saved = snap.val();
+            if (saved) stripeConfig = saved;
         } catch (e) {}
-        
+
         if (stripeConfig.stripeKey && stripeConfig.stripeKey.startsWith('pk_')) {
             try {
                 stripe = Stripe(stripeConfig.stripeKey);
@@ -382,19 +383,21 @@
         }
 
         stripeConfig = { stripeKey: key, priceMonthly: monthly, priceYearly: yearly };
-        localStorage.setItem('tinoStripeConfig', JSON.stringify(stripeConfig));
-
-        if (key) {
-            try {
-                stripe = Stripe(key);
-                showToast('✅ Configuration sauvegardée !');
-                document.getElementById('configBox').classList.add('success');
-            } catch (e) {
-                showToast('Erreur Stripe', true);
+        db.ref('settings/stripeConfig').set(stripeConfig).then(() => {
+            if (key) {
+                try {
+                    stripe = Stripe(key);
+                    showToast('✅ Configuration sauvegardée !');
+                    document.getElementById('configBox').classList.add('success');
+                } catch (e) {
+                    showToast('Erreur Stripe', true);
+                }
+            } else {
+                showToast('✅ Configuration sauvegardée (mode démo)');
             }
-        } else {
-            showToast('✅ Configuration sauvegardée (mode démo)');
-        }
+        }).catch(() => {
+            showToast('Erreur de sauvegarde Firebase', true);
+        });
     }
 
     // Auth
@@ -417,6 +420,8 @@
                         if (isAdmin(user)) {
                             document.getElementById('adminConfigBtn').style.display = 'inline-block';
                         }
+
+                        await loadConfig();
 
                         if (userProfile.premium && userProfile.premiumExpiry > Date.now()) {
                             document.getElementById('userPlan').textContent = '✨ Premium';
@@ -450,6 +455,8 @@
                         if (isAdmin(user)) {
                             document.getElementById('adminConfigBtn').style.display = 'inline-block';
                         }
+
+                        await loadConfig();
 
                         if (userProfile.premium && userProfile.premiumExpiry > Date.now()) {
                             document.getElementById('userPlan').textContent = '✨ Premium';
@@ -564,8 +571,7 @@
     }
 
     // showToast() charge depuis js/firebase-config.js
-
-    loadConfig();
+    // loadConfig() est appelé dans setupAuthListener après authentification
     </script>
 
     <!-- Bouton Partager Flottant -->
