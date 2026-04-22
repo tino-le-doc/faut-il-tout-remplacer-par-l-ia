@@ -1,5 +1,5 @@
 // Service Worker - TLD PWA
-const CACHE_NAME = 'tld-cache-v4';
+const CACHE_NAME = 'tld-cache-v5';
 const OFFLINE_URL = '/offline.html';
 
 // Ressources essentielles a mettre en cache lors de l'installation
@@ -8,8 +8,8 @@ const PRECACHE_URLS = [
   '/',
   '/index.html',
   '/offline.html',
-  '/css/common.css?v=1',
-  '/js/firebase-config.js?v=2',
+  '/css/common.css?v=2',
+  '/js/firebase-config.js?v=3',
   '/js/consent.js?v=1',
   '/js/i18n.js',
   '/img/1000074494.avif',

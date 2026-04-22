@@ -52,7 +52,7 @@
     <title>Avis - TLD | IA vs Humains</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"></noscript>
-    <link rel="stylesheet" href="css/common.css?v=1">
+    <link rel="stylesheet" href="css/common.css?v=2">
     <style>
         :root {
             --bg-dark: #0a0a0f;
@@ -552,18 +552,7 @@
 
         footer a { color: var(--accent-cyan); text-decoration: none; }
 
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--accent-cyan);
-            text-decoration: none;
-            font-weight: 600;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-        }
-
-        .back-link:hover { transform: translateX(-5px); }
+        /* .back-link défini dans common.css */
 
         @media (max-width: 600px) {
             .container { padding: 20px 15px; }
@@ -730,7 +719,15 @@
         </div>
 
         <footer role="contentinfo">
-            Créé avec ❤️ par <strong>TLD</strong> | Propulsé par <a href="https://claude.ai" target="_blank" rel="noopener noreferrer">Claude AI</a> & <a href="https://firebase.google.com" target="_blank" rel="noopener noreferrer">Firebase</a>
+            <p><strong>TLD</strong> — Avis de la communauté</p>
+            <div class="footer-links">
+                <a href="index.html">🏠 Accueil</a>
+                <a href="debat.html">⚔️ Débat</a>
+                <a href="tchat.html">💬 Tchat</a>
+                <a href="quiz.html">🧠 Quiz</a>
+                <a href="compte.html">👤 Mon compte</a>
+                <a href="confidentialite.html">🔒 Confidentialité</a>
+            </div>
         </footer>
     </div>
 
