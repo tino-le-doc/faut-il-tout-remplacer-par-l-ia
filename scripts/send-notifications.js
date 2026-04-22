@@ -17,8 +17,8 @@ const FIREBASE_DB_URL = 'https://tino-le-doc-default-rtdb.europe-west1.firebased
 const DRY_RUN = process.env.DRY_RUN === 'true';
 
 if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY || !FIREBASE_DATABASE_SECRET) {
-    console.error('❌ Variables d\'environnement manquantes (VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, FIREBASE_DATABASE_SECRET)');
-    process.exit(1);
+    console.warn('⚠️  Variables d\'environnement manquantes (VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, FIREBASE_DATABASE_SECRET). Notifications ignorées.');
+    process.exit(0);
 }
 
 if (DRY_RUN) {
@@ -78,7 +78,11 @@ async function main() {
     const url = `${FIREBASE_DB_URL}/pushSubscriptions.json?auth=${FIREBASE_DATABASE_SECRET}`;
     const resp = await fetch(url);
     if (!resp.ok) {
-        console.error(`❌ Erreur Firebase: ${resp.status} ${resp.statusText}`);
+        const body = await resp.text().catch(() => '');
+        console.error(`❌ Erreur Firebase ${resp.status} ${resp.statusText}: ${body}`);
+        if (resp.status === 401 || resp.status === 403) {
+            console.warn('⚠️  Vérifiez que FIREBASE_DATABASE_SECRET est valide (Settings > Secrets > Actions).');
+        }
         process.exit(1);
     }
 
